@@ -1,0 +1,175 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2565822cd9b2fae4aa9ee893f95a8c92, type: 3}
+  m_Name: LevelData
+  m_EditorClassIdentifier: 
+  levels:
+  - Level: 1
+    ExperienceRequired: 100
+  - Level: 2
+    ExperienceRequired: 150
+  - Level: 3
+    ExperienceRequired: 200
+  - Level: 4
+    ExperienceRequired: 250
+  - Level: 5
+    ExperienceRequired: 300
+  - Level: 6
+    ExperienceRequired: 350
+  - Level: 7
+    ExperienceRequired: 400
+  - Level: 8
+    ExperienceRequired: 450
+  - Level: 9
+    ExperienceRequired: 500
+  - Level: 10
+    ExperienceRequired: 550
+  - Level: 11
+    ExperienceRequired: 650
+  - Level: 12
+    ExperienceRequired: 700
+  - Level: 13
+    ExperienceRequired: 750
+  - Level: 14
+    ExperienceRequired: 800
+  - Level: 15
+    ExperienceRequired: 850
+  - Level: 16
+    ExperienceRequired: 900
+  - Level: 17
+    ExperienceRequired: 950
+  - Level: 18
+    ExperienceRequired: 1000
+  - Level: 19
+    ExperienceRequired: 1050
+  - Level: 20
+    ExperienceRequired: 1100
+  - Level: 21
+    ExperienceRequired: 1150
+  - Level: 22
+    ExperienceRequired: 1200
+  - Level: 23
+    ExperienceRequired: 1250
+  - Level: 24
+    ExperienceRequired: 1300
+  - Level: 25
+    ExperienceRequired: 1350
+  - Level: 26
+    ExperienceRequired: 1400
+  - Level: 27
+    ExperienceRequired: 1450
+  - Level: 28
+    ExperienceRequired: 1500
+  - Level: 29
+    ExperienceRequired: 1550
+  - Level: 30
+    ExperienceRequired: 1600
+  - Level: 31
+    ExperienceRequired: 1700
+  - Level: 32
+    ExperienceRequired: 1800
+  - Level: 33
+    ExperienceRequired: 1900
+  - Level: 34
+    ExperienceRequired: 2000
+  - Level: 35
+    ExperienceRequired: 2100
+  - Level: 36
+    ExperienceRequired: 2200
+  - Level: 37
+    ExperienceRequired: 2300
+  - Level: 38
+    ExperienceRequired: 2400
+  - Level: 39
+    ExperienceRequired: 2500
+  - Level: 40
+    ExperienceRequired: 2600
+  - Level: 41
+    ExperienceRequired: 2700
+  - Level: 42
+    ExperienceRequired: 2800
+  - Level: 43
+    ExperienceRequired: 2900
+  - Level: 44
+    ExperienceRequired: 3000
+  - Level: 45
+    ExperienceRequired: 3100
+  - Level: 46
+    ExperienceRequired: 3200
+  - Level: 47
+    ExperienceRequired: 3300
+  - Level: 48
+    ExperienceRequired: 3400
+  - Level: 49
+    ExperienceRequired: 3500
+  - Level: 50
+    ExperienceRequired: 3600
+  - Level: 51
+    ExperienceRequired: 3700
+  - Level: 52
+    ExperienceRequired: 3800
+  - Level: 53
+    ExperienceRequired: 3900
+  - Level: 54
+    ExperienceRequired: 4000
+  - Level: 55
+    ExperienceRequired: 4100
+  - Level: 56
+    ExperienceRequired: 4200
+  - Level: 57
+    ExperienceRequired: 4300
+  - Level: 58
+    ExperienceRequired: 4400
+  - Level: 59
+    ExperienceRequired: 4500
+  - Level: 60
+    ExperienceRequired: 4600
+  - Level: 61
+    ExperienceRequired: 4700
+  - Level: 62
+    ExperienceRequired: 4800
+  - Level: 63
+    ExperienceRequired: 4900
+  - Level: 64
+    ExperienceRequired: 5000
+  - Level: 65
+    ExperienceRequired: 5100
+  - Level: 66
+    ExperienceRequired: 5200
+  - Level: 67
+    ExperienceRequired: 5300
+  - Level: 68
+    ExperienceRequired: 5400
+  - Level: 69
+    ExperienceRequired: 5500
+  - Level: 70
+    ExperienceRequired: 5600
+  - Level: 71
+    ExperienceRequired: 6500
+  - Level: 72
+    ExperienceRequired: 7000
+  - Level: 73
+    ExperienceRequired: 7500
+  - Level: 74
+    ExperienceRequired: 8000
+  - Level: 75
+    ExperienceRequired: 8500
+  - Level: 76
+    ExperienceRequired: 9000
+  - Level: 77
+    ExperienceRequired: 9500
+  - Level: 78
+    ExperienceRequired: 10000
+  - Level: 79
+    ExperienceRequired: 10500
+  - Level: 80
+    ExperienceRequired: 0

@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c2691476e1acf34096c2dc0ea752c10, type: 3}
+  m_Name: PlayerNamesData
+  m_EditorClassIdentifier: 
+  playerNames:
+  - FastFalcon87
+  - GhostHawk25
+  - MegaEagle16
+  - EpicLion87
+  - FastLion43
+  - CoolHawk24
+  - NinjaFox33
+  - NinjaDragon62
+  - CoolDragon71
+  - GhostHawk2
+  - NinjaLion59
+  - EpicLion92
+  - MegaFalcon12
+  - CrazyViper68
+  - DarkTiger84
+  - EpicTiger15
+  - SuperFox57
+  - NinjaWolf52
+  - EpicTiger44
+  - FastEagle41
+  - NinjaEagle34
+  - EpicTiger16
+  - CrazyFox35
+  - EpicEagle18
+  - EpicTiger7
+  - EpicTiger1
+  - CrazyShadow35
+  - MegaViper98
+  - NinjaEagle30
+  - HyperLion37
+  - CrazyShadow32
+  - GhostLion66
+  - MegaViper46
+  - DarkDragon44
+  - MegaDragon32
+  - FastFox72
+  - HyperDragon97
+  - MegaLion82
+  - HyperShadow93
+  - DarkLion92
+  - DarkLion13
+  - SuperEagle47
+  - NinjaWolf24
+  - CrazyEagle24
+  - NinjaFalcon84
+  - CoolWolf11
+  - GhostHawk90
+  - CrazyShadow33
+  - MegaWolf33
+  - GhostHawk8

@@ -1,0 +1,61 @@
+namespace BrawlLine.DependencyInjection 
+{
+    using BrawlLine.Assets;
+    using BrawlLine.Events;
+    using UnityEngine;
+    using BrawlLine.Networking;
+    using BrawlLine.UI;
+    using BrawlLine.Shop;
+    using BrawlLine.Audio;
+    using BrawlLine.Localization;
+    using BrawlLine.Player;
+    using BrawlLine.GameModes;
+
+    public class GameInstaller : MonoInstaller
+    {
+        [SerializeField] private CurrencyIconMap currencyIconMap;
+        [SerializeField] private PlayerNamesData playerNamesData;
+        [SerializeField] private LevelData levelData;
+        [SerializeField] private DefaultPlayerConfig defaultPlayerConfig;
+        [SerializeField] private CharacterDatabase characterDatabase;
+        [SerializeField] private MiniGameDatabase miniGameDatabase;
+
+        public override void InstallBindings(DIContainer container)
+        {
+            container.RegisterSingleton(currencyIconMap);
+            container.RegisterSingleton(playerNamesData);
+            container.RegisterSingleton(levelData);
+            container.RegisterSingleton(defaultPlayerConfig);
+            container.RegisterSingleton(characterDatabase);
+            container.RegisterSingleton(miniGameDatabase);
+
+            IEventManager eventManager = new EventManager();
+            container.RegisterSingleton(eventManager);
+
+            EventsBus.Initialize(eventManager);
+
+            ViewManager viewManager = new ViewManager();
+            viewManager.Initialize();
+
+            container.RegisterSingleton(viewManager);
+
+            IAssetManager assetManager = new AssetManager(currencyIconMap);
+            container.RegisterSingleton(assetManager);
+
+            ShopManager shopManager = FindAnyObjectByType<ShopManager>();
+            container.RegisterMonoBehaviourSingleton(shopManager);
+
+            AudioManager audioManager = FindAnyObjectByType<AudioManager>();
+            container.RegisterMonoBehaviourSingleton(audioManager);
+
+            LocalizationService localizationService = FindAnyObjectByType<LocalizationService>();
+            container.RegisterMonoBehaviourSingleton(localizationService);
+
+            NetworkManagerCustom networkManagerCustom = FindAnyObjectByType<NetworkManagerCustom>();
+            container.RegisterSingleton(networkManagerCustom);
+
+            PopupManager popupManager = FindAnyObjectByType<PopupManager>();
+            container.RegisterMonoBehaviourSingleton(popupManager);
+        }
+    }
+}
