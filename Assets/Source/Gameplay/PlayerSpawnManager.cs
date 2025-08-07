@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
-using System.Linq;
 using MageLock.Controls;
 using MageLock.DependencyInjection;
 using MageLock.Networking;
@@ -13,25 +12,11 @@ namespace MageLock.GameModes
     {
         [Inject] private NetworkManagerCustom networkManagerCustom;
         
-        private SpawnPoint[] cachedSpawnPoints;
-        private readonly Dictionary<ulong, SpawnedPlayerData> spawnedPlayers = new();
-        private readonly List<ulong> playersToRespawnCache = new();
-
-        private struct SpawnedPlayerData
-        {
-            public NetworkObject PlayerNetworkObject;
-            public bool IsAlive;
-            public float RespawnTime;
-        }
+        private readonly Dictionary<ulong, NetworkObject> spawnedPlayers = new();
 
         public PlayerSpawnManager()
         {
             DIContainer.Instance.Inject(this);
-        }
-
-        public void Update()
-        {
-            HandlePendingRespawns();
         }
 
         public void Cleanup()
@@ -39,83 +24,34 @@ namespace MageLock.GameModes
             ClearAllPlayers();
         }
 
-        #region Public Methods
-
-        public bool SpawnAllPlayers()
+        public bool SpawnAllPlayers()ß
         {
             ClearAllPlayers();
 
             var allSpawned = true;
+            int spawnIndex = 0;
 
             foreach (var clientId in networkManagerCustom.ConnectedClientsIds)
             {
-                if (!SpawnPlayerForClient(clientId))
+                if (!SpawnPlayerForClient(clientId, spawnIndex))
                 {
                     allSpawned = false;
                     Debug.LogError($"Failed to spawn player for client {clientId}");
                 }
+                spawnIndex++;
             }
 
             Debug.Log($"Spawned {spawnedPlayers.Count} players");
             return allSpawned;
         }
 
-        public bool EliminatePlayer(ulong clientId)
-        {
-            if (!spawnedPlayers.TryGetValue(clientId, out var playerData))
-            {
-                Debug.LogWarning($"Cannot eliminate player {clientId} - not found");
-                return false;
-            }
-
-            if (!playerData.IsAlive)
-            {
-                Debug.LogWarning($"Player {clientId} is already eliminated");
-                return false;
-            }
-
-            playerData.IsAlive = false;
-            spawnedPlayers[clientId] = playerData;
-
-            if (playerData.PlayerNetworkObject != null && playerData.PlayerNetworkObject.IsSpawned)
-            {
-                playerData.PlayerNetworkObject.Despawn();
-            }
-            
-            int alivePlayerCount = spawnedPlayers.Values.Count(p => p.IsAlive);
-            Debug.Log($"Player {clientId} eliminated. Alive players: {alivePlayerCount}");
-            
-            return true;
-        }
-
-        public bool SchedulePlayerRespawn(ulong clientId, float respawnDelay)
-        {
-            if (!spawnedPlayers.TryGetValue(clientId, out var playerData))
-            {
-                Debug.LogWarning($"Cannot respawn player {clientId} - not found");
-                return false;
-            }
-
-            if (playerData.IsAlive)
-            {
-                Debug.LogWarning($"Player {clientId} is already alive");
-                return false;
-            }
-
-            playerData.RespawnTime = Time.time + respawnDelay;
-            spawnedPlayers[clientId] = playerData;
-
-            Debug.Log($"Scheduled respawn for player {clientId} in {respawnDelay} seconds");
-            return true;
-        }
-
         public void ClearAllPlayers()
         {
-            foreach (var playerData in spawnedPlayers.Values)
+            foreach (var playerNetworkObject in spawnedPlayers.Values)
             {
-                if (playerData.PlayerNetworkObject != null && playerData.PlayerNetworkObject.IsSpawned)
+                if (playerNetworkObject != null && playerNetworkObject.IsSpawned)
                 {
-                    playerData.PlayerNetworkObject.Despawn();
+                    playerNetworkObject.Despawn();
                 }
             }
 
@@ -125,33 +61,18 @@ namespace MageLock.GameModes
 
         public void OnClientDisconnected(ulong clientId)
         {
-            if (spawnedPlayers.TryGetValue(clientId, out var playerData))
+            if (spawnedPlayers.TryGetValue(clientId, out var playerNetworkObject))
             {
                 Debug.Log($"Cleaning up player data for disconnected client {clientId}");
 
-                if (playerData.PlayerNetworkObject != null && playerData.PlayerNetworkObject.IsSpawned)
-                    playerData.PlayerNetworkObject.Despawn();
+                if (playerNetworkObject != null && playerNetworkObject.IsSpawned)
+                    playerNetworkObject.Despawn();
 
                 spawnedPlayers.Remove(clientId);
             }
         }
-        
-        public int GetSpawnPointCount()
-        {
-            return cachedSpawnPoints?.Length ?? 0;
-        }
 
-        #endregion
-
-        #region Private Methods
-
-        public void CacheSpawnPoints()
-        {
-            cachedSpawnPoints = Object.FindObjectsByType<SpawnPoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-            Debug.Log($"Cached {cachedSpawnPoints?.Length ?? 0} spawn points");
-        }
-
-        private bool SpawnPlayerForClient(ulong clientId)
+        private bool SpawnPlayerForClient(ulong clientId, int spawnIndex)
         {
             var playerPrefab = GetPlayerPrefabForClient(clientId);
 
@@ -161,7 +82,7 @@ namespace MageLock.GameModes
                 return false;
             }
 
-            var spawnPoint = FindNextAvailableSpawnPoint();
+            var spawnPoint = GetSpawnPointByIndex(spawnIndex);
             
             if (spawnPoint == null)
             {
@@ -185,15 +106,7 @@ namespace MageLock.GameModes
             }
 
             playerNetworkObject.SpawnAsPlayerObject(clientId);
-            
-            var playerData = new SpawnedPlayerData
-            {
-                PlayerNetworkObject = playerNetworkObject,
-                IsAlive = true,
-                RespawnTime = 0f
-            };
-
-            spawnedPlayers[clientId] = playerData;
+            spawnedPlayers[clientId] = playerNetworkObject;
 
             Debug.Log($"Spawned player for client {clientId} at {spawnPoint.Position}");
             return true;
@@ -212,44 +125,23 @@ namespace MageLock.GameModes
             return selectedCharacter.inGamePrefab;
         }
 
-        private SpawnPoint FindNextAvailableSpawnPoint()
+        private SpawnPoint GetSpawnPointByIndex(int index)
         {
-            if (cachedSpawnPoints == null || cachedSpawnPoints.Length == 0)
+            var spawnPoints = Object.FindObjectsByType<SpawnPoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            
+            if (spawnPoints == null || spawnPoints.Length == 0)
             {
                 Debug.LogError("No spawn points available!");
                 return null;
             }
 
-            return cachedSpawnPoints[Random.Range(0, cachedSpawnPoints.Length)];
-        }
+            // For 1v1, use opposite spawn points (first and second, or first and last)
+            if (index >= spawnPoints.Length)
+            {
+                index = spawnPoints.Length - 1;
+            }
 
-        private void HandlePendingRespawns()
-        {
-            playersToRespawnCache.Clear();
-    
-            float currentTime = Time.time;
-    
-            foreach (var (key, player) in spawnedPlayers)
-            {
-                if (!player.IsAlive && 
-                    player.RespawnTime > 0f && 
-                    currentTime >= player.RespawnTime)
-                {
-                    playersToRespawnCache.Add(key);
-                }
-            }
-    
-            for (int i = 0; i < playersToRespawnCache.Count; i++)
-            {
-                var clientId = playersToRespawnCache[i];
-        
-                if (SpawnPlayerForClient(clientId))
-                    Debug.Log($"Respawned player {clientId}");
-                else
-                    Debug.LogError($"Failed to respawn player {clientId}");
-            }
+            return spawnPoints[index];
         }
-        
-        #endregion
     }
 }

@@ -1,430 +1,183 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using MageLock.DependencyInjection;
-using MageLock.Events;
-using MageLock.Networking;
-using Unity.Collections;
-using Unity.Netcode;
 using UnityEngine;
+using Unity.Netcode;
+using MageLock.DependencyInjection;
+using MageLock.Networking;
 
 namespace MageLock.GameModes
 {
+    public enum GameState
+    {
+        WaitingForPlayers,
+        Playing,
+        GameOver
+    }
+
     public class GameStateManager : NetworkBehaviour
     {
-        [Inject] private MiniGameDatabase miniGameDatabase;
         [Inject] private NetworkManagerCustom networkManagerCustom;
-
-        public NetworkVariable<int> playersAlive = new();
-        public NetworkVariable<int> playersFinished = new();
-        public NetworkVariable<bool> isGameActive = new();
-        public NetworkVariable<int> currentPhase = new(1);
-        public NetworkVariable<FixedString128Bytes> currentMiniGameId = new("");
-
-        private GameObject currentLevelInstance;
-        private int totalPlayers;
-        private readonly HashSet<ulong> finishedPlayers = new();
-        private readonly HashSet<ulong> eliminatedPlayers = new();
-        private MiniGameConfig currentMiniGame;
-        private PhaseConfig currentPhaseConfig;
-        private int qualifyingPlayersForCurrentPhase;
-        private IGameModeLogic currentGameModeLogic;
-        
         private PlayerSpawnManager playerSpawnManager;
+        
+        private NetworkVariable<GameState> currentState = new(GameState.WaitingForPlayers);
+        private NetworkVariable<float> matchTimer = new(0f);
+        
+        private ulong player1ClientId = ulong.MaxValue;
+        private ulong player2ClientId = ulong.MaxValue;
+        private float matchDuration = 120f; 
+        
+        public event Action<GameState> OnGameStateChanged;
+        public event Action<ulong> OnGameWon;
+        
+        public GameState CurrentState => currentState.Value;
+        public float MatchTimer => matchTimer.Value;
+        public bool IsFull => player1ClientId != ulong.MaxValue && player2ClientId != ulong.MaxValue;
 
-        #region Unity Lifecycle
+        private void Awake()
+        {
+            DIContainer.Instance.Inject(this);
+            playerSpawnManager = new PlayerSpawnManager();
+        }
 
         public override void OnNetworkSpawn()
         {
-            base.OnNetworkSpawn();
-            
-            DIContainer.Instance.Inject(this);
-
             if (IsServer)
             {
-                playerSpawnManager = new PlayerSpawnManager();
-                
-                InitializeGame();
-                RegisterServerEvents();
+                networkManagerCustom.OnClientConnectedCallback += OnPlayerConnected;
+                networkManagerCustom.OnClientDisconnectCallback += OnPlayerDisconnected;
             }
 
-            RegisterNetworkCallbacks();
+            currentState.OnValueChanged += (prev, current) => OnGameStateChanged?.Invoke(current);
         }
 
         public override void OnNetworkDespawn()
         {
-            base.OnNetworkDespawn();
-            UnregisterNetworkCallbacks();
-
-            if (IsServer) 
+            if (IsServer)
             {
-                UnregisterServerEvents();
-                playerSpawnManager?.Cleanup();
+                networkManagerCustom.OnClientConnectedCallback -= OnPlayerConnected;
+                networkManagerCustom.OnClientDisconnectCallback -= OnPlayerDisconnected;
+            }
+            
+            if (playerSpawnManager != null)
+            {
+                playerSpawnManager.Cleanup();
             }
         }
 
         private void Update()
         {
             if (!IsServer) return;
-            
-            currentGameModeLogic?.Update();
-            playerSpawnManager?.Update();
-        }
 
-        #endregion
-
-        #region Initialization
-
-        private void RegisterNetworkCallbacks()
-        {
-            isGameActive.OnValueChanged += OnGameActiveChanged;
-            playersFinished.OnValueChanged += OnPlayersFinishedChanged;
-            playersAlive.OnValueChanged += OnPlayersAliveChanged;
-            currentMiniGameId.OnValueChanged += OnCurrentMiniGameChanged;
-            currentPhase.OnValueChanged += OnCurrentPhaseChanged;
-        }
-
-        private void UnregisterNetworkCallbacks()
-        {
-            isGameActive.OnValueChanged -= OnGameActiveChanged;
-            playersFinished.OnValueChanged -= OnPlayersFinishedChanged;
-            playersAlive.OnValueChanged -= OnPlayersAliveChanged;
-            currentMiniGameId.OnValueChanged -= OnCurrentMiniGameChanged;
-            currentPhase.OnValueChanged -= OnCurrentPhaseChanged;
-        }
-
-        private void RegisterServerEvents()
-        {
-            if (networkManagerCustom != null) 
-                networkManagerCustom.OnClientDisconnectCallback += OnClientDisconnected;
-        }
-
-        private void UnregisterServerEvents()
-        {
-            if (networkManagerCustom != null) 
-                networkManagerCustom.OnClientDisconnectCallback -= OnClientDisconnected;
-        }
-
-        #endregion
-
-        #region Server Logic
-
-        private void InitializeGame()
-        {
-            if (miniGameDatabase == null)
+            if (currentState.Value == GameState.Playing)
             {
-                Debug.LogError("MiniGameDatabase is not assigned!");
-                EndGameWithError("MiniGameDatabase missing");
+                UpdateMatch();
+            }
+        }
+
+        #region Server Methods
+
+        private void OnPlayerConnected(ulong clientId)
+        {
+            if (!IsServer) return;
+
+            if (player1ClientId == ulong.MaxValue)
+            {
+                player1ClientId = clientId;
+                Debug.Log($"Player 1 connected: {clientId}");
+            }
+            else if (player2ClientId == ulong.MaxValue)
+            {
+                player2ClientId = clientId;
+                Debug.Log($"Player 2 connected: {clientId}");
+            }
+            else
+            {
+                Debug.LogWarning($"Game full, rejecting player: {clientId}");
                 return;
             }
 
-            var playerCount = networkManagerCustom.ConnectedClients.Count;
-            
-            totalPlayers = playerCount;
-            playersAlive.Value = playerCount;
-            playersFinished.Value = 0;
-            currentPhase.Value = 1;
-
-            Debug.Log($"Initializing game for {playerCount} players");
-
-            finishedPlayers.Clear();
-            eliminatedPlayers.Clear();
-
-            SelectAndStartMiniGame();
+            if (IsFull && currentState.Value == GameState.WaitingForPlayers)
+            {
+                StartMatch();
+            }
         }
 
-        private void SelectAndStartMiniGame()
+        private void OnPlayerDisconnected(ulong clientId)
         {
-            currentMiniGame = miniGameDatabase.SelectRandomMiniGame();
+            if (!IsServer) return;
 
-            if (currentMiniGame == null)
+            if (clientId == player1ClientId || clientId == player2ClientId)
             {
-                Debug.LogError("No mini-games available in database!");
-                EndGameWithError("No mini-games available");
-                return;
-            }
-
-            currentMiniGameId.Value = currentMiniGame.miniGameId;
-            Debug.Log($"Selected mini-game: {currentMiniGame.miniGameId}");
-
-            currentGameModeLogic = currentMiniGame.GameModeLogic;
-            currentMiniGame.InitializeGameModeLogic(this, playerSpawnManager);
-
-            StartCurrentPhase();
-        }
-
-        private void StartCurrentPhase()
-        {
-            if (!IsServer)
-            {
-                Debug.LogError("Cannot start phase - invalid state");
-                return;
-            }
-
-            currentPhaseConfig = currentMiniGame.GetPhase(currentPhase.Value);
-            
-            if (currentPhaseConfig == null)
-            {
-                Debug.LogError($"No phase config found for phase {currentPhase.Value}");
-                EndGameWithError($"Phase {currentPhase.Value} configuration missing");
-                return;
-            }
-
-            qualifyingPlayersForCurrentPhase = currentMiniGame.GetQualifyingPlayersForPhase(
-                currentPhase.Value,
-                playersAlive.Value,
-                networkManagerCustom.MaxPlayers
-            );
-
-            Debug.Log(
-                $"Starting phase {currentPhase.Value} - Need {qualifyingPlayersForCurrentPhase} to qualify from {playersAlive.Value} players");
-
-            isGameActive.Value = true;
-
-            finishedPlayers.Clear();
-            playersFinished.Value = 0;
-
-            if (!SpawnCurrentLevel())
-            {
-                Debug.LogError("Failed to spawn level");
-                EndGameWithError("Level spawning failed");
-                return;
-            }
-
-            if (!SpawnAllPlayers())
-            {
-                Debug.LogError("Failed to spawn players");
-                EndGameWithError("Player spawning failed");
-                return;
-            }
-
-            currentGameModeLogic?.OnPhaseStart(currentPhase.Value, playersAlive.Value, qualifyingPlayersForCurrentPhase);
-
-            Debug.Log($"Phase {currentPhase.Value} started successfully");
-
-            EventsBus.Trigger(new RaceStartedEvent
-            {
-                PlayersTotal = playersAlive.Value,
-                QualifyingPlayers = qualifyingPlayersForCurrentPhase
-            });
-        }
-
-        private bool SpawnCurrentLevel()
-        {
-            if (currentLevelInstance != null)
-            {
-                if (currentLevelInstance.TryGetComponent<NetworkObject>(out var oldNetworkObj))
-                    oldNetworkObj.Despawn(); 
-                else
-                    Destroy(currentLevelInstance); 
-            }
-
-            try
-            {
-                currentLevelInstance = Instantiate(currentPhaseConfig.levelPrefab);
-
-                if (currentLevelInstance.TryGetComponent<NetworkObject>(out var newNetworkObj))
-                    newNetworkObj.Spawn();
-                else
-                    Debug.LogWarning("Spawned level prefab does not have a NetworkObject component.");
-
-                Debug.Log($"Spawned level: {currentPhaseConfig.levelPrefab.name}");
+                Debug.Log($"Player disconnected during match: {clientId}");
                 
-                playerSpawnManager?.CacheSpawnPoints();
+                playerSpawnManager.OnClientDisconnected(clientId);
                 
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Failed to spawn level: {ex.Message}");
-                return false;
+                EndMatch(clientId == player1ClientId ? player2ClientId : player1ClientId);
             }
         }
 
-        private bool SpawnAllPlayers()
+        private void StartMatch()
         {
-            var result = playerSpawnManager.SpawnAllPlayers();
+            if (!IsServer) return;
+
+            Debug.Log("Starting match!");
             
-            if (result)
+            matchTimer.Value = matchDuration;
+            
+            playerSpawnManager.SpawnAllPlayers();
+            
+            currentState.Value = GameState.Playing;
+            
+            StartMatchClientRpc();
+        }
+
+        private void UpdateMatch()
+        {
+            matchTimer.Value -= Time.deltaTime;
+            
+            if (matchTimer.Value <= 0)
             {
-                Debug.Log($"Successfully spawned all players. Spawn points available: {playerSpawnManager.GetSpawnPointCount()}");
+                EndMatch(ulong.MaxValue);
             }
+        }
+
+        private void EndMatch(ulong winnerClientId)
+        {
+            if (!IsServer) return;
+
+            Debug.Log($"Match ended! Winner: {winnerClientId}");
             
-            return result;
+            currentState.Value = GameState.GameOver;
+            OnGameWon?.Invoke(winnerClientId);
+            
+            EndMatchClientRpc(winnerClientId);
+            
+            ResetGame();
+        }
+
+        private void ResetGame()
+        {
+            if (!IsServer) return;
+
+            playerSpawnManager.ClearAllPlayers();
+            player1ClientId = ulong.MaxValue;
+            player2ClientId = ulong.MaxValue;
+            currentState.Value = GameState.WaitingForPlayers;
         }
 
         #endregion
 
-        #region Game Management
+        #region Public Server Methods
 
-        private void CheckPhaseCompletion()
+        [ServerRpc(RequireOwnership = false)]
+        public void RegisterPlayerDeathServerRpc(ulong killerClientId, ulong victimClientId)
         {
             if (!IsServer) return;
-
-            var shouldEnd = currentGameModeLogic?.ShouldEndPhase(
-                finishedPlayers.Count, 
-                qualifyingPlayersForCurrentPhase, 
-                playersAlive.Value
-            ) ?? finishedPlayers.Count >= qualifyingPlayersForCurrentPhase;
-
-            if (shouldEnd)
-            {
-                Debug.Log(
-                    $"Phase completion criteria met. Finished: {finishedPlayers.Count}, Required: {qualifyingPlayersForCurrentPhase}");
-                EndCurrentPhase();
-            }
-        }
-
-        private void EndCurrentPhase()
-        {
-            if (!IsServer) return;
-
-            isGameActive.Value = false;
-
-            var connectedClients = NetworkManager.ConnectedClientsIds.ToList();
             
-            var playersToEliminate = currentGameModeLogic?.GetPlayersToEliminate(
-                finishedPlayers.ToList(), 
-                qualifyingPlayersForCurrentPhase, 
-                connectedClients
-            ) ?? GetDefaultPlayersToEliminate(connectedClients);
-
-            var qualifiedPlayers = connectedClients.Where(p => !playersToEliminate.Contains(p)).ToList();
-
-            EliminateNonQualifiedPlayers(playersToEliminate);
-
-            Debug.Log($"Phase {currentPhase.Value} ended! {qualifiedPlayers.Count} players qualified");
-
-            if (currentLevelInstance != null)
+            if (killerClientId == player1ClientId || killerClientId == player2ClientId)
             {
-                if (currentLevelInstance.TryGetComponent<NetworkObject>(out var networkObj))
-                    networkObj.Despawn();
-                else
-                    Destroy(currentLevelInstance);
-                currentLevelInstance = null;
+                EndMatch(killerClientId);
             }
-
-            playerSpawnManager?.ClearAllPlayers();
-
-            currentGameModeLogic?.OnPhaseEnd(currentPhase.Value, qualifiedPlayers, playersToEliminate);
-
-            EventsBus.Trigger(new RaceEndedEvent
-            {
-                QualifiedPlayers = qualifiedPlayers,
-                TotalFinished = finishedPlayers.Count,
-                TotalEliminated = eliminatedPlayers.Count
-            });
-
-            var shouldEndGame = currentGameModeLogic?.ShouldEndGame(
-                playersAlive.Value, 
-                currentPhase.Value, 
-                currentMiniGame.GetTotalPhases()
-            ) ?? playersAlive.Value <= 1;
-
-            if (shouldEndGame)
-            {
-                EndGame();
-            }
-            else if (currentPhase.Value < currentMiniGame.GetTotalPhases())
-            {
-                currentPhase.Value++;
-                StartCurrentPhase();
-            }
-        }
-
-        private List<ulong> GetDefaultPlayersToEliminate(List<ulong> connectedClients)
-        {
-            var qualifiedPlayers = finishedPlayers.Take(qualifyingPlayersForCurrentPhase).ToList();
-            return connectedClients.Where(p => !qualifiedPlayers.Contains(p) && !eliminatedPlayers.Contains(p)).ToList();
-        }
-
-        private void EliminateNonQualifiedPlayers(List<ulong> playersToEliminate)
-        {
-            foreach (var clientId in playersToEliminate)
-                if (!eliminatedPlayers.Contains(clientId))
-                    EliminatePlayer(clientId, "Did not qualify");
-
-            Debug.Log($"Eliminated {playersToEliminate.Count} players who didn't qualify");
-        }
-
-        private void EndGame()
-        {
-            if (!IsServer) return;
-
-            var winner = NetworkManager.ConnectedClientsIds.FirstOrDefault(id => !eliminatedPlayers.Contains(id));
-
-            Debug.Log($"Game ended! Winner: {winner}");
-
-            currentGameModeLogic?.OnGameEnd(winner);
-
-            EventsBus.Trigger(new GameEndedEvent
-            {
-                WinnerClientId = winner,
-                TotalEliminated = eliminatedPlayers.Count
-            });
-        }
-
-        private void EndGameWithError(string errorMessage)
-        {
-            Debug.LogError($"Game ended with error: {errorMessage}");
-
-            isGameActive.Value = false;
-            playerSpawnManager?.ClearAllPlayers();
-
-            EventsBus.Trigger(new RaceErrorEvent
-            {
-                ErrorMessage = errorMessage
-            });
-        }
-
-        #endregion
-
-        #region Server RPCs - Player Management
-
-        [ServerRpc(RequireOwnership = false)]
-        public void PlayerFinishedPhaseServerRpc(ulong clientId)
-        {
-            if (!IsServer) return;
-            PlayerFinishedPhase(clientId);
-        }
-
-        [ServerRpc(RequireOwnership = false)]
-        public void PlayerEliminatedServerRpc(ulong clientId, string reason = "")
-        {
-            if (!IsServer) return;
-            EliminatePlayer(clientId, reason);
-        }
-
-        [ServerRpc(RequireOwnership = false)]
-        public void PlayerRespawnRequestServerRpc(ulong clientId)
-        {
-            if (!IsServer) return;
-
-            var defaultDelay = currentPhaseConfig?.respawnDelay ?? 2f;
-            var customDelay = currentGameModeLogic?.GetRespawnDelay(clientId, defaultDelay) ?? defaultDelay;
-            
-            playerSpawnManager?.SchedulePlayerRespawn(clientId, customDelay);
-        }
-
-        [ServerRpc(RequireOwnership = false)]
-        public void ForceEliminatePlayerServerRpc(ulong clientId)
-        {
-            if (!IsServer) return;
-            playerSpawnManager?.EliminatePlayer(clientId);
-        }
-
-        [ServerRpc(RequireOwnership = false)]
-        public void RequestGameStateServerRpc(ServerRpcParams rpcParams = default)
-        {
-            if (!IsServer) return;
-
-            SendGameStateToClientClientRpc(
-                playersAlive.Value,
-                playersFinished.Value,
-                isGameActive.Value,
-                currentPhase.Value,
-                currentMiniGameId.Value
-            );
         }
 
         #endregion
@@ -432,194 +185,31 @@ namespace MageLock.GameModes
         #region Client RPCs
 
         [ClientRpc]
-        private void SendGameStateToClientClientRpc(
-            int aliveCount, 
-            int finishedCount, 
-            bool gameActive, 
-            int phase, 
-            FixedString128Bytes miniGameId)
+        private void StartMatchClientRpc()
         {
-            Debug.Log($"[Client] Received game state - Alive: {aliveCount}, Finished: {finishedCount}, Active: {gameActive}, Phase: {phase}, Game: {miniGameId}");
+            Debug.Log("Match started on client!");
         }
 
         [ClientRpc]
-        public void NotifyPhaseStartClientRpc(int phaseNumber, int totalPlayers, int qualifyingPlayers)
+        private void EndMatchClientRpc(ulong winnerClientId)
         {
-            Debug.Log($"[Client] Phase {phaseNumber} started with {totalPlayers} players, {qualifyingPlayers} qualifying");
-            
-            if (!IsServer && currentMiniGame != null)
-            {
-                currentGameModeLogic?.OnPhaseStart(phaseNumber, totalPlayers, qualifyingPlayers);
-            }
-        }
-
-        [ClientRpc]
-        public void NotifyPhaseEndClientRpc(int phaseNumber, int qualifiedCount, int eliminatedCount)
-        {
-            Debug.Log($"[Client] Phase {phaseNumber} ended - Qualified: {qualifiedCount}, Eliminated: {eliminatedCount}");
-            
-            if (!IsServer && currentMiniGame != null)
-            {
-                currentGameModeLogic?.OnPhaseEnd(phaseNumber, new List<ulong>(), new List<ulong>());
-            }
-        }
-
-        [ClientRpc]
-        public void NotifyGameEndClientRpc(ulong winnerClientId)
-        {
-            Debug.Log($"[Client] Game ended! Winner: {winnerClientId}");
-            
-            if (!IsServer && currentMiniGame != null)
-            {
-                currentGameModeLogic?.OnGameEnd(winnerClientId);
-            }
+            Debug.Log($"Match ended on client! Winner: {winnerClientId}");
         }
 
         #endregion
 
-        #region Player Management (Server-only)
+        #region Public Getters
 
-        private void PlayerFinishedPhase(ulong clientId)
+        public bool IsPlayer(ulong clientId)
         {
-            if (finishedPlayers.Contains(clientId))
-            {
-                Debug.LogWarning($"Player {clientId} already finished the phase");
-                return;
-            }
-
-            if (eliminatedPlayers.Contains(clientId))
-            {
-                Debug.LogWarning($"Player {clientId} is eliminated and cannot finish");
-                return;
-            }
-
-            finishedPlayers.Add(clientId);
-            playersFinished.Value = finishedPlayers.Count;
-
-            var position = finishedPlayers.Count;
-            var isQualified = position <= qualifyingPlayersForCurrentPhase;
-
-            Debug.Log($"Player {clientId} finished in position {position} (Qualified: {isQualified})");
-
-            currentGameModeLogic?.OnPlayerFinished(clientId, position);
-
-            EventsBus.Trigger(new PlayerFinishedRaceEvent
-            {
-                ClientId = clientId,
-                Position = position,
-                IsQualified = isQualified
-            });
-
-            CheckPhaseCompletion();
+            return clientId == player1ClientId || clientId == player2ClientId;
         }
 
-        private void EliminatePlayer(ulong clientId, string reason)
+        public ulong GetOpponent(ulong clientId)
         {
-            if (eliminatedPlayers.Contains(clientId))
-            {
-                Debug.LogWarning($"Player {clientId} is already eliminated");
-                return;
-            }
-
-            if (finishedPlayers.Contains(clientId))
-            {
-                Debug.LogWarning($"Player {clientId} already finished and cannot be eliminated");
-                return;
-            }
-
-            eliminatedPlayers.Add(clientId);
-
-            playerSpawnManager?.EliminatePlayer(clientId);
-            playersAlive.Value = totalPlayers - eliminatedPlayers.Count;
-
-            Debug.Log($"Player {clientId} eliminated. Reason: {reason}. Players alive: {playersAlive.Value}");
-
-            currentGameModeLogic?.OnPlayerEliminated(clientId, reason);
-
-            EventsBus.Trigger(new PlayerEliminatedEvent
-            {
-                ClientId = clientId,
-                Reason = reason,
-                PlayersRemaining = playersAlive.Value
-            });
-
-            CheckPhaseCompletion();
-        }
-
-        private void OnClientDisconnected(ulong clientId)
-        {
-            if (networkManagerCustom.ShutdownInProgress)
-            {
-                return;
-            }
-            
-            if (!IsServer) return;
-
-            Debug.Log($"Player {clientId} disconnected");
-
-            finishedPlayers.Remove(clientId);
-            eliminatedPlayers.Remove(clientId);
-
-            totalPlayers = Mathf.Max(0, totalPlayers - 1);
-            playersAlive.Value = totalPlayers - eliminatedPlayers.Count;
-            playersFinished.Value = finishedPlayers.Count;
-
-            playerSpawnManager?.OnClientDisconnected(clientId);
-            currentGameModeLogic?.OnPlayerDisconnected(clientId);
-
-            CheckPhaseCompletion();
-        }
-
-        #endregion
-
-        #region Network Variable Callbacks
-
-        private void OnGameActiveChanged(bool previousValue, bool newValue)
-        {
-            Debug.Log($"Game active changed: {newValue}");
-        }
-
-        private void OnCurrentMiniGameChanged(FixedString128Bytes previousValue, FixedString128Bytes newValue)
-        {
-            Debug.Log($"Current mini-game changed to: {newValue}");
-
-            if (!IsServer)
-            {
-                currentMiniGame = miniGameDatabase?.GetMiniGame(newValue.ToString());
-                if (currentMiniGame != null)
-                {
-                    currentGameModeLogic = currentMiniGame.GameModeLogic;
-                    currentMiniGame.InitializeGameModeLogic(this, null);
-                }
-            }
-        }
-
-        private void OnCurrentPhaseChanged(int previousValue, int newValue)
-        {
-            Debug.Log($"Current phase changed from {previousValue} to {newValue}");
-        }
-
-        private void OnPlayersFinishedChanged(int previousValue, int newValue)
-        {
-            Debug.Log($"Players finished changed from {previousValue} to {newValue}");
-
-            EventsBus.Trigger(new PlayersFinishedChangedEvent
-            {
-                PreviousCount = previousValue,
-                CurrentCount = newValue,
-                QualifyingPlayers = qualifyingPlayersForCurrentPhase
-            });
-        }
-
-        private void OnPlayersAliveChanged(int previousValue, int newValue)
-        {
-            Debug.Log($"Players alive changed from {previousValue} to {newValue}");
-
-            EventsBus.Trigger(new PlayersAliveChangedEvent
-            {
-                PreviousCount = previousValue,
-                CurrentCount = newValue
-            });
+            if (clientId == player1ClientId) return player2ClientId;
+            if (clientId == player2ClientId) return player1ClientId;
+            return ulong.MaxValue;
         }
 
         #endregion

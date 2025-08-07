@@ -18,7 +18,6 @@
         [SerializeField] private LevelData levelData;
         [SerializeField] private DefaultPlayerConfig defaultPlayerConfig;
         [SerializeField] private CharacterDatabase characterDatabase;
-        [SerializeField] private MiniGameDatabase miniGameDatabase;
 
         public override void InstallBindings(DIContainer container)
         {
@@ -27,7 +26,6 @@
             container.RegisterSingleton(levelData);
             container.RegisterSingleton(defaultPlayerConfig);
             container.RegisterSingleton(characterDatabase);
-            container.RegisterSingleton(miniGameDatabase);
 
             IEventManager eventManager = new EventManager();
             container.RegisterSingleton(eventManager);
