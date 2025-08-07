@@ -1,7 +1,7 @@
-using System;
+﻿using System;
 using UnityEngine;
 
-namespace BrawlLine.GameModes
+namespace MageLock.GameModes
 {
     [RequireComponent(typeof(Collider))]
     public class ChildCollisionDetector : MonoBehaviour

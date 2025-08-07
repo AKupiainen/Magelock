@@ -1,9 +1,9 @@
-using BrawlLine.DependencyInjection;
+﻿using MageLock.DependencyInjection;
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace BrawlLine.Audio
+namespace MageLock.Audio
 {
     [RequireComponent(typeof(Button))]
     public class ButtonClickSound : MonoBehaviour

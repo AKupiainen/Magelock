@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace BrawlLine.UI
+namespace MageLock.UI
 {
     public class ShopScrollTracker : MonoBehaviour
     {

@@ -1,12 +1,12 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using UnityEngine.SceneManagement;
 
-namespace BrawlLine.Editor
+namespace MageLock.Editor
 {
     public static class RemoveUnderscoresFromNames
     {
-        [MenuItem("BrawlLine/Remove Underscores From Names")]
+        [MenuItem("MageLock/Remove Underscores From Names")]
         private static void RemoveUnderscores()
         {
             GameObject[] rootObjects = SceneManager.GetActiveScene().GetRootGameObjects();

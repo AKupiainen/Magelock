@@ -1,7 +1,7 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using UnityEngine;
 
-namespace BrawlLine.ModelRenderer
+namespace MageLock.ModelRenderer
 {
     public static class ModelRenderGraphicMenu
     {

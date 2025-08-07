@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace BrawlLine.Shop
+namespace MageLock.Shop
 {
-    [CreateAssetMenu(fileName = "IAPMultiRewardProduct", menuName = "BrawlLine/Shop/IAP Multi Reward Product")]
+    [CreateAssetMenu(fileName = "IAPMultiRewardProduct", menuName = "MageLock/Shop/IAP Multi Reward Product")]
     public class IAPMultiRewardProductConfig : IAPProductConfig
     {
         [Header("Rewards")]

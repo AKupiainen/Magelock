@@ -1,9 +1,9 @@
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BrawlLine.Localization.Editor
+namespace MageLock.Localization.Editor
 {
     [CustomEditor(typeof(LocalizedText))]
     public class LocalizedTextEditor : UnityEditor.Editor

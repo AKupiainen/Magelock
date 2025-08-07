@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
-using BrawlLine.Events;
+using MageLock.Events;
 using UnityEngine.SceneManagement;
 
 
@@ -18,7 +18,7 @@ using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 #endif
 
-namespace BrawlLine.Networking
+namespace MageLock.Networking
 {
     public class NetworkManagerCustom : NetworkManager
     {

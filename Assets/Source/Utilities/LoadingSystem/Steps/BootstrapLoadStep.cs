@@ -1,15 +1,15 @@
-using System.Threading.Tasks;
-using BrawlLine.Audio;
-using BrawlLine.Player;
-using BrawlLine.Localization;
-using BrawlLine.Shop;
-using BrawlLine.DependencyInjection;
+﻿using System.Threading.Tasks;
+using MageLock.Audio;
+using MageLock.Player;
+using MageLock.Localization;
+using MageLock.Shop;
+using MageLock.DependencyInjection;
 using UnityEngine;
 using Unity.Services.Core;
 using Unity.Services.Authentication;
 using System;
 
-namespace BrawlLine.Utilies
+namespace MageLock.Utilies
 {
     [CreateAssetMenu(fileName = "BootstrapLoadStep", menuName = "Load Step/Bootstrap Load Step")]
     public class BootstrapLoadStep : LoadStep

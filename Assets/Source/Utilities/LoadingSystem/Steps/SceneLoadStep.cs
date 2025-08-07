@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace BrawlLine.Utilies
+namespace MageLock.Utilies
 {
     [CreateAssetMenu(fileName = "SceneLoadStep", menuName = "Load Step/Scene Load Step")]
     public class SceneLoadStep : LoadStep

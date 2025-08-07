@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using BrawlLine.Localization;
+using MageLock.Localization;
 using UnityEngine;
 
-namespace BrawlLine.Player
+namespace MageLock.Player
 {
     [Serializable]
     public class CharacterData

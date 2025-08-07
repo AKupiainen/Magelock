@@ -1,6 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace BrawlLine.Gameplay
+namespace MageLock.Gameplay
 {
     public class CameraController : MonoBehaviour
     {

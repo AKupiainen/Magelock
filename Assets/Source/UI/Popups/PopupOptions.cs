@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using System.Linq;
 using UnityEngine.Serialization;
 
-namespace BrawlLine.UI
+namespace MageLock.UI
 {
     public enum ViewType
     {

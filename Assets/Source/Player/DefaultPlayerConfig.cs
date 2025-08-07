@@ -1,9 +1,9 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 
-namespace BrawlLine.Player
+namespace MageLock.Player
 {
-    [CreateAssetMenu(fileName = "DefaultPlayerConfig", menuName = "BrawlLine/Default Player Config")]
+    [CreateAssetMenu(fileName = "DefaultPlayerConfig", menuName = "MageLock/Default Player Config")]
     public class DefaultPlayerConfig : ScriptableObject
     {
         [Header("Starting Currencies")]

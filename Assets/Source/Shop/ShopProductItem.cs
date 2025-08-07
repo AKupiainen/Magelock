@@ -1,11 +1,11 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using BrawlLine.DependencyInjection;
-using BrawlLine.Player;
-using BrawlLine.Events;
+using MageLock.DependencyInjection;
+using MageLock.Player;
+using MageLock.Events;
 
-namespace BrawlLine.Shop
+namespace MageLock.Shop
 {
     public abstract class ShopProductItem : MonoBehaviour
     {

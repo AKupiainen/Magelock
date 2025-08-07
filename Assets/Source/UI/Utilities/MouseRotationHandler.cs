@@ -1,7 +1,7 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace BrawlLine.UI
+namespace MageLock.UI
 {
     public class MouseRotationHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
     {

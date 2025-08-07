@@ -1,14 +1,14 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BrawlLine.DependencyInjection;
-using BrawlLine.Events;
-using BrawlLine.Networking;
+using MageLock.DependencyInjection;
+using MageLock.Events;
+using MageLock.Networking;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace BrawlLine.GameModes
+namespace MageLock.GameModes
 {
     public class GameStateManager : NetworkBehaviour
     {

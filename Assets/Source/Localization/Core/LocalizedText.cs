@@ -1,9 +1,9 @@
-using BrawlLine.DependencyInjection;
+﻿using MageLock.DependencyInjection;
 using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
 
-namespace BrawlLine.Localization
+namespace MageLock.Localization
 {
     public class LocalizedText : MonoBehaviour
     {

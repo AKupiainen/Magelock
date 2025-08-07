@@ -1,11 +1,11 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BrawlLine.Editor
+namespace MageLock.Editor
 {
     public class RemoveDeletedScripts : EditorWindow
     {
@@ -16,7 +16,7 @@ namespace BrawlLine.Editor
         private readonly List<string> processedAssets = new();
         private readonly List<string> assetsWithMissingScripts = new();
         
-        [MenuItem("BrawlLine/Remove Deleted Scripts")]
+        [MenuItem("MageLock/Remove Deleted Scripts")]
         public static void ShowWindow()
         {
             GetWindow<RemoveDeletedScripts>("Remove Deleted Scripts");
@@ -258,7 +258,7 @@ namespace BrawlLine.Editor
     // Alternative static method approach for batch processing
     public static class DeletedScriptCleaner
     {
-        [MenuItem("BrawlLine/Quick Clean All Assets")]
+        [MenuItem("MageLock/Quick Clean All Assets")]
         public static void QuickCleanAllAssets()
         {
             if (!EditorUtility.DisplayDialog("Quick Clean", 

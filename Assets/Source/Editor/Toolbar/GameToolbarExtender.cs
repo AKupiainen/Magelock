@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 
@@ -10,7 +10,7 @@ using UnityEditor.Recorder.Input;
 using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
 
-namespace BrawlLine.Editor
+namespace MageLock.Editor
 {
     [InitializeOnLoad]
     public class GameToolbarExtender

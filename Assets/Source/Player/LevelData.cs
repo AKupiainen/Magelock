@@ -1,9 +1,9 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
-using BrawlLine.JsonScriptableObject;
+using MageLock.JsonScriptableObject;
 
-namespace BrawlLine.Player
+namespace MageLock.Player
 {
     [Serializable]
     public class LevelInfo
@@ -20,7 +20,7 @@ namespace BrawlLine.Player
         }
     }
     
-    [CreateAssetMenu(fileName = "LevelData", menuName = "BrawlLine/Level Data")]
+    [CreateAssetMenu(fileName = "LevelData", menuName = "MageLock/Level Data")]
     public class LevelData : JsonScriptableObjectBase
     {
         [SerializeField] private List<LevelInfo> levels = new();

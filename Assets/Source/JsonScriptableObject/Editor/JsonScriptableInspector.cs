@@ -1,10 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
 using System.Collections;
 using System.Reflection;
 
-namespace BrawlLine.JsonScriptableObject.Editor
+namespace MageLock.JsonScriptableObject.Editor
 {
     [CustomEditor(typeof(JsonScriptableObjectBase), true)]
     public class JsonScriptableObjectInspector : UnityEditor.Editor

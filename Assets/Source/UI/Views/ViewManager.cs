@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System;
 using UnityEngine;
-using BrawlLine.Events;
+using MageLock.Events;
 
-namespace BrawlLine.UI
+namespace MageLock.UI
 {
    
     public class ViewManager

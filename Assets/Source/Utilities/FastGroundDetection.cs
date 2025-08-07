@@ -1,4 +1,4 @@
-namespace BrawlLine.Utilies
+﻿namespace MageLock.Utilies
 {
     using UnityEngine;
     

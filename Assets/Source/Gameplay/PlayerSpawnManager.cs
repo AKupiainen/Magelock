@@ -1,13 +1,13 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using System.Linq;
-using BrawlLine.Controls;
-using BrawlLine.DependencyInjection;
-using BrawlLine.Networking;
-using BrawlLine.Player;
+using MageLock.Controls;
+using MageLock.DependencyInjection;
+using MageLock.Networking;
+using MageLock.Player;
 
-namespace BrawlLine.GameModes
+namespace MageLock.GameModes
 {
     public class PlayerSpawnManager
     {

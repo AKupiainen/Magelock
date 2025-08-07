@@ -1,15 +1,15 @@
-namespace BrawlLine.DependencyInjection 
+﻿namespace MageLock.DependencyInjection 
 {
-    using BrawlLine.Assets;
-    using BrawlLine.Events;
+    using MageLock.Assets;
+    using MageLock.Events;
     using UnityEngine;
-    using BrawlLine.Networking;
-    using BrawlLine.UI;
-    using BrawlLine.Shop;
-    using BrawlLine.Audio;
-    using BrawlLine.Localization;
-    using BrawlLine.Player;
-    using BrawlLine.GameModes;
+    using MageLock.Networking;
+    using MageLock.UI;
+    using MageLock.Shop;
+    using MageLock.Audio;
+    using MageLock.Localization;
+    using MageLock.Player;
+    using MageLock.GameModes;
 
     public class GameInstaller : MonoInstaller
     {

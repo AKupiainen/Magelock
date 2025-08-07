@@ -1,4 +1,4 @@
-namespace BrawlLine.DependencyInjection
+﻿namespace MageLock.DependencyInjection
 {
     public interface IInstaller
     {

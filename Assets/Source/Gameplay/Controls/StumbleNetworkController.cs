@@ -1,7 +1,7 @@
-using UnityEngine;
-using BrawlLine.Utilies;
+﻿using UnityEngine;
+using MageLock.Utilies;
 
-namespace BrawlLine.Controls
+namespace MageLock.Controls
 {
     [RequireComponent(typeof(Rigidbody))]
     public class StumbleNetworkController : MonoBehaviour

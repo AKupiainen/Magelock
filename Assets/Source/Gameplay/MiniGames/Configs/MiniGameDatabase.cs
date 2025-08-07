@@ -1,12 +1,12 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace BrawlLine.GameModes
+namespace MageLock.GameModes
 {
-    [CreateAssetMenu(fileName = "MiniGameDatabase", menuName = "BrawlLine/Mini Game Database")]
+    [CreateAssetMenu(fileName = "MiniGameDatabase", menuName = "MageLock/Mini Game Database")]
     public class MiniGameDatabase : ScriptableObject
     {
         [Header("All Mini Games")]

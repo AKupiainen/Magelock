@@ -1,7 +1,7 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using UnityEngine;
 
-namespace BrawlLine.Utilies
+namespace MageLock.Utilies
 {
     public class LoadStep : ScriptableObject
     {

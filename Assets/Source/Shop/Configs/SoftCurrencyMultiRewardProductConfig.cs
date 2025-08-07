@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace BrawlLine.Shop
+namespace MageLock.Shop
 {
-    [CreateAssetMenu(fileName = "SoftMultiRewardProduct", menuName = "BrawlLine/Shop/Soft Currency Multi Reward Product")]
+    [CreateAssetMenu(fileName = "SoftMultiRewardProduct", menuName = "MageLock/Shop/Soft Currency Multi Reward Product")]
     public class SoftCurrencyMultiRewardProductConfig : SoftCurrencyProductConfig
     {
         [Header("Rewards")]

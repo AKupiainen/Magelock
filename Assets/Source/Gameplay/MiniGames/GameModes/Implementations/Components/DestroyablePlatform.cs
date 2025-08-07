@@ -1,7 +1,7 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Unity.Netcode;
 
-namespace BrawlLine.GameModes
+namespace MageLock.GameModes
 {
     public class DestroyablePlatform : NetworkBehaviour
     {

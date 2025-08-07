@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace BrawlLine.Events
+namespace MageLock.Events
 {
     /// <summary>
     /// Base interface for all event data

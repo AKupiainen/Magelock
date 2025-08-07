@@ -1,7 +1,7 @@
-using Unity.Netcode;
+﻿using Unity.Netcode;
 using UnityEngine;
 
-namespace BrawlLine.GameModes
+namespace MageLock.GameModes
 {
     public class SpawnPoint : NetworkBehaviour
     {

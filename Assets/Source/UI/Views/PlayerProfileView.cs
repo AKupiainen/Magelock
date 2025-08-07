@@ -1,10 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using BrawlLine.Player;
-using BrawlLine.Events;
+using MageLock.Player;
+using MageLock.Events;
 
-namespace BrawlLine.UI
+namespace MageLock.UI
 {
     public class PlayerProfileView : BaseView
     {

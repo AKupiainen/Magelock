@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace BrawlLine.Localization
+namespace MageLock.Localization
 {
     [Serializable]
     public class LocalizedString

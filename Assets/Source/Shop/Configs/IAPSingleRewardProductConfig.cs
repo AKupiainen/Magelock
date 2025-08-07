@@ -1,8 +1,8 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace BrawlLine.Shop
+namespace MageLock.Shop
 {
-    [CreateAssetMenu(fileName = "IAPSingleRewardProduct", menuName = "BrawlLine/Shop/IAP Single Reward Product")]
+    [CreateAssetMenu(fileName = "IAPSingleRewardProduct", menuName = "MageLock/Shop/IAP Single Reward Product")]
     public class IAPSingleRewardProductConfig : IAPProductConfig
     {
         [Header("Reward")]

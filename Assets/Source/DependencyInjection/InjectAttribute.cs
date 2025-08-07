@@ -1,6 +1,6 @@
-using System;
+﻿using System;
 
-namespace BrawlLine.DependencyInjection
+namespace MageLock.DependencyInjection
 {
     /// <summary>
     /// Marks a field, property, or method for dependency injection

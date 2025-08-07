@@ -1,9 +1,9 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace BrawlLine.Localization.Editor
+namespace MageLock.Localization.Editor
 {
     [CustomPropertyDrawer(typeof(LocString))]
     public class LocStringDrawer : PropertyDrawer

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace BrawlLine.UI
+namespace MageLock.UI
 {
     [ExecuteInEditMode]
     [RequireComponent(typeof(CanvasRenderer), typeof(ParticleSystem))]

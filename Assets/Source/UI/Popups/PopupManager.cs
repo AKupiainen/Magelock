@@ -1,11 +1,11 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-using BrawlLine.Utilies;
-using BrawlLine.Events;
-using BrawlLine.DependencyInjection;
+using MageLock.Utilies;
+using MageLock.Events;
+using MageLock.DependencyInjection;
 
-namespace BrawlLine.UI
+namespace MageLock.UI
 {
     public enum PopupType
     {

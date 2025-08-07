@@ -1,8 +1,8 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace BrawlLine.Shop
+namespace MageLock.Shop
 {
-    [CreateAssetMenu(fileName = "SoftSingleRewardProduct", menuName = "BrawlLine/Shop/Soft Currency Single Reward Product")]
+    [CreateAssetMenu(fileName = "SoftSingleRewardProduct", menuName = "MageLock/Shop/Soft Currency Single Reward Product")]
     public class SoftCurrencySingleRewardProductConfig : SoftCurrencyProductConfig
     {
         [Header("Reward")]

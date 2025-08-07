@@ -1,7 +1,7 @@
-using Unity.Netcode.Editor;
+﻿using Unity.Netcode.Editor;
 using UnityEditor;
 
-namespace BrawlLine.Networking.Editor
+namespace MageLock.Networking.Editor
 {
     [CustomEditor(typeof(NetworkManagerCustom), true)]
     public class NetworkManagerCustomEditor : NetworkManagerEditor

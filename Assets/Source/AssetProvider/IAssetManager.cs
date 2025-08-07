@@ -1,7 +1,7 @@
-using UnityEngine;
-using BrawlLine.Player;
+﻿using UnityEngine;
+using MageLock.Player;
 
-namespace BrawlLine.Assets
+namespace MageLock.Assets
 {
     public interface IAssetManager
     {

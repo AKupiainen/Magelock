@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
@@ -6,7 +6,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
 using System.IO;
 
-namespace BrawlLine.Audio.Editor
+namespace MageLock.Audio.Editor
 {
     public class ButtonSoundSetupEditor : EditorWindow
     {
@@ -26,7 +26,7 @@ namespace BrawlLine.Audio.Editor
             public bool IsSelected;
         }
         
-        [MenuItem("Tools/BrawlLine/Setup Button Sounds")]
+        [MenuItem("Tools/MageLock/Setup Button Sounds")]
         public static void ShowWindow()
         {
             ButtonSoundSetupEditor window = GetWindow<ButtonSoundSetupEditor>();

@@ -1,6 +1,6 @@
-using BrawlLine.Events;
+﻿using MageLock.Events;
 
-namespace BrawlLine.Networking
+namespace MageLock.Networking
 {
     public struct MatchmakingStartedEvent : IEventData
     {

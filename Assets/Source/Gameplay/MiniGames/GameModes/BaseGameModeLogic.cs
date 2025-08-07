@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using BrawlLine.DependencyInjection;
+using MageLock.DependencyInjection;
 
-namespace BrawlLine.GameModes
+namespace MageLock.GameModes
 {
     [Serializable]
     public abstract class BaseGameModeLogic : IGameModeLogic

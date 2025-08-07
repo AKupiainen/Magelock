@@ -1,6 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace BrawlLine.Audio
+namespace MageLock.Audio
 {
     public class SfxAutoReturn : MonoBehaviour
     {

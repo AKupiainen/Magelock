@@ -1,6 +1,6 @@
-using System;
+﻿using System;
 
-namespace BrawlLine.Player
+namespace MageLock.Player
 {
     [Serializable]
     public class PlayerProfileData

@@ -1,7 +1,7 @@
-using UnityEngine;
-using BrawlLine.Localization;
+﻿using UnityEngine;
+using MageLock.Localization;
 
-namespace BrawlLine.Shop
+namespace MageLock.Shop
 {
     public enum ShopSectionType
     {

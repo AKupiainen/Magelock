@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace BrawlLine.Editor
+namespace MageLock.Editor
 {
     [InitializeOnLoad]
     public static class ToolbarExtender

@@ -1,7 +1,7 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace BrawlLine.Localization
+namespace MageLock.Localization
 {
     public interface ILocalizationService
     {

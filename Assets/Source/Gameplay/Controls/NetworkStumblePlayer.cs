@@ -1,9 +1,9 @@
-using Unity.Netcode;
+﻿using Unity.Netcode;
 using UnityEngine;
-using BrawlLine.Gameplay;
-using BrawlLine.Player;
+using MageLock.Gameplay;
+using MageLock.Player;
 
-namespace BrawlLine.Controls
+namespace MageLock.Controls
 {
     public class NetworkStumblePlayer : NetworkBehaviour
     {

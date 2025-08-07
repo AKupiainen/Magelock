@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BrawlLine.GameModes
+namespace MageLock.GameModes
 {
     [Serializable]
     public class ImmediateEliminationLogic : BaseGameModeLogic

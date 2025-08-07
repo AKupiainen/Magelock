@@ -1,4 +1,4 @@
-namespace BrawlLine.Editor
+﻿namespace MageLock.Editor
 {
     using UnityEngine;
     using UnityEditor;

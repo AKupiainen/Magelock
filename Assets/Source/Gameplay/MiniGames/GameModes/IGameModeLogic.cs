@@ -1,7 +1,7 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 
-namespace BrawlLine.GameModes
+namespace MageLock.GameModes
 {
     public interface IGameModeLogic
     {

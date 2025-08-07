@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace BrawlLine.Localization.Editor
+namespace MageLock.Localization.Editor
 {
     public static class LocalizationValidator
     {

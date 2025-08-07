@@ -1,4 +1,4 @@
-namespace BrawlLine.StateMachine
+﻿namespace MageLock.StateMachine
 {
     /// <summary>
     /// Basic state interface

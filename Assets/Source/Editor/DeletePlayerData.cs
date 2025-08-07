@@ -1,4 +1,4 @@
-namespace BrawlLine.Editor
+﻿namespace MageLock.Editor
 {
     using UnityEditor;
     using UnityEngine;
@@ -6,7 +6,7 @@ namespace BrawlLine.Editor
 
     public static class PlayerDataDeleteMenu
     {
-        [MenuItem("BrawlLine/Delete Player Data File")]
+        [MenuItem("MageLock/Delete Player Data File")]
         public static void DeletePlayerDataFile()
         {
             string filePath = Path.Combine(Application.persistentDataPath, "player_data.json");

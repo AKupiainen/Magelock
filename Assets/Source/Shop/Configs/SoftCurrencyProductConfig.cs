@@ -1,7 +1,7 @@
-using UnityEngine;
-using BrawlLine.Player; 
+﻿using UnityEngine;
+using MageLock.Player; 
 
-namespace BrawlLine.Shop
+namespace MageLock.Shop
 {
     public abstract class SoftCurrencyProductConfig : ShopProductBaseConfig
     {

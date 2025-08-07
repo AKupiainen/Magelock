@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 using UnityEngine;
 using UnityEditor;
@@ -7,7 +7,7 @@ using Object = UnityEngine.Object;
 
 using UnityEngine.UIElements;
 
-namespace BrawlLine.Editor
+namespace MageLock.Editor
 {
     public static class ToolbarCallback
     {

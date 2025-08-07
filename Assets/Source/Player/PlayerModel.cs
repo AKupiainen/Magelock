@@ -1,14 +1,14 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
-using BrawlLine.Events;
-using BrawlLine.DependencyInjection;
+using MageLock.Events;
+using MageLock.DependencyInjection;
 using UnityEngine.Serialization;
 
-namespace BrawlLine.Player
+namespace MageLock.Player
 {
     public class PlayerLevelChangedEvent : IEventData
     {

@@ -1,10 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
-using BrawlLine.JsonScriptableObject;
+using MageLock.JsonScriptableObject;
 
-namespace BrawlLine.Player
+namespace MageLock.Player
 {
-    [CreateAssetMenu(fileName = "PlayerNamesData", menuName = "BrawlLine/Player Names Data")]
+    [CreateAssetMenu(fileName = "PlayerNamesData", menuName = "MageLock/Player Names Data")]
     public class PlayerNamesData : JsonScriptableObjectBase
     {
         [SerializeField] private List<string> playerNames = new();

@@ -1,10 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BrawlLine.Player
+namespace MageLock.Player
 {
-    [CreateAssetMenu(fileName = "CharacterDatabase", menuName = "BrawlLine/Character Database")]
+    [CreateAssetMenu(fileName = "CharacterDatabase", menuName = "MageLock/Character Database")]
     public class CharacterDatabase : ScriptableObject
     {
         [SerializeField] private List<CharacterData> characters = new();

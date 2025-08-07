@@ -1,6 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace BrawlLine.ModelRenderer
+namespace MageLock.ModelRenderer
 {
     public class ModelPrefabInstantiator : MonoBehaviour
     {

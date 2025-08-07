@@ -1,7 +1,7 @@
-using System;
+﻿using System;
 using UnityEngine;
 
-namespace BrawlLine.Player
+namespace MageLock.Player
 {
     [Serializable]
     public class SettingsData

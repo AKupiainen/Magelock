@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using UnityEngine;
-using BrawlLine.DependencyInjection;
+using MageLock.DependencyInjection;
 
-namespace BrawlLine.Localization
+namespace MageLock.Localization
 {
     [Serializable]
     public class LocString

@@ -1,8 +1,8 @@
-using UnityEngine;
-using BrawlLine.Localization;
-using BrawlLine.DependencyInjection;
+﻿using UnityEngine;
+using MageLock.Localization;
+using MageLock.DependencyInjection;
 
-namespace BrawlLine.UI
+namespace MageLock.UI
 {
     public class LanguageSelectionPopup : Popup
     {

@@ -1,7 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
-namespace BrawlLine.StateMachine
+namespace MageLock.StateMachine
 {
     /// <summary>
     /// Basic state machine

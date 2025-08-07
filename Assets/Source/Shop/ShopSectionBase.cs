@@ -1,8 +1,8 @@
-using System.Collections.Generic;
-using BrawlLine.DependencyInjection;
+﻿using System.Collections.Generic;
+using MageLock.DependencyInjection;
 using UnityEngine;
 
-namespace BrawlLine.Shop
+namespace MageLock.Shop
 {
     public abstract class ShopSection : MonoBehaviour
     {

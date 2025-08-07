@@ -1,7 +1,7 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace BrawlLine.ModelRenderer
+namespace MageLock.ModelRenderer
 {
     public class RenderTexturePool
     {

@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using BrawlLine.Shop;
+using MageLock.Shop;
 
-namespace BrawlLine.UI
+namespace MageLock.UI
 {
     public class ShopPopup : Popup
     {

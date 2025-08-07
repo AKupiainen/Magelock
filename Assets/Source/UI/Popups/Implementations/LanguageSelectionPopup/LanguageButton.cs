@@ -1,10 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
-using BrawlLine.Localization;
-using BrawlLine.Player;
-using BrawlLine.DependencyInjection;
+using MageLock.Localization;
+using MageLock.Player;
+using MageLock.DependencyInjection;
 
-namespace BrawlLine.UI
+namespace MageLock.UI
 {
     [RequireComponent(typeof(Button))]
     public class LanguageButton : MonoBehaviour

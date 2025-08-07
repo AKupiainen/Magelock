@@ -1,10 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
-using BrawlLine.Player;
+using MageLock.Player;
 
-namespace BrawlLine.Assets
+namespace MageLock.Assets
 {
-    [CreateAssetMenu(menuName = "BrawlLine/Assets/Currency Icon Map")]
+    [CreateAssetMenu(menuName = "MageLock/Assets/Currency Icon Map")]
     public class CurrencyIconMap : ScriptableObject
     {
         [System.Serializable]

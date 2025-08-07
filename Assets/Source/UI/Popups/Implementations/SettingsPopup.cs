@@ -1,12 +1,12 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
-using BrawlLine.Player;
-using BrawlLine.Localization;
-using BrawlLine.Audio;
+using MageLock.Player;
+using MageLock.Localization;
+using MageLock.Audio;
 using TMPro;
-using BrawlLine.DependencyInjection;
+using MageLock.DependencyInjection;
 
-namespace BrawlLine.UI
+namespace MageLock.UI
 {
     public class SettingsPopup : Popup
     {

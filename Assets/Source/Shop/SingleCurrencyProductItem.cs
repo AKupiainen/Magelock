@@ -1,11 +1,11 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using BrawlLine.Player;
-using BrawlLine.Assets;
-using BrawlLine.DependencyInjection;
+using MageLock.Player;
+using MageLock.Assets;
+using MageLock.DependencyInjection;
 
-namespace BrawlLine.Shop
+namespace MageLock.Shop
 {
     public class SingleCurrencyProductItem : ShopProductItem
     {

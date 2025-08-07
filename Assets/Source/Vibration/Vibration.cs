@@ -1,4 +1,4 @@
-namespace BrawlLine.Haptics
+﻿namespace MageLock.Haptics
 {
     using UnityEngine;
     using System;

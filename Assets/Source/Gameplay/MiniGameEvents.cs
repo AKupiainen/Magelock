@@ -1,7 +1,7 @@
-using BrawlLine.Events;
+﻿using MageLock.Events;
 using System.Collections.Generic;
 
-namespace BrawlLine.GameModes
+namespace MageLock.GameModes
 {
     public class RaceStartedEvent : IEventData
     {

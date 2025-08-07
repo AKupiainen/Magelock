@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace BrawlLine.Localization
+namespace MageLock.Localization
 {
     [Serializable]
     public class LanguageInfo
@@ -16,7 +16,7 @@ namespace BrawlLine.Localization
         public Sprite LanguageImage => languageImage;
     }
 
-    [CreateAssetMenu(fileName = "LanguageData", menuName = "BrawlLine/Localization/Language Data")]
+    [CreateAssetMenu(fileName = "LanguageData", menuName = "MageLock/Localization/Language Data")]
     public class LanguageData : ScriptableObject
     {
         [SerializeField] private List<LanguageInfo> supportedLanguages = new List<LanguageInfo>();

@@ -1,8 +1,8 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace BrawlLine.Audio
+namespace MageLock.Audio
 {
-    [CreateAssetMenu(fileName = "NewSfx", menuName = "BrawlLine/Audio/Sfx")]
+    [CreateAssetMenu(fileName = "NewSfx", menuName = "MageLock/Audio/Sfx")]
     public class Sfx : ScriptableObject
     {
         [SerializeField] private AudioClip clip;

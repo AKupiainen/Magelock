@@ -1,8 +1,8 @@
-using BrawlLine.DependencyInjection;
+﻿using MageLock.DependencyInjection;
 using UnityEngine;
 using Unity.Netcode;
 
-namespace BrawlLine.GameModes
+namespace MageLock.GameModes
 {
     [RequireComponent(typeof(Collider))]
     public class EliminationTrigger : NetworkBehaviour

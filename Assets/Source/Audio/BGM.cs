@@ -1,8 +1,8 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace BrawlLine.Audio
+namespace MageLock.Audio
 {
-    [CreateAssetMenu(fileName = "NewBGM", menuName = "BrawlLine/Audio/BGM")]
+    [CreateAssetMenu(fileName = "NewBGM", menuName = "MageLock/Audio/BGM")]
     public class BGM : ScriptableObject
     {
         [SerializeField] private AudioClip clip;

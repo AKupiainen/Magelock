@@ -1,7 +1,7 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace BrawlLine.ModelRenderer
+namespace MageLock.ModelRenderer
 {
     using UnityEngine;
     using UnityEngine.UI;

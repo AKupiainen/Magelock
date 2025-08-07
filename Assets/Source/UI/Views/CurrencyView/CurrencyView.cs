@@ -1,9 +1,9 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
-using BrawlLine.Player;
-using BrawlLine.Events;
+using MageLock.Player;
+using MageLock.Events;
 
-namespace BrawlLine.UI
+namespace MageLock.UI
 {
     public class CurrencyView : BaseView
     {

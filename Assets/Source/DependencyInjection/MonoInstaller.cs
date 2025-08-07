@@ -1,6 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace BrawlLine.DependencyInjection
+namespace MageLock.DependencyInjection
 {
     public abstract class MonoInstaller : MonoBehaviour, IInstaller
     {

@@ -1,12 +1,12 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Reflection;
-using BrawlLine.UI;
+using MageLock.UI;
 
-namespace BrawlLine.Editor
+namespace MageLock.Editor
 {
     public class PopupFinder : EditorWindow
     {
@@ -14,7 +14,7 @@ namespace BrawlLine.Editor
         private List<Type> popupTypesInProject;
         private Dictionary<Type, GameObject> popupPrefabs;
         
-        [MenuItem("BrawlLine/Find All Popups")]
+        [MenuItem("MageLock/Find All Popups")]
         public static void ShowWindow()
         {
             PopupFinder window = GetWindow<PopupFinder>("Popup Finder");

@@ -1,7 +1,7 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace BrawlLine.Audio
+namespace MageLock.Audio
 {
     public class AudioManager : MonoBehaviour
     {

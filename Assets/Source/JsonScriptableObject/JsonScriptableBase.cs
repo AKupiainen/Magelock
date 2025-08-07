@@ -1,7 +1,7 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.IO;
 
-namespace BrawlLine.JsonScriptableObject
+namespace MageLock.JsonScriptableObject
 {
     /// <summary>
     /// Base class for ScriptableObjects that can be imported/exported as JSON

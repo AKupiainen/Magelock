@@ -1,7 +1,7 @@
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 
-namespace BrawlLine.Gameplay
+namespace MageLock.Gameplay
 {
     [RequireComponent(typeof(TextMeshPro))]
     public class BillboardText : MonoBehaviour

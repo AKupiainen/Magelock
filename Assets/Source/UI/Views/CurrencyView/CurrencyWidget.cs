@@ -1,9 +1,9 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using BrawlLine.Player;
+using MageLock.Player;
 
-namespace BrawlLine.UI
+namespace MageLock.UI
 {
     public class CurrencyWidget : MonoBehaviour
     {

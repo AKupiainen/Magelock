@@ -1,10 +1,10 @@
-using BrawlLine.Player;
+﻿using MageLock.Player;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Purchasing;
 using UnityEngine.Purchasing.Extension;
 
-namespace BrawlLine.Shop
+namespace MageLock.Shop
 {
     public class ShopManager : MonoBehaviour, IDetailedStoreListener
     {

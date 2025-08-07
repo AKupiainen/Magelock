@@ -1,12 +1,12 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using BrawlLine.Networking;
-using BrawlLine.DependencyInjection;
-using BrawlLine.Events;
-using BrawlLine.Localization;
+using MageLock.Networking;
+using MageLock.DependencyInjection;
+using MageLock.Events;
+using MageLock.Localization;
 
-namespace BrawlLine.UI
+namespace MageLock.UI
 {
     public class MatchmakingPopup : Popup
     {

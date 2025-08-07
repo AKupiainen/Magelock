@@ -1,6 +1,6 @@
-using BrawlLine.Events;
+﻿using MageLock.Events;
 
-namespace BrawlLine.UI
+namespace MageLock.UI
 {
     public class PopupOpenedEvent : IEventData
     {

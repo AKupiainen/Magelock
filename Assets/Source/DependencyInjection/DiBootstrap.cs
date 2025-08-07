@@ -1,6 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace BrawlLine.DependencyInjection
+namespace MageLock.DependencyInjection
 {
     public class DIBootstrap : MonoBehaviour
     {

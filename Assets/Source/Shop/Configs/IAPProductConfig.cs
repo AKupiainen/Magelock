@@ -1,6 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace BrawlLine.Shop
+namespace MageLock.Shop
 {
     public abstract class IAPProductConfig : ShopProductBaseConfig
     {

@@ -1,6 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace BrawlLine.UI
+namespace MageLock.UI
 {
     public class CameraCanvasAssigner : MonoBehaviour
     {

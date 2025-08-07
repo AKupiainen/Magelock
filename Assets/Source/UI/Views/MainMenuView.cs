@@ -1,10 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
-using BrawlLine.Player;
-using BrawlLine.Events;
-using BrawlLine.ModelRenderer;
+using MageLock.Player;
+using MageLock.Events;
+using MageLock.ModelRenderer;
 
-namespace BrawlLine.UI
+namespace MageLock.UI
 {
     public class MainMenuView : BaseView
     {

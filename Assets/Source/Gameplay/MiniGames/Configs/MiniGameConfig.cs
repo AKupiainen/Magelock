@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using BrawlLine.Audio;
-using BrawlLine.Localization;
+using MageLock.Audio;
+using MageLock.Localization;
 using UnityEngine;
 
-namespace BrawlLine.GameModes
+namespace MageLock.GameModes
 {
     [Serializable]
     public class MiniGameConfig

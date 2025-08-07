@@ -1,8 +1,8 @@
-using UnityEngine.UI;
+﻿using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine;
 
-namespace BrawlLine.UI
+namespace MageLock.UI
 {
     public abstract class Popup : MonoBehaviour
     {

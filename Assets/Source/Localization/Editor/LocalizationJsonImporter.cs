@@ -1,10 +1,10 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
 using Newtonsoft.Json;
 
-namespace BrawlLine.Localization.Editor
+namespace MageLock.Localization.Editor
 {
     public class LocalizationJsonImporter : EditorWindow
     {

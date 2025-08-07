@@ -1,7 +1,7 @@
-using System;
+﻿using System;
 using UnityEngine;
 
-namespace BrawlLine.GameModes
+namespace MageLock.GameModes
 {
     [Serializable]
     public class PhaseConfig
