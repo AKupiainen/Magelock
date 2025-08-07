@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
-using MageLock.Controls;
 using MageLock.DependencyInjection;
 using MageLock.Networking;
 using MageLock.Player;
@@ -24,7 +23,7 @@ namespace MageLock.GameModes
             ClearAllPlayers();
         }
 
-        public bool SpawnAllPlayers()ß
+        public bool SpawnAllPlayers()
         {
             ClearAllPlayers();
 
@@ -135,7 +134,6 @@ namespace MageLock.GameModes
                 return null;
             }
 
-            // For 1v1, use opposite spawn points (first and second, or first and last)
             if (index >= spawnPoints.Length)
             {
                 index = spawnPoints.Length - 1;
