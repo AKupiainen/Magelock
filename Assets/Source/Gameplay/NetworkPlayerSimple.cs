@@ -37,16 +37,6 @@ namespace MageLock.Controls
         {    
             controller = GetComponent<SimpleNetworkController>();
             
-            if (IsOwner)
-            {
-                SetupLocalPlayer();
-            }
-            else
-            {
-                DisableLocalComponents();
-            }
-            
-            SetupPlayerDisplay();
         }
         
         private void Update()
@@ -104,11 +94,6 @@ namespace MageLock.Controls
         private void SendInputServerRpc(InputData inputData)
         {
             controller.SetNetworkInput(inputData.MoveInput);
-        }
-        
-        public override void OnNetworkDespawn()
-        {
-            base.OnNetworkDespawn();
         }
     }
 }
