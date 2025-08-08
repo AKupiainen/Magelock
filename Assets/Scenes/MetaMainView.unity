@@ -1117,11 +1117,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: MetaMainView
       objectReference: {fileID: 0}
-    - target: {fileID: 7361230257220998111, guid: 57cded8b360ede5429eb575d1964864b,
-        type: 3}
-      propertyPath: autoResetSpeed
-      value: 200
-      objectReference: {fileID: 0}
     - target: {fileID: 8130528432929981851, guid: 57cded8b360ede5429eb575d1964864b,
         type: 3}
       propertyPath: canvas

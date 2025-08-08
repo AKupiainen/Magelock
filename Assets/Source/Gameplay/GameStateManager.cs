@@ -5,7 +5,7 @@ using Unity.Netcode;
 using MageLock.DependencyInjection;
 using MageLock.Networking;
 
-namespace MageLock.GameModes
+namespace MageLock.Gameplay
 {
     public enum GameState
     {
@@ -43,8 +43,10 @@ namespace MageLock.GameModes
         {
             if (IsServer)
             {
-                networkManagerCustom.OnClientConnectedCallback += OnPlayerConnected;
                 networkManagerCustom.OnClientDisconnectCallback += OnPlayerDisconnected;
+                
+                playerSpawnManager.SpawnAllPlayers();
+                SetupPlayers();
             }
 
             currentState.OnValueChanged += (prev, current) => OnGameStateChanged?.Invoke(current);
@@ -54,7 +56,6 @@ namespace MageLock.GameModes
         {
             if (IsServer)
             {
-                networkManagerCustom.OnClientConnectedCallback -= OnPlayerConnected;
                 networkManagerCustom.OnClientDisconnectCallback -= OnPlayerDisconnected;
             }
             
@@ -76,24 +77,22 @@ namespace MageLock.GameModes
 
         #region Server Methods
 
-        private void OnPlayerConnected(ulong clientId)
+        private void SetupPlayers()
         {
             if (!IsServer) return;
 
-            if (player1ClientId == ulong.MaxValue)
+            foreach (var clientId in networkManagerCustom.ConnectedClientsIds)
             {
-                player1ClientId = clientId;
-                Debug.Log($"Player 1 connected: {clientId}");
-            }
-            else if (player2ClientId == ulong.MaxValue)
-            {
-                player2ClientId = clientId;
-                Debug.Log($"Player 2 connected: {clientId}");
-            }
-            else
-            {
-                Debug.LogWarning($"Game full, rejecting player: {clientId}");
-                return;
+                if (player1ClientId == ulong.MaxValue)
+                {
+                    player1ClientId = clientId;
+                    Debug.Log($"Player 1 assigned: {clientId}");
+                }
+                else if (player2ClientId == ulong.MaxValue)
+                {
+                    player2ClientId = clientId;
+                    Debug.Log($"Player 2 assigned: {clientId}");
+                }
             }
 
             if (IsFull && currentState.Value == GameState.WaitingForPlayers)
@@ -112,7 +111,21 @@ namespace MageLock.GameModes
                 
                 playerSpawnManager.OnClientDisconnected(clientId);
                 
-                EndMatch(clientId == player1ClientId ? player2ClientId : player1ClientId);
+                if (currentState.Value == GameState.Playing)
+                {
+                    EndMatch(clientId == player1ClientId ? player2ClientId : player1ClientId);
+                }
+                else
+                {
+                    if (clientId == player1ClientId)
+                    {
+                        player1ClientId = ulong.MaxValue;
+                    }
+                    else if (clientId == player2ClientId)
+                    {
+                        player2ClientId = ulong.MaxValue;
+                    }
+                }
             }
         }
 
@@ -123,8 +136,6 @@ namespace MageLock.GameModes
             Debug.Log("Starting match!");
             
             matchTimer.Value = matchDuration;
-            
-            playerSpawnManager.SpawnAllPlayers();
             
             currentState.Value = GameState.Playing;
             

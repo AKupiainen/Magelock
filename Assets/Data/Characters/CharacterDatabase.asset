@@ -18,7 +18,7 @@ MonoBehaviour:
       key: 
     purchaseCurrency: 0
     purchasePrice: 0
-    menuPrefab: {fileID: 6193644456894574910, guid: 59894f78aaef7df40b081e4609996509,
+    menuPrefab: {fileID: 6051315753214007565, guid: 122ccf0ab4b3c49668d6ff4e0b481252,
       type: 3}
-    inGamePrefab: {fileID: 6193644456894574910, guid: 9f35a3517c7d49545a6b88d779d2771d,
+    inGamePrefab: {fileID: 5729129601422827479, guid: 160d415b08ae24e679f020edcb6db4c8,
       type: 3}

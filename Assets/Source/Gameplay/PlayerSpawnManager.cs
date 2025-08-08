@@ -5,7 +5,7 @@ using MageLock.DependencyInjection;
 using MageLock.Networking;
 using MageLock.Player;
 
-namespace MageLock.GameModes
+namespace MageLock.Gameplay
 {
     public class PlayerSpawnManager
     {

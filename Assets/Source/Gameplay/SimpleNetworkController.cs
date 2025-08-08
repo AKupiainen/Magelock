@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace MageLock.Controls
+namespace MageLock.Gameplay
 {
     [RequireComponent(typeof(Rigidbody))]
     public class SimpleNetworkController : MonoBehaviour
@@ -39,10 +39,9 @@ namespace MageLock.Controls
             rb = GetComponent<Rigidbody>();
             animator = GetComponentInChildren<Animator>();
             
-            // Lock Y rotation only, keep movement on XZ plane
             rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
             rb.linearDamping = drag;
-            rb.useGravity = false; // No gravity needed for top-down movement
+            rb.useGravity = false; 
         }
 
         public void HandleInput()
@@ -88,7 +87,6 @@ namespace MageLock.Controls
 
             Vector3 newVel = currentVel + movementForce;
             
-            // Clamp to max speed
             if (newVel.sqrMagnitude > maxSpeed * maxSpeed)
             {
                 newVel = Vector3.ClampMagnitude(newVel, maxSpeed);
@@ -125,11 +123,9 @@ namespace MageLock.Controls
         {
             if (!Application.isPlaying) return;
             
-            // Draw movement direction
             Gizmos.color = Color.cyan;
             Gizmos.DrawRay(transform.position, new Vector3(moveInput.x, 0, moveInput.y) * 2f);
             
-            // Draw velocity
             if (rb != null)
             {
                 Gizmos.color = Color.yellow;

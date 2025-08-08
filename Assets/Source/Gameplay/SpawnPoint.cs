@@ -1,7 +1,7 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
 
-namespace MageLock.GameModes
+namespace MageLock.Gameplay
 {
     public class SpawnPoint : NetworkBehaviour
     {

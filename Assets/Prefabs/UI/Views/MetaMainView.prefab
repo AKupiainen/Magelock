@@ -305,7 +305,7 @@ MonoBehaviour:
   cameraDepth: -1
   cameraClearFlags: 2
   modelTransform: {fileID: 0}
-  modelOffset: {x: 0, y: 0.7, z: -2.8}
+  modelOffset: {x: 0, y: 1, z: -4}
   cameraRotation: {x: 0, y: 180, z: 0}
   useUniqueLayer: 1
 --- !u!114 &7287780083227378425
@@ -344,6 +344,9 @@ MonoBehaviour:
   dampingFactor: 0.95
   minimumVelocity: 0.1
   enableSmoothRotation: 1
+  enableAutoReset: 1
+  autoResetDelay: 3
+  autoResetSpeed: 200
   resetOnStart: 0
 --- !u!1 &3643679811986049167
 GameObject:

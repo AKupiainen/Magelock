@@ -9,7 +9,6 @@
     using MageLock.Audio;
     using MageLock.Localization;
     using MageLock.Player;
-    using MageLock.GameModes;
 
     public class GameInstaller : MonoInstaller
     {

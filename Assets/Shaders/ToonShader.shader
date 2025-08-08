@@ -510,6 +510,6 @@ Shader "BrawlLine/AdvancedToonShader"
         }
     }
     
-    CustomEditor "BrawlLine.Graphics.Editor.ToonShaderGUI"
+    CustomEditor "MageLock.Graphics.Editor.ToonShaderGUI"
     FallBack "Hidden/Universal Render Pipeline/FallbackError"
 }

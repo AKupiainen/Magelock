@@ -360,7 +360,6 @@ MonoBehaviour:
   defaultPlayerConfig: {fileID: 11400000, guid: 5a61959ec92ba5141833d06f10b6bf9e,
     type: 2}
   characterDatabase: {fileID: 11400000, guid: f95bdf1b53378ae4eba85e779e7020db, type: 2}
-  miniGameDatabase: {fileID: 11400000, guid: 55dea9f3cb30f1a4a9fae0adccbb4661, type: 2}
 --- !u!4 &920823754
 Transform:
   m_ObjectHideFlags: 0
@@ -808,7 +807,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 273d37fb083199b4d846c3021bcb7d71, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 273d37fb083199b4d846c3021bcb7d71, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -977,6 +976,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2032362725}
   - component: {fileID: 2032362724}
+  - component: {fileID: 2032362726}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -1017,6 +1017,14 @@ Transform:
   - {fileID: 1640862127}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!81 &2032362726
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2032362723}
+  m_Enabled: 1
 --- !u!224 &2911957188718758868
 RectTransform:
   m_ObjectHideFlags: 0
