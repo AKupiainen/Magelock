@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 1672666446545052606}
   - component: {fileID: 1772783251259270072}
   - component: {fileID: 5804498040266236938}
+  - component: {fileID: 7300333420831359714}
+  - component: {fileID: 331280166584757316}
   m_Layer: 0
   m_Name: Grass_Tile_Night
   m_TagString: Untagged
@@ -58,6 +60,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -83,3 +88,38 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &7300333420831359714
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6932407664559192993}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.270585, y: 2.2085168, z: 2.2940316}
+  m_Center: {x: 0.0011420846, y: 1.0542797, z: 0.0029992461}
+--- !u!114 &331280166584757316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6932407664559192993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 630adbc2e44764f939c74bece31fe5a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  revealDistance: 2
+  fadeDuration: 0.2
