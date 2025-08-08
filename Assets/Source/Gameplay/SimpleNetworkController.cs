@@ -9,12 +9,6 @@ namespace MageLock.Gameplay
 
         [Header("Movement")]
         [SerializeField] private float moveSpeed = 8f;
-        [SerializeField] private float acceleration = 50f;
-        [SerializeField] private float deceleration = 30f;
-        [SerializeField] private float maxSpeed = 10f;
-
-        [Header("Physics")]
-        [SerializeField] private float drag = 5f;
 
         [Header("Rotation")]
         [SerializeField] private float rotationSpeed = 10f;
@@ -25,15 +19,9 @@ namespace MageLock.Gameplay
         [SerializeField] private string verticalAxis = "Vertical";
         [SerializeField] private float deadZone = 0.1f;
 
-        [Header("Animation")]
-        [SerializeField] private float animationSmoothTime = 0.1f;
-
         private Rigidbody rb;
         private Animator animator;
         private Vector2 moveInput;
-        
-        private float currentAnimationSpeed;
-        private float animationSpeedVelocity;
         private bool isLocalPlayer = false;
 
         private void Awake()
@@ -47,7 +35,7 @@ namespace MageLock.Gameplay
             animator = GetComponentInChildren<Animator>();
             
             rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
-            rb.linearDamping = drag;
+            rb.linearDamping = 0f; // No drag for instant stop
             rb.useGravity = false; 
         }
 
@@ -91,23 +79,18 @@ namespace MageLock.Gameplay
 
         private void HandleMovement(Vector3 moveDirection)
         {
-            Vector3 targetVelocity = moveDirection * moveSpeed;
-            
-            Vector3 currentVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-            Vector3 deltaVel = targetVelocity - currentVel;
-
-            float rate = targetVelocity.sqrMagnitude > 0.0001f ? acceleration : deceleration;
-            Vector3 movementForce = deltaVel * (rate * Time.fixedDeltaTime);
-
-            Vector3 newVel = currentVel + movementForce;
-            
-            if (newVel.sqrMagnitude > maxSpeed * maxSpeed)
+            if (rb.isKinematic)
             {
-                newVel = Vector3.ClampMagnitude(newVel, maxSpeed);
-                movementForce = newVel - currentVel;
+                // For kinematic bodies, use MovePosition
+                Vector3 movement = moveDirection * moveSpeed * Time.fixedDeltaTime;
+                rb.MovePosition(rb.position + movement);
             }
-
-            rb.AddForce(movementForce, ForceMode.Force);
+            else
+            {
+                // For non-kinematic bodies, set velocity directly
+                Vector3 targetVelocity = moveDirection * moveSpeed;
+                rb.linearVelocity = new Vector3(targetVelocity.x, rb.linearVelocity.y, targetVelocity.z);
+            }
         }
 
         private void HandleRotation(Vector3 moveDirection)
@@ -126,29 +109,19 @@ namespace MageLock.Gameplay
             if (animator == null) return;
 
             float targetSpeed = GetAnimationSpeed();
-            
-            currentAnimationSpeed = Mathf.SmoothDamp(
-                currentAnimationSpeed, 
-                targetSpeed, 
-                ref animationSpeedVelocity, 
-                animationSmoothTime
-            );
-            
-            animator.SetFloat(SpeedHash, currentAnimationSpeed);
+            animator.SetFloat(SpeedHash, targetSpeed);
         }
 
         public float GetAnimationSpeed()
         {
-            if (isLocalPlayer)
+            if (rb.isKinematic)
             {
-                float inputSpeed = moveInput.magnitude * moveSpeed;
-                Vector3 horizontalVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-                float velocitySpeed = horizontalVel.magnitude;
-                
-                return Mathf.Lerp(velocitySpeed, inputSpeed, 0.7f);
+                // For kinematic bodies, use input magnitude directly
+                return moveInput.magnitude * moveSpeed;
             }
             else
             {
+                // For non-kinematic bodies, use actual velocity
                 Vector3 horizontalVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
                 return horizontalVel.magnitude;
             }
@@ -156,31 +129,17 @@ namespace MageLock.Gameplay
         
         public void SetAnimationSpeed(float speed)
         {
-            if (animator == null || isLocalPlayer) return;
-            
-            currentAnimationSpeed = Mathf.SmoothDamp(
-                currentAnimationSpeed, 
-                speed, 
-                ref animationSpeedVelocity, 
-                animationSmoothTime
-            );
-            
-            animator.SetFloat(SpeedHash, currentAnimationSpeed);
+            if (animator == null) return;
+            animator.SetFloat(SpeedHash, speed);
         }
         
         private void Update()
         {
-            if (isLocalPlayer && animator != null)
+            // Update animations in Update for all players (local and remote)
+            if (animator != null)
             {
                 float targetSpeed = GetAnimationSpeed();
-                currentAnimationSpeed = Mathf.SmoothDamp(
-                    currentAnimationSpeed, 
-                    targetSpeed, 
-                    ref animationSpeedVelocity, 
-                    animationSmoothTime * Time.deltaTime
-                );
-                
-                animator.SetFloat(SpeedHash, currentAnimationSpeed);
+                animator.SetFloat(SpeedHash, targetSpeed);
             }
         }
 
@@ -198,7 +157,7 @@ namespace MageLock.Gameplay
             }
             
             Gizmos.color = Color.green;
-            Vector3 animDir = transform.forward * currentAnimationSpeed * 0.5f;
+            Vector3 animDir = transform.forward * GetAnimationSpeed() * 0.5f;
             Gizmos.DrawRay(transform.position + Vector3.up * 0.1f, animDir);
         }
     }

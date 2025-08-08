@@ -488,11 +488,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a3c7698021d14ef6bfbb438a22677ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 40
-  acceleration: 50
-  deceleration: 30
-  maxSpeed: 40
-  drag: 5
+  moveSpeed: 8
   rotationSpeed: 10
   rotateTowardsMovement: 1
   horizontalAxis: Horizontal
