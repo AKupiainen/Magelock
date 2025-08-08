@@ -25,9 +25,16 @@ namespace MageLock.Gameplay
         [SerializeField] private string verticalAxis = "Vertical";
         [SerializeField] private float deadZone = 0.1f;
 
+        [Header("Animation")]
+        [SerializeField] private float animationSmoothTime = 0.1f;
+
         private Rigidbody rb;
         private Animator animator;
         private Vector2 moveInput;
+        
+        private float currentAnimationSpeed;
+        private float animationSpeedVelocity;
+        private bool isLocalPlayer = false;
 
         private void Awake()
         {
@@ -42,6 +49,11 @@ namespace MageLock.Gameplay
             rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
             rb.linearDamping = drag;
             rb.useGravity = false; 
+        }
+
+        public void SetIsLocalPlayer(bool isLocal)
+        {
+            isLocalPlayer = isLocal;
         }
 
         public void HandleInput()
@@ -73,6 +85,8 @@ namespace MageLock.Gameplay
             
             HandleMovement(moveInput3D);
             HandleRotation(moveInput3D);
+            
+            UpdateAnimations();
         }
 
         private void HandleMovement(Vector3 moveDirection)
@@ -107,16 +121,67 @@ namespace MageLock.Gameplay
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
         }
 
-        public float GetAnimationSpeed()
-        {
-            Vector3 horizontalVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-            return horizontalVel.magnitude;
-        }
-
-        public void UpdateNetworkAnimations(float networkSpeed)
+        private void UpdateAnimations()
         {
             if (animator == null) return;
-            animator.SetFloat(SpeedHash, networkSpeed);
+
+            float targetSpeed = GetAnimationSpeed();
+            
+            currentAnimationSpeed = Mathf.SmoothDamp(
+                currentAnimationSpeed, 
+                targetSpeed, 
+                ref animationSpeedVelocity, 
+                animationSmoothTime
+            );
+            
+            animator.SetFloat(SpeedHash, currentAnimationSpeed);
+        }
+
+        public float GetAnimationSpeed()
+        {
+            if (isLocalPlayer)
+            {
+                float inputSpeed = moveInput.magnitude * moveSpeed;
+                Vector3 horizontalVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+                float velocitySpeed = horizontalVel.magnitude;
+                
+                return Mathf.Lerp(velocitySpeed, inputSpeed, 0.7f);
+            }
+            else
+            {
+                Vector3 horizontalVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+                return horizontalVel.magnitude;
+            }
+        }
+        
+        public void SetAnimationSpeed(float speed)
+        {
+            if (animator == null || isLocalPlayer) return;
+            
+            currentAnimationSpeed = Mathf.SmoothDamp(
+                currentAnimationSpeed, 
+                speed, 
+                ref animationSpeedVelocity, 
+                animationSmoothTime
+            );
+            
+            animator.SetFloat(SpeedHash, currentAnimationSpeed);
+        }
+        
+        private void Update()
+        {
+            if (isLocalPlayer && animator != null)
+            {
+                float targetSpeed = GetAnimationSpeed();
+                currentAnimationSpeed = Mathf.SmoothDamp(
+                    currentAnimationSpeed, 
+                    targetSpeed, 
+                    ref animationSpeedVelocity, 
+                    animationSmoothTime * Time.deltaTime
+                );
+                
+                animator.SetFloat(SpeedHash, currentAnimationSpeed);
+            }
         }
 
         private void OnDrawGizmosSelected()
@@ -131,6 +196,10 @@ namespace MageLock.Gameplay
                 Gizmos.color = Color.yellow;
                 Gizmos.DrawRay(transform.position, rb.linearVelocity);
             }
+            
+            Gizmos.color = Color.green;
+            Vector3 animDir = transform.forward * currentAnimationSpeed * 0.5f;
+            Gizmos.DrawRay(transform.position + Vector3.up * 0.1f, animDir);
         }
     }
 }

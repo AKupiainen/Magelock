@@ -13,6 +13,7 @@ namespace MageLock.Controls
         [SerializeField] private BillboardText playerBillboardText;
         
         private SimpleNetworkController controller;
+        private Vector2 lastSentInput;
         
         private readonly NetworkVariable<PlayerNetworkState> networkState = new();
         private readonly NetworkVariable<PlayerInfo> playerInfo = new();
@@ -30,10 +31,12 @@ namespace MageLock.Controls
         private struct PlayerNetworkState : INetworkSerializable
         {
             public float Speed;
+            public Vector2 LastInput;
             
             public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
             {
                 serializer.SerializeValue(ref Speed);
+                serializer.SerializeValue(ref LastInput);
             }
         }
         
@@ -53,27 +56,44 @@ namespace MageLock.Controls
             
             if (IsOwner)
             {
+                controller.SetIsLocalPlayer(true);
+                
                 SetupCamera();
                 
                 string playerName = PlayerModel.GetPlayerName();
                 UpdatePlayerNameServerRpc(playerName);
             }
+            else
+            {
+                controller.SetIsLocalPlayer(false);
+            }
             
             SetupPlayerBillboard();
             
             playerInfo.OnValueChanged += OnPlayerInfoChanged;
+            networkState.OnValueChanged += OnNetworkStateChanged;
         }
         
         private void Update()
         {
-            if (IsOwner)
-            {
-                HandleInputAndSend();
-            }
+            if (!IsOwner) return;
             
-            if (IsClient && !IsOwner)
+            controller.HandleInput();
+            Vector2 currentInput = controller.GetMoveInput();
+            
+            if (Vector2.Distance(currentInput, lastSentInput) > 0.01f)
             {
-                SyncClientState();
+                if (IsHost)
+                {
+                    controller.SetNetworkInput(currentInput);
+                }
+                else
+                {
+                    controller.SetNetworkInput(currentInput);
+                    SendInputServerRpc(new InputData { MoveInput = currentInput });
+                }
+                
+                lastSentInput = currentInput;
             }
         }
         
@@ -81,38 +101,30 @@ namespace MageLock.Controls
         {
             if (IsServer)
             {
-                ProcessServerMovement();
+                controller.ProcessMovement();
+                
+                float speed = controller.GetAnimationSpeed();
+                Vector2 currentInput = controller.GetMoveInput();
+                
+                networkState.Value = new PlayerNetworkState 
+                { 
+                    Speed = speed,
+                    LastInput = currentInput
+                };
             }
-        }
-        
-        private void HandleInputAndSend()
-        {
-            controller.HandleInput();
-            
-            Vector2 moveInput = controller.GetMoveInput();
-            
-            if (IsServer)
+            else if (IsOwner)
             {
-                controller.SetNetworkInput(moveInput);
+                controller.ProcessMovement();
             }
-            else
+        }
+        
+        private void OnNetworkStateChanged(PlayerNetworkState previousValue, PlayerNetworkState newValue)
+        {
+            if (!IsOwner)
             {
-                SendInputServerRpc(new InputData { MoveInput = moveInput });
+                controller.SetNetworkInput(newValue.LastInput);
+                controller.SetAnimationSpeed(newValue.Speed);
             }
-        }
-        
-        private void ProcessServerMovement()
-        {
-            controller.ProcessMovement();
-            
-            float speed = controller.GetAnimationSpeed();
-            networkState.Value = new PlayerNetworkState { Speed = speed };
-        }
-        
-        private void SyncClientState()
-        {
-            var state = networkState.Value;
-            controller.UpdateNetworkAnimations(state.Speed);
         }
         
         [ServerRpc]
@@ -138,6 +150,7 @@ namespace MageLock.Controls
         public override void OnNetworkDespawn()
         {
             playerInfo.OnValueChanged -= OnPlayerInfoChanged;
+            networkState.OnValueChanged -= OnNetworkStateChanged;
             
             if (IsOwner && cameraController != null)
             {
@@ -157,17 +170,7 @@ namespace MageLock.Controls
             }
             else
             {
-                // Try to find camera in scene
-                cameraController = FindObjectOfType<CameraController>();
-                if (cameraController != null)
-                {
-                    cameraController.SetTarget(transform);
-                    Debug.Log($"Found and assigned camera to player {OwnerClientId}");
-                }
-                else
-                {
-                    Debug.LogWarning("CameraController not found in scene!");
-                }
+                Debug.LogWarning("CameraController not assigned in inspector for player!");
             }
         }
         
@@ -175,18 +178,11 @@ namespace MageLock.Controls
         {
             if (playerBillboardText != null)
             {
-                if (IsOwner)
-                {
-                    playerBillboardText.gameObject.SetActive(false);
-                }
-                else
-                {
-                    playerBillboardText.gameObject.SetActive(true);
+                playerBillboardText.gameObject.SetActive(true);
 
-                    if (!string.IsNullOrEmpty(playerInfo.Value.PlayerName.ToString()))
-                    {
-                        playerBillboardText.SetText(playerInfo.Value.PlayerName.ToString());
-                    }
+                if (!string.IsNullOrEmpty(playerInfo.Value.PlayerName.ToString()))
+                {
+                    playerBillboardText.SetText(playerInfo.Value.PlayerName.ToString());
                 }
             }
             else
