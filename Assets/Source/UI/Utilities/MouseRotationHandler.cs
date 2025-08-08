@@ -30,15 +30,8 @@ namespace MageLock.UI
         
         private float rotationVelocity;
         private bool isDecelerating;
-        
         private float lastInputTime;
         private bool isAutoResetting;
-        
-        private void Start()
-        {
-            InitializeTarget();
-            lastInputTime = Time.time;
-        }
         
         private void Update()
         {
