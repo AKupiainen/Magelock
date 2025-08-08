@@ -55,14 +55,12 @@ namespace MageLock.Controls
             {
                 SetupCamera();
                 
-                // Send player name to server
                 string playerName = PlayerModel.GetPlayerName();
                 UpdatePlayerNameServerRpc(playerName);
             }
             
             SetupPlayerBillboard();
             
-            // Subscribe to player info changes
             playerInfo.OnValueChanged += OnPlayerInfoChanged;
         }
         
@@ -131,7 +129,6 @@ namespace MageLock.Controls
         
         private void OnPlayerInfoChanged(PlayerInfo previousValue, PlayerInfo newValue)
         {
-            // Update billboard text when network variable changes
             if (playerBillboardText != null)
             {
                 playerBillboardText.SetText(newValue.PlayerName.ToString());
@@ -178,7 +175,6 @@ namespace MageLock.Controls
         {
             if (playerBillboardText != null)
             {
-                // For local player, hide the billboard
                 if (IsOwner)
                 {
                     playerBillboardText.gameObject.SetActive(false);
@@ -186,7 +182,7 @@ namespace MageLock.Controls
                 else
                 {
                     playerBillboardText.gameObject.SetActive(true);
-                    // Set initial name if available
+
                     if (!string.IsNullOrEmpty(playerInfo.Value.PlayerName.ToString()))
                     {
                         playerBillboardText.SetText(playerInfo.Value.PlayerName.ToString());
