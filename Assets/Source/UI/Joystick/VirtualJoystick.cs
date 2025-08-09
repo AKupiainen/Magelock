@@ -20,7 +20,7 @@ namespace MageLock.UI
         [SerializeField] private float eventSendRate = 0.02f;
         
         [Header("Dynamic Positioning")]
-        [SerializeField] private Vector2 defaultPosition = new Vector2(150, 150);
+        [SerializeField] private Vector2 defaultPosition = new(150, 150);
         [SerializeField] private float returnAnimationDuration = 0.3f;
         [SerializeField] private float screenEdgePadding = 100f;
         [SerializeField] private float maxDragDistance = 150f; 
@@ -32,12 +32,12 @@ namespace MageLock.UI
         [SerializeField] private float colorFadeDuration = 0.2f;
         
         [Header("Inactive State Colors")]
-        [SerializeField] private Color inactiveBackgroundColor = new Color(120f/255f, 160f/255f, 180f/255f, 60f/255f);
-        [SerializeField] private Color inactiveHandleColor = new Color(200f/255f, 200f/255f, 200f/255f, 80f/255f);
+        [SerializeField] private Color inactiveBackgroundColor = new(120f/255f, 160f/255f, 180f/255f, 60f/255f);
+        [SerializeField] private Color inactiveHandleColor = new(200f/255f, 200f/255f, 200f/255f, 80f/255f);
         
         [Header("Active State Colors")]
-        [SerializeField] private Color activeBackgroundColor = new Color(0f, 200f/255f, 255f/255f, 120f/255f);
-        [SerializeField] private Color activeHandleColor = new Color(255f/255f, 255f/255f, 255f/255f, 220f/255f);
+        [SerializeField] private Color activeBackgroundColor = new(0f, 200f/255f, 255f/255f, 120f/255f);
+        [SerializeField] private Color activeHandleColor = new(255f/255f, 255f/255f, 255f/255f, 220f/255f);
         
         [Header("Effects")]
         [SerializeField] private bool enableGlowEffect = true;
@@ -45,29 +45,23 @@ namespace MageLock.UI
         [SerializeField] private float pulseSpeed = 1f;
         [SerializeField] private float pulseIntensity = 0.1f;
         
-        private Vector2 inputVector;
-        private Vector2 lastSentInput;
-        private Image backgroundImage;
-        private Image handleImage;
-        private bool isActive = false;
-        private Camera cam;
-        private float lastEventTime;
-        private float interactionStartTime;
-        private RectTransform canvasRect;
-        private Shadow glowEffect;
-        private Vector2 touchStartPosition; 
-        private Vector2 joystickStartPosition; 
+        private Vector2 _inputVector;
+        private Vector2 _lastSentInput;
+        private Image _backgroundImage;
+        private Image _handleImage;
+        private bool _isActive;
+        private Camera _cam;
+        private float _lastEventTime;
+        private float _interactionStartTime;
+        private RectTransform _canvasRect;
+        private Shadow _glowEffect;
+        private Vector2 _joystickStartPosition; 
         
-        private Sequence pulseSequence;
-        private Tweener returnTween;
-        private Tweener bgColorTween;
-        private Tweener handleColorTween;
-        private Tweener handleScaleTween;
-        
-        public Vector2 InputVector => inputVector;
-        public float Horizontal => inputVector.x;
-        public float Vertical => inputVector.y;
-        public bool IsActive => isActive;
+        private Sequence _pulseSequence;
+        private Tweener _returnTween;
+        private Tweener _bgColorTween;
+        private Tweener _handleColorTween;
+        private Tweener _handleScaleTween;
         
         private void Awake()
         {
@@ -81,7 +75,7 @@ namespace MageLock.UI
             EventsBus.Subscribe<InputModeChangeEvent>(OnInputModeChanged);
             EventsBus.Subscribe<LocalPlayerStatusEvent>(OnLocalPlayerStatusChanged);
             
-            if (enablePulseAnimation && !isActive)
+            if (enablePulseAnimation && !_isActive)
             {
                 StartPulseAnimation();
             }
@@ -94,7 +88,7 @@ namespace MageLock.UI
             
             DOTween.Kill(this);
             
-            if (isActive)
+            if (_isActive)
             {
                 SendMovementEvent(Vector2.zero);
             }
@@ -107,11 +101,29 @@ namespace MageLock.UI
         
         private void InitializeComponents()
         {
+            if (joystickBackground != null)
+            {
+                _backgroundImage = joystickBackground.GetComponent<Image>();
+                if (_backgroundImage == null)
+                {
+                    _backgroundImage = joystickBackground.gameObject.AddComponent<Image>();
+                }
+            }
+            
+            if (joystickHandle != null)
+            {
+                _handleImage = joystickHandle.GetComponent<Image>();
+                if (_handleImage == null)
+                {
+                    _handleImage = joystickHandle.gameObject.AddComponent<Image>();
+                }
+            }
+            
             if (canvas != null)
             {
-                canvasRect = canvas.GetComponent<RectTransform>();
+                _canvasRect = canvas.GetComponent<RectTransform>();
                 if (canvas.renderMode == RenderMode.ScreenSpaceCamera)
-                    cam = canvas.worldCamera;
+                    _cam = canvas.worldCamera;
             }
             
             if (joystickBackground != null)
@@ -122,78 +134,75 @@ namespace MageLock.UI
         {
             if (enableGlowEffect && joystickHandle != null)
             {
-                glowEffect = joystickHandle.GetComponent<Shadow>();
-                if (glowEffect == null)
+                _glowEffect = joystickHandle.GetComponent<Shadow>();
+                if (_glowEffect == null)
                 {
-                    glowEffect = joystickHandle.gameObject.AddComponent<Shadow>();
-                    glowEffect.effectColor = new Color(1f, 1f, 1f, 0.5f);
-                    glowEffect.effectDistance = new Vector2(0, 0);
-                    glowEffect.useGraphicAlpha = true;
+                    _glowEffect = joystickHandle.gameObject.AddComponent<Shadow>();
+                    _glowEffect.effectColor = new Color(1f, 1f, 1f, 0.5f);
+                    _glowEffect.effectDistance = new Vector2(0, 0);
+                    _glowEffect.useGraphicAlpha = true;
                 }
-                glowEffect.enabled = false;
+                _glowEffect.enabled = false;
             }
         }
         
         private void SetupVisuals()
         {
-            if (backgroundImage != null)
-                backgroundImage.color = inactiveBackgroundColor;
-            if (handleImage != null)
-                handleImage.color = inactiveHandleColor;
+            if (_backgroundImage != null)
+                _backgroundImage.color = inactiveBackgroundColor;
+            if (_handleImage != null)
+                _handleImage.color = inactiveHandleColor;
         }
         
         private void Update()
         {
-            if (isActive && Time.time - lastEventTime >= eventSendRate)
+            if (_isActive && Time.time - _lastEventTime >= eventSendRate)
             {
-                SendMovementEvent(inputVector);
-                lastEventTime = Time.time;
+                SendMovementEvent(_inputVector);
+                _lastEventTime = Time.time;
             }
         }
         
         public void OnPointerDown(PointerEventData eventData)
         {
-            returnTween?.Kill();
+            _returnTween?.Kill();
             
-            isActive = true;
-            interactionStartTime = Time.time;
-            
-            touchStartPosition = eventData.position;
-            
-            RectTransform parentRect = joystickBackground.parent as RectTransform ?? canvasRect;
-            Vector2 localTouchPos;
-            Camera eventCamera = (canvas.renderMode == RenderMode.ScreenSpaceOverlay) ? null : cam;
+            _isActive = true;
+            _interactionStartTime = Time.time;
+
+            RectTransform parentRect = joystickBackground.parent as RectTransform ?? _canvasRect;
+            Camera eventCamera = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : _cam;
             
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 parentRect,
                 eventData.position,
                 eventCamera,
-                out localTouchPos);
+                out var localTouchPos);
             
             Vector2 constrainedPos = ConstrainToScreen(localTouchPos);
             joystickBackground.anchoredPosition = constrainedPos;
             
-            joystickStartPosition = constrainedPos;
+            _joystickStartPosition = constrainedPos;
             
             if (joystickHandle != null)
             {
                 joystickHandle.anchoredPosition = Vector2.zero;
             }
             
-            inputVector = Vector2.zero;
+            _inputVector = Vector2.zero;
             
             AnimateToActiveState();
             
-            EventsBus.Trigger(new JoystickStartEvent(inputVector));
+            EventsBus.Trigger(new JoystickStartEvent(_inputVector));
         }
         
         public void OnPointerUp(PointerEventData eventData)
         {
-            float duration = Time.time - interactionStartTime;
-            Vector2 finalInput = inputVector;
+            float duration = Time.time - _interactionStartTime;
+            Vector2 finalInput = _inputVector;
             
-            isActive = false;
-            inputVector = Vector2.zero;
+            _isActive = false;
+            _inputVector = Vector2.zero;
             
             if (joystickHandle != null)
             {
@@ -210,15 +219,14 @@ namespace MageLock.UI
         
         public void OnDrag(PointerEventData eventData)
         {
-            RectTransform parentRect = joystickBackground.parent as RectTransform ?? canvasRect;
-            Camera eventCamera = (canvas.renderMode == RenderMode.ScreenSpaceOverlay) ? null : cam;
-            
-            Vector2 currentTouchLocalPos;
+            RectTransform parentRect = joystickBackground.parent as RectTransform ?? _canvasRect;
+            Camera eventCamera = (canvas.renderMode == RenderMode.ScreenSpaceOverlay) ? null : _cam;
+
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 parentRect,
                 eventData.position,
                 eventCamera,
-                out currentTouchLocalPos);
+                out var currentTouchLocalPos);
             
             Vector2 currentJoystickPos = joystickBackground.anchoredPosition;
             
@@ -233,10 +241,10 @@ namespace MageLock.UI
                 
                 if (maxDragDistance > 0)
                 {
-                    Vector2 offsetFromStart = targetJoystickPos - joystickStartPosition;
+                    Vector2 offsetFromStart = targetJoystickPos - _joystickStartPosition;
                     if (offsetFromStart.magnitude > maxDragDistance)
                     {
-                        targetJoystickPos = joystickStartPosition + (offsetFromStart.normalized * maxDragDistance);
+                        targetJoystickPos = _joystickStartPosition + (offsetFromStart.normalized * maxDragDistance);
                     }
                 }
                 
@@ -255,7 +263,7 @@ namespace MageLock.UI
                     joystickBackground.anchoredPosition = targetJoystickPos;
                 }
                 
-                inputVector = direction;
+                _inputVector = direction;
                 
                 if (joystickHandle != null)
                 {
@@ -265,17 +273,16 @@ namespace MageLock.UI
             }
             else
             {
-                inputVector = joystickToTouch / joystickRadius;
+                _inputVector = joystickToTouch / joystickRadius;
                 
-                // Apply dead zone
-                if (inputVector.magnitude < deadZone)
+                if (_inputVector.magnitude < deadZone)
                 {
-                    inputVector = Vector2.zero;
+                    _inputVector = Vector2.zero;
                 }
                 else
                 {
-                    float magnitude = (inputVector.magnitude - deadZone) / (1 - deadZone);
-                    inputVector = inputVector.normalized * magnitude;
+                    float magnitude = (_inputVector.magnitude - deadZone) / (1 - deadZone);
+                    _inputVector = _inputVector.normalized * magnitude;
                 }
                 
                 if (joystickHandle != null)
@@ -286,15 +293,15 @@ namespace MageLock.UI
                 }
             }
             
-            if (Vector2.Distance(inputVector, lastSentInput) > 0.01f)
+            if (Vector2.Distance(_inputVector, _lastSentInput) > 0.01f)
             {
-                SendMovementEvent(inputVector);
+                SendMovementEvent(_inputVector);
             }
         }
         
         private Vector2 ConstrainToScreen(Vector2 position)
         {
-            RectTransform parentRect = joystickBackground.parent as RectTransform ?? canvasRect;
+            RectTransform parentRect = joystickBackground.parent as RectTransform ?? _canvasRect;
             
             if (parentRect != null)
             {
@@ -317,59 +324,59 @@ namespace MageLock.UI
         
         private void AnimateToActiveState()
         {
-            pulseSequence?.Kill();
-            bgColorTween?.Kill();
-            handleColorTween?.Kill();
-            handleScaleTween?.Kill();
+            _pulseSequence?.Kill();
+            _bgColorTween?.Kill();
+            _handleColorTween?.Kill();
+            _handleScaleTween?.Kill();
             
-            if (backgroundImage != null)
+            if (_backgroundImage != null)
             {
-                bgColorTween = backgroundImage.DOColor(activeBackgroundColor, colorFadeDuration)
+                _bgColorTween = _backgroundImage.DOColor(activeBackgroundColor, colorFadeDuration)
                     .SetEase(Ease.OutQuad)
                     .SetId(this);
             }
                 
-            if (handleImage != null)
+            if (_handleImage != null)
             {
-                handleColorTween = handleImage.DOColor(activeHandleColor, colorFadeDuration)
+                _handleColorTween = _handleImage.DOColor(activeHandleColor, colorFadeDuration)
                     .SetEase(Ease.OutQuad)
                     .SetId(this);
                     
-                handleScaleTween = joystickHandle.DOScale(handleSizeOnPress, 0.15f)
+                _handleScaleTween = joystickHandle.DOScale(handleSizeOnPress, 0.15f)
                     .SetEase(Ease.OutBack)
                     .SetId(this);
             }
             
-            if (glowEffect != null)
-                glowEffect.enabled = true;
+            if (_glowEffect != null)
+                _glowEffect.enabled = true;
         }
         
         private void AnimateToInactiveState()
         {
-            bgColorTween?.Kill();
-            handleColorTween?.Kill();
-            handleScaleTween?.Kill();
+            _bgColorTween?.Kill();
+            _handleColorTween?.Kill();
+            _handleScaleTween?.Kill();
             
-            if (backgroundImage != null)
+            if (_backgroundImage != null)
             {
-                bgColorTween = backgroundImage.DOColor(inactiveBackgroundColor, colorFadeDuration)
+                _bgColorTween = _backgroundImage.DOColor(inactiveBackgroundColor, colorFadeDuration)
                     .SetEase(Ease.OutQuad)
                     .SetId(this);
             }
                 
-            if (handleImage != null)
+            if (_handleImage != null)
             {
-                handleColorTween = handleImage.DOColor(inactiveHandleColor, colorFadeDuration)
+                _handleColorTween = _handleImage.DOColor(inactiveHandleColor, colorFadeDuration)
                     .SetEase(Ease.OutQuad)
                     .SetId(this);
                     
-                handleScaleTween = joystickHandle.DOScale(1f, 0.15f)
+                _handleScaleTween = joystickHandle.DOScale(1f, 0.15f)
                     .SetEase(Ease.OutQuad)
                     .SetId(this);
             }
             
-            if (glowEffect != null)
-                glowEffect.enabled = false;
+            if (_glowEffect != null)
+                _glowEffect.enabled = false;
             
             if (enablePulseAnimation)
             {
@@ -379,31 +386,31 @@ namespace MageLock.UI
         
         private void AnimateToDefaultPosition()
         {
-            returnTween?.Kill();
-            returnTween = joystickBackground.DOAnchorPos(defaultPosition, returnAnimationDuration)
+            _returnTween?.Kill();
+            _returnTween = joystickBackground.DOAnchorPos(defaultPosition, returnAnimationDuration)
                 .SetEase(Ease.OutQuad)
                 .SetId(this);
         }
         
         private void StartPulseAnimation()
         {
-            if (handleImage == null || !enablePulseAnimation) return;
+            if (_handleImage == null || !enablePulseAnimation) return;
             
-            pulseSequence?.Kill();
+            _pulseSequence?.Kill();
             
-            pulseSequence = DOTween.Sequence()
+            _pulseSequence = DOTween.Sequence()
                 .SetId(this)
                 .SetLoops(-1) 
-                .Append(handleImage.DOFade(inactiveHandleColor.a * (1f + pulseIntensity), pulseSpeed)
+                .Append(_handleImage.DOFade(inactiveHandleColor.a * (1f + pulseIntensity), pulseSpeed)
                     .SetEase(Ease.InOutSine))
-                .Append(handleImage.DOFade(inactiveHandleColor.a, pulseSpeed)
+                .Append(_handleImage.DOFade(inactiveHandleColor.a, pulseSpeed)
                     .SetEase(Ease.InOutSine));
         }
         
         private void SendMovementEvent(Vector2 input)
         {
             EventsBus.Trigger(new MovementInputEvent(input, InputSource.VirtualJoystick));
-            lastSentInput = input;
+            _lastSentInput = input;
         }
         
         private void OnInputModeChanged(InputModeChangeEvent e)
@@ -431,29 +438,6 @@ namespace MageLock.UI
                     }
                     parent = parent.parent;
                 }
-            }
-        }
-        
-        public void ResetJoystick()
-        {
-            inputVector = Vector2.zero;
-            
-            if (joystickHandle != null)
-            {
-                joystickHandle.DOAnchorPos(Vector2.zero, 0.15f)
-                    .SetEase(Ease.OutQuad)
-                    .SetId(this);
-            }
-            
-            SendMovementEvent(Vector2.zero);
-        }
-        
-        public void SetDefaultPosition(Vector2 position)
-        {
-            defaultPosition = position;
-            if (!isActive)
-            {
-                joystickBackground.anchoredPosition = defaultPosition;
             }
         }
     }
