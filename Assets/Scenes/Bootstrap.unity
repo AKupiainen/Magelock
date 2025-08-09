@@ -360,6 +360,7 @@ MonoBehaviour:
   defaultPlayerConfig: {fileID: 11400000, guid: 5a61959ec92ba5141833d06f10b6bf9e,
     type: 2}
   characterDatabase: {fileID: 11400000, guid: f95bdf1b53378ae4eba85e779e7020db, type: 2}
+  spellDatabase: {fileID: 11400000, guid: e7ab2c14d202b46808ad0d3ca78ac966, type: 2}
 --- !u!4 &920823754
 Transform:
   m_ObjectHideFlags: 0

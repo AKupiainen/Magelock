@@ -9,6 +9,7 @@
     using MageLock.Audio;
     using MageLock.Localization;
     using MageLock.Player;
+    using MageLock.Spells;
 
     public class GameInstaller : MonoInstaller
     {
@@ -17,6 +18,7 @@
         [SerializeField] private LevelData levelData;
         [SerializeField] private DefaultPlayerConfig defaultPlayerConfig;
         [SerializeField] private CharacterDatabase characterDatabase;
+        [SerializeField] private SpellDatabase spellDatabase;
 
         public override void InstallBindings(DIContainer container)
         {
@@ -25,6 +27,7 @@
             container.RegisterSingleton(levelData);
             container.RegisterSingleton(defaultPlayerConfig);
             container.RegisterSingleton(characterDatabase);
+            container.RegisterSingleton(spellDatabase);
 
             IEventManager eventManager = new EventManager();
             container.RegisterSingleton(eventManager);

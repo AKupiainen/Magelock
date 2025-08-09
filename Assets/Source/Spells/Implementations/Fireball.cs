@@ -12,15 +12,24 @@ namespace MageLock.Spells
         
         public override void Cast(GameObject caster, Vector3 direction)
         {
-            base.Cast(caster, direction);
+            if (!projectilePrefab) return;
+            
+            var spawnPos = caster.transform.position + Vector3.up + direction * 0.5f;
+            var projectile = Instantiate(projectilePrefab, spawnPos, Quaternion.LookRotation(direction));
+            
+            var proj = projectile.GetComponent<Projectile>();
+            if (!proj) proj = projectile.AddComponent<Projectile>();
+            
+            proj.Initialize(caster, damage, projectileSpeed, lifetime, Explode);
         }
         
-        public void OnImpact(Vector3 position, GameObject caster)
+        private void Explode(Vector3 position, GameObject caster)
         {
             if (explosionPrefab)
                 Instantiate(explosionPrefab, position, Quaternion.identity);
             
             var hits = Physics.OverlapSphere(position, explosionRadius);
+            
             foreach (var hit in hits)
             {
                 if (hit.gameObject == caster) continue;
