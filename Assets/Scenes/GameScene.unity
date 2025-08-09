@@ -33853,6 +33853,7 @@ GameObject:
   - component: {fileID: 1454373930}
   - component: {fileID: 1454373932}
   - component: {fileID: 1454373931}
+  - component: {fileID: 1454373933}
   m_Layer: 5
   m_Name: JoystickBackground
   m_TagString: Untagged
@@ -33918,6 +33919,44 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1454373929}
   m_CullTransparentMesh: 1
+--- !u!114 &1454373933
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1454373929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49616b87cd0854e9b9ac1fc06fb451e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  joystickBackground: {fileID: 1454373930}
+  joystickHandle: {fileID: 1937515534}
+  canvas: {fileID: 740793767}
+  joystickRange: 100
+  deadZone: 0.1
+  resetHandlePosition: 1
+  sendContinuousEvents: 1
+  eventSendRate: 0.02
+  dynamicPositioning: 1
+  dynamicMode: 0
+  returnToDefaultPosition: 1
+  defaultPosition: {x: 150, y: 150}
+  maxDistanceFromDefault: 300
+  constrainToScreen: 1
+  screenEdgePadding: 100
+  useBrawlStarsStyle: 1
+  handleSizeOnPress: 1.2
+  fadeTransitionSpeed: 8
+  inactiveBackgroundColor: {r: 0.47058824, g: 0.627451, b: 0.7058824, a: 0.23529412}
+  inactiveHandleColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.3137255}
+  activeBackgroundColor: {r: 0, g: 0.78431374, b: 1, a: 0.47058824}
+  activeHandleColor: {r: 1, g: 1, b: 1, a: 0.8627451}
+  enableGlowEffect: 1
+  enablePulseAnimation: 1
+  pulseSpeed: 2
+  pulseIntensity: 0.1
 --- !u!1001 &1455325893
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -45585,7 +45624,6 @@ GameObject:
   - component: {fileID: 1937515534}
   - component: {fileID: 1937515537}
   - component: {fileID: 1937515536}
-  - component: {fileID: 1937515535}
   m_Layer: 5
   m_Name: JoystickForegound
   m_TagString: Untagged
@@ -45612,30 +45650,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0.000030517578}
   m_SizeDelta: {x: 225, y: 225}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1937515535
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1937515533}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 49616b87cd0854e9b9ac1fc06fb451e0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  joystickBackground: {fileID: 1454373930}
-  joystickHandle: {fileID: 1937515534}
-  canvas: {fileID: 740793767}
-  joystickRange: 100
-  deadZone: 0.1
-  hideWhenInactive: 0
-  resetHandlePosition: 1
-  sendContinuousEvents: 1
-  eventSendRate: 0.02
-  handleSizeOnPress: 1.2
-  activeColor: {r: 1, g: 1, b: 1, a: 1}
-  inactiveColor: {r: 1, g: 1, b: 1, a: 0.5}
 --- !u!114 &1937515536
 MonoBehaviour:
   m_ObjectHideFlags: 0
