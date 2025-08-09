@@ -165,7 +165,6 @@ namespace MageLock.Gameplay
             
             Gizmos.matrix = oldMatrix;
             
-            // Draw reveal radius
             Gizmos.color = new Color(1, 1, 0, 0.2f);
             Gizmos.matrix = Matrix4x4.identity;
             Gizmos.DrawWireSphere(transform.position, revealDistance);
