@@ -15,10 +15,7 @@ namespace MageLock.Shop
         
         protected List<ShopProductBaseConfig> SectionProducts = new();
         protected readonly List<GameObject> ProductItems = new();
-
-        protected bool isActive;
-
-        public bool IsActive => isActive;
+        
 
         public virtual void Initialize()
         {
@@ -77,8 +74,6 @@ namespace MageLock.Shop
 
         public virtual void SetActive(bool active)
         {
-            isActive = active;
-            
             if (sectionContent != null)
             {
                 sectionContent.SetActive(active);
@@ -89,7 +84,5 @@ namespace MageLock.Shop
         {
             SetupSectionContent();
         }
-
-        protected virtual void OnDestroy() { }
     }
 }

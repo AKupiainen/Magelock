@@ -6,7 +6,6 @@ using System.Linq;
 using Newtonsoft.Json;
 using MageLock.Events;
 using MageLock.DependencyInjection;
-using UnityEngine.Serialization;
 
 namespace MageLock.Player
 {

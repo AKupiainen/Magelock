@@ -12,17 +12,17 @@ namespace MageLock.UI
         [SerializeField] protected CanvasGroup canvasGroup;
         [SerializeField] protected Canvas canvas;
 
-        [Inject] private ViewManager viewManager;
+        [Inject] private ViewManager _viewManager;
 
-        private int originalSortingOrder;
-        private bool hasStoredOriginalOrder;
+        private int _originalSortingOrder;
+        private bool _hasStoredOriginalOrder;
 
         protected virtual void Awake()
         {
             if (canvas != null)
             {
-                originalSortingOrder = canvas.sortingOrder;
-                hasStoredOriginalOrder = true;
+                _originalSortingOrder = canvas.sortingOrder;
+                _hasStoredOriginalOrder = true;
             }
         }
 
@@ -48,13 +48,13 @@ namespace MageLock.UI
         [PostInject]
         private void OnDependenciesInjected()
         {
-            viewManager.RegisterView(this);
+            _viewManager.RegisterView(this);
         }
 
         protected virtual void OnDestroy()
         {
             UnsubscribeFromEvents();
-            viewManager.UnregisterView(this);
+            _viewManager.UnregisterView(this);
         }
 
         protected virtual void Initialize() { }
@@ -132,9 +132,9 @@ namespace MageLock.UI
 
         public virtual void RestoreOriginalSortingOrder()
         {
-            if (canvas != null && hasStoredOriginalOrder)
+            if (canvas != null && _hasStoredOriginalOrder)
             {
-                canvas.sortingOrder = originalSortingOrder;
+                canvas.sortingOrder = _originalSortingOrder;
             }
         }
 

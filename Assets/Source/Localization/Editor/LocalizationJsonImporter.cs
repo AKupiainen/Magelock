@@ -8,7 +8,7 @@ namespace MageLock.Localization.Editor
 {
     public class LocalizationJsonImporter : EditorWindow
     {
-        private string jsonFilePath;
+        private string _jsonFilePath;
         
         [MenuItem("Tools/Localization/Import Localizations from JSON")]
         public static void ShowWindow()
@@ -20,7 +20,7 @@ namespace MageLock.Localization.Editor
         private void OnGUI()
         {
             GUILayout.Label("Localization JSON Importer", EditorStyles.boldLabel);
-            jsonFilePath = EditorGUILayout.TextField("JSON File Path:", jsonFilePath);
+            _jsonFilePath = EditorGUILayout.TextField("JSON File Path:", _jsonFilePath);
             
             if (GUILayout.Button("Select JSON File"))
             {
@@ -28,13 +28,13 @@ namespace MageLock.Localization.Editor
                 
                 if (!string.IsNullOrEmpty(selectedPath))
                 {
-                    jsonFilePath = selectedPath.Replace(Application.dataPath, "Assets");
+                    _jsonFilePath = selectedPath.Replace(Application.dataPath, "Assets");
                 }
             }
             
-            if (GUILayout.Button("Import Localizations") && !string.IsNullOrEmpty(jsonFilePath))
+            if (GUILayout.Button("Import Localizations") && !string.IsNullOrEmpty(_jsonFilePath))
             {
-                ImportLocalizations(jsonFilePath);
+                ImportLocalizations(_jsonFilePath);
             }
         }
         

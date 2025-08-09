@@ -18,8 +18,8 @@ namespace MageLock.UI
         [Header("Input Settings")]
         [SerializeField] protected bool allowBackKeyClose = true;
         
-        private Tween currentTween;
-        private bool isAnimating;
+        private Tween _currentTween;
+        private bool _isAnimating;
         public PopupType PopupType { get; set; }
 
         public virtual void Initialize()
@@ -39,16 +39,16 @@ namespace MageLock.UI
             if (scalingTransform == null)
                 return;
 
-            currentTween?.Kill();
+            _currentTween?.Kill();
 
-            isAnimating = true;
+            _isAnimating = true;
             scalingTransform.localScale = Vector3.zero;
             
-            currentTween = scalingTransform.DOScale(Vector3.one, animationDuration)
+            _currentTween = scalingTransform.DOScale(Vector3.one, animationDuration)
                 .SetEase(openEase)
                 .OnComplete(() => {
-                    currentTween = null;
-                    isAnimating = false;
+                    _currentTween = null;
+                    _isAnimating = false;
                 });
         }
 
@@ -58,7 +58,7 @@ namespace MageLock.UI
 
         protected virtual void Close()
         {
-            if (isAnimating)
+            if (_isAnimating)
                 return;
             
             if (scalingTransform == null)
@@ -67,16 +67,16 @@ namespace MageLock.UI
                 return;
             }
             
-            if (currentTween != null)
-                currentTween.Kill();
+            if (_currentTween != null)
+                _currentTween.Kill();
             
-            isAnimating = true;
+            _isAnimating = true;
             
-            currentTween = scalingTransform.DOScale(Vector3.zero, animationDuration)
+            _currentTween = scalingTransform.DOScale(Vector3.zero, animationDuration)
                 .SetEase(closeEase)
                 .OnComplete(() => {
-                    currentTween = null;
-                    isAnimating = false;
+                    _currentTween = null;
+                    _isAnimating = false;
                     ClosePopup();
                 });
         }
@@ -91,7 +91,7 @@ namespace MageLock.UI
             if (!allowBackKeyClose)
                 return;
                 
-            if (isAnimating)
+            if (_isAnimating)
                 return;
                 
             if (!Input.GetKeyDown(KeyCode.Escape))
@@ -102,11 +102,11 @@ namespace MageLock.UI
 
         protected virtual void OnDestroy()
         {
-            if (currentTween == null)
+            if (_currentTween == null)
                 return;
                 
-            currentTween.Kill();
-            currentTween = null;
+            _currentTween.Kill();
+            _currentTween = null;
         }
     }
 }

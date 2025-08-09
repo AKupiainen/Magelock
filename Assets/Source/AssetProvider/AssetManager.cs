@@ -6,16 +6,16 @@ namespace MageLock.Assets
 {
     public class AssetManager : IAssetManager
     {
-        private readonly Dictionary<CurrencyType, Sprite> currencyIcons;
+        private readonly Dictionary<CurrencyType, Sprite> _currencyIcons;
 
         public AssetManager(CurrencyIconMap currencyIconMap)
         {
-            currencyIcons = currencyIconMap.ToDictionary();
+            _currencyIcons = currencyIconMap.ToDictionary();
         }
 
         public Sprite GetCurrencyIcon(CurrencyType currencyType)
         {
-            if (currencyIcons.TryGetValue(currencyType, out var sprite))
+            if (_currencyIcons.TryGetValue(currencyType, out var sprite))
             {
                 return sprite;
             }

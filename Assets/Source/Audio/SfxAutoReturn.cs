@@ -4,30 +4,30 @@ namespace MageLock.Audio
 {
     public class SfxAutoReturn : MonoBehaviour
     {
-        private AudioManager audioManager;
-        private float returnTime;
-        private bool isActive;
+        private AudioManager _audioManager;
+        private float _returnTime;
+        private bool _isActive;
         
         public void Initialize(AudioManager manager)
         {
-            audioManager = manager;
+            _audioManager = manager;
         }
         
         public void SetReturnTime(float time)
         {
-            returnTime = Time.time + time;
-            isActive = true;
+            _returnTime = Time.time + time;
+            _isActive = true;
         }
         
         private void Update()
         {
-            if (isActive && Time.time >= returnTime)
+            if (_isActive && Time.time >= _returnTime)
             {
-                isActive = false;
+                _isActive = false;
                 
                 if (TryGetComponent(out AudioSource source))
                 {
-                    audioManager.ReturnToPool(source);
+                    _audioManager.ReturnToPool(source);
                 }
             }
         }

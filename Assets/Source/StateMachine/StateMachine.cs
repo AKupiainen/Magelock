@@ -8,11 +8,11 @@ namespace MageLock.StateMachine
     /// </summary>
     public class StateMachine
     {
-        private Dictionary<Type, IState> states = new Dictionary<Type, IState>();
-        private IState currentState;
+        private readonly Dictionary<Type, IState> states = new();
+        private IState _currentState;
 
-        public IState CurrentState => currentState;
-        public T CurrentStateAs<T>() where T : class, IState => currentState as T;
+        public IState CurrentState => _currentState;
+        public T CurrentStateAs<T>() where T : class, IState => _currentState as T;
 
         /// <summary>
         /// Add a state to the machine
@@ -40,9 +40,9 @@ namespace MageLock.StateMachine
         {
             if (states.TryGetValue(typeof(T), out IState newState))
             {
-                currentState?.OnExit();
-                currentState = newState;
-                currentState.OnEnter();
+                _currentState?.OnExit();
+                _currentState = newState;
+                _currentState.OnEnter();
             }
         }
 
@@ -51,7 +51,7 @@ namespace MageLock.StateMachine
         /// </summary>
         public void Update(float deltaTime)
         {
-            currentState?.OnUpdate(deltaTime);
+            _currentState?.OnUpdate(deltaTime);
         }
 
         /// <summary>
@@ -75,8 +75,8 @@ namespace MageLock.StateMachine
         /// </summary>
         public void Clear()
         {
-            currentState?.OnExit();
-            currentState = null;
+            _currentState?.OnExit();
+            _currentState = null;
             states.Clear();
         }
     }

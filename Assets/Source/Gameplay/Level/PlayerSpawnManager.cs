@@ -9,9 +9,9 @@ namespace MageLock.Gameplay
 {
     public class PlayerSpawnManager
     {
-        [Inject] private NetworkManagerCustom networkManagerCustom;
+        [Inject] private NetworkManagerCustom _networkManagerCustom;
         
-        private readonly Dictionary<ulong, NetworkObject> spawnedPlayers = new();
+        private readonly Dictionary<ulong, NetworkObject> _spawnedPlayers = new();
 
         public PlayerSpawnManager()
         {
@@ -30,7 +30,7 @@ namespace MageLock.Gameplay
             var allSpawned = true;
             int spawnIndex = 0;
 
-            foreach (var clientId in networkManagerCustom.ConnectedClientsIds)
+            foreach (var clientId in _networkManagerCustom.ConnectedClientsIds)
             {
                 if (!SpawnPlayerForClient(clientId, spawnIndex))
                 {
@@ -40,13 +40,13 @@ namespace MageLock.Gameplay
                 spawnIndex++;
             }
 
-            Debug.Log($"Spawned {spawnedPlayers.Count} players");
+            Debug.Log($"Spawned {_spawnedPlayers.Count} players");
             return allSpawned;
         }
 
         public void ClearAllPlayers()
         {
-            foreach (var playerNetworkObject in spawnedPlayers.Values)
+            foreach (var playerNetworkObject in _spawnedPlayers.Values)
             {
                 if (playerNetworkObject != null && playerNetworkObject.IsSpawned)
                 {
@@ -54,20 +54,20 @@ namespace MageLock.Gameplay
                 }
             }
 
-            spawnedPlayers.Clear();
+            _spawnedPlayers.Clear();
             Debug.Log("Cleared all spawned players");
         }
 
         public void OnClientDisconnected(ulong clientId)
         {
-            if (spawnedPlayers.TryGetValue(clientId, out var playerNetworkObject))
+            if (_spawnedPlayers.TryGetValue(clientId, out var playerNetworkObject))
             {
                 Debug.Log($"Cleaning up player data for disconnected client {clientId}");
 
                 if (playerNetworkObject != null && playerNetworkObject.IsSpawned)
                     playerNetworkObject.Despawn();
 
-                spawnedPlayers.Remove(clientId);
+                _spawnedPlayers.Remove(clientId);
             }
         }
 
@@ -105,7 +105,7 @@ namespace MageLock.Gameplay
             }
 
             playerNetworkObject.SpawnAsPlayerObject(clientId);
-            spawnedPlayers[clientId] = playerNetworkObject;
+            _spawnedPlayers[clientId] = playerNetworkObject;
 
             Debug.Log($"Spawned player for client {clientId} at {spawnPoint.Position}");
             return true;

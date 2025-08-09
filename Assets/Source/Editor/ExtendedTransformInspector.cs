@@ -7,11 +7,11 @@
     [CustomEditor(typeof(Transform))]
     public class TransformInspector : Editor
     {
-        private Transform targetTransform;
+        private Transform _targetTransform;
 
         private void OnEnable()
         {
-            targetTransform = (Transform)target;
+            _targetTransform = (Transform)target;
         }
 
         public override void OnInspectorGUI()
@@ -30,11 +30,11 @@
 
                 else
                 {
-                    targetTransform.localPosition = Reset(new Vector3(0f, 0f, 0f));
+                    _targetTransform.localPosition = Reset(new Vector3(0f, 0f, 0f));
                 }
             }
 
-            Vector3 position = EditorGUILayout.Vector3Field("Position", targetTransform.localPosition);
+            Vector3 position = EditorGUILayout.Vector3Field("Position", _targetTransform.localPosition);
 
             GUILayout.EndHorizontal();
 
@@ -52,11 +52,11 @@
 
                 else
                 {
-                    targetTransform.transform.localEulerAngles = Reset(new Vector3(0f, 0f, 0f));
+                    _targetTransform.transform.localEulerAngles = Reset(new Vector3(0f, 0f, 0f));
                 }
             }
 
-            Vector3 eulerAngles = EditorGUILayout.Vector3Field("Rotation", targetTransform.localEulerAngles);
+            Vector3 eulerAngles = EditorGUILayout.Vector3Field("Rotation", _targetTransform.localEulerAngles);
 
             GUILayout.EndHorizontal();
 
@@ -74,11 +74,11 @@
 
                 else
                 {
-                    targetTransform.localScale = Reset(new Vector3(1f, 1f, 1f));
+                    _targetTransform.localScale = Reset(new Vector3(1f, 1f, 1f));
                 }
             }
 
-            Vector3 scale = EditorGUILayout.Vector3Field("Scale", targetTransform.localScale);
+            Vector3 scale = EditorGUILayout.Vector3Field("Scale", _targetTransform.localScale);
 
             GUILayout.EndHorizontal();
 
@@ -96,13 +96,13 @@
 
                 else
                 {
-                    Undo.RegisterCompleteObjectUndo(targetTransform, "Transform Change");
-                    targetTransform.localPosition = FixIfNaN(position);
-                    targetTransform.localEulerAngles = FixIfNaN(eulerAngles);
-                    targetTransform.localScale = FixIfNaN(scale);
+                    Undo.RegisterCompleteObjectUndo(_targetTransform, "Transform Change");
+                    _targetTransform.localPosition = FixIfNaN(position);
+                    _targetTransform.localEulerAngles = FixIfNaN(eulerAngles);
+                    _targetTransform.localScale = FixIfNaN(scale);
                 }
 
-                EditorUtility.SetDirty(targetTransform);
+                EditorUtility.SetDirty(_targetTransform);
             }
         }
 

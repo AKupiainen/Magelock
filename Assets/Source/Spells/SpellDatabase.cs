@@ -6,9 +6,9 @@ namespace MageLock.Spells
     [CreateAssetMenu(fileName = "SpellDatabase", menuName = "MageLock/Database/Spell Database")]
     public class SpellDatabase : ScriptableObject
     {
-        [SerializeField] private List<Spell> spells = new List<Spell>();
+        [SerializeField] private List<Spell> spells = new();
         
-        private Dictionary<int, Spell> spellCache;
+        private Dictionary<int, Spell> _spellCache;
         
         public int SpellCount => spells.Count;
         
@@ -19,30 +19,25 @@ namespace MageLock.Spells
         
         private void BuildCache()
         {
-            spellCache = new Dictionary<int, Spell>();
+            _spellCache = new Dictionary<int, Spell>();
             
             foreach (var spell in spells)
             {
-                if (spell != null && !spellCache.ContainsKey(spell.SpellId))
+                if (spell != null)
                 {
-                    spellCache[spell.SpellId] = spell;
+                    _spellCache.TryAdd(spell.SpellId, spell);
                 }
             }
         }
         
         public Spell GetSpell(int spellId)
         {
-            if (spellCache.TryGetValue(spellId, out Spell spell))
-            {
-                return spell;
-            }
-            
-            return null;
+            return _spellCache.GetValueOrDefault(spellId);
         }
         
         public bool HasSpell(int spellId)
         {
-            return spellCache.ContainsKey(spellId);
+            return _spellCache.ContainsKey(spellId);
         }
     }
 }

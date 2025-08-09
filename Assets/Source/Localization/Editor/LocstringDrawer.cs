@@ -11,7 +11,7 @@ namespace MageLock.Localization.Editor
         private static string[] _availableKeys;
         private static bool _keysLoaded;
         private static double _lastLoadTime;
-        private static readonly Dictionary<string, string> previewCache = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> PreviewCache = new Dictionary<string, string>();
         
         private const double CacheRefreshInterval = 2.0;
 
@@ -134,7 +134,7 @@ namespace MageLock.Localization.Editor
 
                 _availableKeys = allKeys.Distinct().OrderBy(k => k).ToArray();
                 
-                previewCache.Clear();
+                PreviewCache.Clear();
             }
             catch (System.Exception e)
             {
@@ -145,9 +145,9 @@ namespace MageLock.Localization.Editor
 
         private string GetLocalizedPreview(string key)
         {
-            if (previewCache.ContainsKey(key))
+            if (PreviewCache.ContainsKey(key))
             {
-                return previewCache[key];
+                return PreviewCache[key];
             }
 
             try
@@ -169,7 +169,7 @@ namespace MageLock.Localization.Editor
                         if (localizedString != null)
                         {
                             string result = string.IsNullOrEmpty(localizedString.Value) ? "❌ Empty" : localizedString.Value;
-                            previewCache[key] = result;
+                            PreviewCache[key] = result;
                             return result;
                         }
                     }
@@ -181,7 +181,7 @@ namespace MageLock.Localization.Editor
             }
 
             string notFoundResult = "❓ Not Found";
-            previewCache[key] = notFoundResult;
+            PreviewCache[key] = notFoundResult;
             return notFoundResult;
         }
 

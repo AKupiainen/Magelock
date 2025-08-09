@@ -10,9 +10,9 @@ namespace MageLock.Editor
 {
     public class PopupFinder : EditorWindow
     {
-        private Vector2 scrollPosition;
-        private List<Type> popupTypesInProject;
-        private Dictionary<Type, GameObject> popupPrefabs;
+        private Vector2 _scrollPosition;
+        private List<Type> _popupTypesInProject;
+        private Dictionary<Type, GameObject> _popupPrefabs;
         
         [MenuItem("MageLock/Find All Popups")]
         public static void ShowWindow()
@@ -30,25 +30,25 @@ namespace MageLock.Editor
                 RefreshPopupList();
             }
             
-            if (popupTypesInProject == null || popupTypesInProject.Count == 0)
+            if (_popupTypesInProject == null || _popupTypesInProject.Count == 0)
             {
                 GUILayout.Label("No popup types found inheriting from Popup class.");
                 return;
             }
             
             GUILayout.Space(10);
-            GUILayout.Label($"Found {popupTypesInProject.Count} popup type(s):", EditorStyles.boldLabel);
+            GUILayout.Label($"Found {_popupTypesInProject.Count} popup type(s):", EditorStyles.boldLabel);
             
-            scrollPosition = GUILayout.BeginScrollView(scrollPosition);
+            _scrollPosition = GUILayout.BeginScrollView(_scrollPosition);
             
-            for (int i = 0; i < popupTypesInProject.Count; i++)
+            for (int i = 0; i < _popupTypesInProject.Count; i++)
             {
                 GUILayout.BeginHorizontal();
                 
-                string namespaceName = popupTypesInProject[i].Namespace ?? "Global";
-                GUILayout.Label($"{i + 1}. {popupTypesInProject[i].Name} ({namespaceName})", GUILayout.ExpandWidth(true));
+                string namespaceName = _popupTypesInProject[i].Namespace ?? "Global";
+                GUILayout.Label($"{i + 1}. {_popupTypesInProject[i].Name} ({namespaceName})", GUILayout.ExpandWidth(true));
                 
-                if (popupPrefabs.ContainsKey(popupTypesInProject[i]))
+                if (_popupPrefabs.ContainsKey(_popupTypesInProject[i]))
                 {
                     GUILayout.Label("✓ Prefab", GUILayout.Width(60));
                 }
@@ -59,7 +59,7 @@ namespace MageLock.Editor
                 
                 if (GUILayout.Button("Assign to Prefab", GUILayout.Width(100)))
                 {
-                    AssignToPrefab(popupTypesInProject[i]);
+                    AssignToPrefab(_popupTypesInProject[i]);
                 }
                 
                 GUILayout.EndHorizontal();
@@ -77,8 +77,8 @@ namespace MageLock.Editor
         
         void RefreshPopupList()
         {
-            popupTypesInProject = new List<Type>();
-            popupPrefabs = new Dictionary<Type, GameObject>();
+            _popupTypesInProject = new List<Type>();
+            _popupPrefabs = new Dictionary<Type, GameObject>();
             
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
             
@@ -91,24 +91,21 @@ namespace MageLock.Editor
                     {
                         if (typeof(Popup).IsAssignableFrom(type) && !type.IsAbstract && type != typeof(Popup))
                         {
-                            popupTypesInProject.Add(type);
+                            _popupTypesInProject.Add(type);
                             
                             GameObject prefab = FindPrefabWithComponent(type);
 
                             if (prefab != null)
                             {
-                                popupPrefabs[type] = prefab;
+                                _popupPrefabs[type] = prefab;
                             }
                         }
                     }
                 }
-                catch (ReflectionTypeLoadException)
-                {
-                    continue;
-                }
+                catch (ReflectionTypeLoadException) { }
             }
             
-            popupTypesInProject = popupTypesInProject.OrderBy(t => t.Name).ToList();
+            _popupTypesInProject = _popupTypesInProject.OrderBy(t => t.Name).ToList();
             Repaint();
         }
         
@@ -132,9 +129,9 @@ namespace MageLock.Editor
         
         void AssignToPrefab(Type popupType)
         {
-            if (popupPrefabs.ContainsKey(popupType))
+            if (_popupPrefabs.ContainsKey(popupType))
             {
-                GameObject prefab = popupPrefabs[popupType];
+                GameObject prefab = _popupPrefabs[popupType];
                 
                 if (prefab.GetComponent<CameraCanvasAssigner>() == null)
                 {
@@ -157,7 +154,7 @@ namespace MageLock.Editor
         {
             int addedCount = 0;
             
-            foreach (var kvp in popupPrefabs)
+            foreach (var kvp in _popupPrefabs)
             {
                 GameObject prefab = kvp.Value;
                 

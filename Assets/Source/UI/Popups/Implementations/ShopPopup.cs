@@ -11,7 +11,7 @@ namespace MageLock.UI
         [SerializeField] private Transform sectionContentContainer;
         
         [Header("Shop Configuration")]
-        [SerializeField] private List<ShopSection> sections = new List<ShopSection>();
+        [SerializeField] private List<ShopSection> sections = new();
         
         protected override void OnPopupOpened()
         {

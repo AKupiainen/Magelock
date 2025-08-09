@@ -23,15 +23,15 @@ namespace MageLock.UI
         [Header("Optional Settings")]
         [SerializeField] private bool resetOnStart;
         
-        private bool isDragging;
-        private Vector2 lastMousePosition;
-        private Vector3 initialRotation;
-        private float currentHorizontalRotation;
+        private bool _isDragging;
+        private Vector2 _lastMousePosition;
+        private Vector3 _initialRotation;
+        private float _currentHorizontalRotation;
         
-        private float rotationVelocity;
-        private bool isDecelerating;
-        private float lastInputTime;
-        private bool isAutoResetting;
+        private float _rotationVelocity;
+        private bool _isDecelerating;
+        private float _lastInputTime;
+        private bool _isAutoResetting;
         
         private void Update()
         {
@@ -48,35 +48,35 @@ namespace MageLock.UI
         
         private void HandleSmoothRotation()
         {
-            if (!isDragging && isDecelerating && targetTransform != null && !isAutoResetting)
+            if (!_isDragging && _isDecelerating && targetTransform != null && !_isAutoResetting)
             {
-                currentHorizontalRotation += rotationVelocity * Time.deltaTime;
+                _currentHorizontalRotation += _rotationVelocity * Time.deltaTime;
                 
-                rotationVelocity *= dampingFactor;
+                _rotationVelocity *= dampingFactor;
                 
-                if (Mathf.Abs(rotationVelocity) < minimumVelocity)
+                if (Mathf.Abs(_rotationVelocity) < minimumVelocity)
                 {
-                    rotationVelocity = 0f;
-                    isDecelerating = false;
+                    _rotationVelocity = 0f;
+                    _isDecelerating = false;
                 }
                 
                 targetTransform.rotation = Quaternion.Euler(
-                    initialRotation.x,
-                    currentHorizontalRotation,
-                    initialRotation.z
+                    _initialRotation.x,
+                    _currentHorizontalRotation,
+                    _initialRotation.z
                 );
             }
         }
         
         private void HandleAutoReset()
         {
-            if (isDragging || isDecelerating || targetTransform == null)
+            if (_isDragging || _isDecelerating || targetTransform == null)
                 return;
                 
-            if (Time.time - lastInputTime >= autoResetDelay)
+            if (Time.time - _lastInputTime >= autoResetDelay)
             {
-                float targetY = initialRotation.y;
-                float currentY = currentHorizontalRotation;
+                float targetY = _initialRotation.y;
+                float currentY = _currentHorizontalRotation;
                 
                 targetY = NormalizeAngle(targetY);
                 currentY = NormalizeAngle(currentY);
@@ -85,7 +85,7 @@ namespace MageLock.UI
                 
                 if (Mathf.Abs(angleDifference) > 0.1f)
                 {
-                    isAutoResetting = true;
+                    _isAutoResetting = true;
                     
                     float rotationStep = autoResetSpeed * Time.deltaTime * Mathf.Sign(angleDifference);
                     
@@ -94,20 +94,20 @@ namespace MageLock.UI
                         rotationStep = angleDifference;
                     }
                     
-                    currentHorizontalRotation += rotationStep;
+                    _currentHorizontalRotation += rotationStep;
                     
                     targetTransform.rotation = Quaternion.Euler(
-                        initialRotation.x,
-                        currentHorizontalRotation,
-                        initialRotation.z
+                        _initialRotation.x,
+                        _currentHorizontalRotation,
+                        _initialRotation.z
                     );
                 }
                 else
                 {
                     // Snap to exact position when very close
-                    currentHorizontalRotation = initialRotation.y;
-                    targetTransform.rotation = Quaternion.Euler(initialRotation);
-                    isAutoResetting = false;
+                    _currentHorizontalRotation = _initialRotation.y;
+                    targetTransform.rotation = Quaternion.Euler(_initialRotation);
+                    _isAutoResetting = false;
                 }
             }
         }
@@ -129,8 +129,8 @@ namespace MageLock.UI
                 return;
             }
             
-            initialRotation = targetTransform.eulerAngles;
-            currentHorizontalRotation = initialRotation.y;
+            _initialRotation = targetTransform.eulerAngles;
+            _currentHorizontalRotation = _initialRotation.y;
             
             if (resetOnStart)
             {
@@ -140,36 +140,36 @@ namespace MageLock.UI
         
         public void OnPointerDown(PointerEventData eventData)
         {
-            isDragging = true;
-            isDecelerating = false;
-            isAutoResetting = false;
-            rotationVelocity = 0f;
-            lastMousePosition = eventData.position;
-            lastInputTime = Time.time;
+            _isDragging = true;
+            _isDecelerating = false;
+            _isAutoResetting = false;
+            _rotationVelocity = 0f;
+            _lastMousePosition = eventData.position;
+            _lastInputTime = Time.time;
         }
         
         public void OnPointerUp(PointerEventData eventData)
         {
-            isDragging = false;
-            lastInputTime = Time.time;
+            _isDragging = false;
+            _lastInputTime = Time.time;
             
             if (enableSmoothRotation)
             {
-                if (Mathf.Abs(rotationVelocity) > minimumVelocity)
+                if (Mathf.Abs(_rotationVelocity) > minimumVelocity)
                 {
-                    isDecelerating = true;
+                    _isDecelerating = true;
                 }
             }
         }
         
         public void OnDrag(PointerEventData eventData)
         {
-            if (!isDragging || targetTransform == null)
+            if (!_isDragging || targetTransform == null)
                 return;
             
-            Vector2 mouseDelta = eventData.position - lastMousePosition;
-            lastMousePosition = eventData.position;
-            lastInputTime = Time.time;
+            Vector2 mouseDelta = eventData.position - _lastMousePosition;
+            _lastMousePosition = eventData.position;
+            _lastInputTime = Time.time;
             
             float horizontalRotation = mouseDelta.x * rotationSpeed;
             
@@ -178,15 +178,15 @@ namespace MageLock.UI
             
             if (enableSmoothRotation)
             {
-                rotationVelocity = horizontalRotation / Time.deltaTime;
+                _rotationVelocity = horizontalRotation / Time.deltaTime;
             }
             
-            currentHorizontalRotation += horizontalRotation;
+            _currentHorizontalRotation += horizontalRotation;
             
             targetTransform.rotation = Quaternion.Euler(
-                initialRotation.x,
-                currentHorizontalRotation,
-                initialRotation.z
+                _initialRotation.x,
+                _currentHorizontalRotation,
+                _initialRotation.z
             );
         }
         
@@ -194,19 +194,19 @@ namespace MageLock.UI
         {
             targetTransform = newTarget;
             InitializeTarget();
-            lastInputTime = Time.time;
+            _lastInputTime = Time.time;
         }
 
         private void ResetRotation()
         {
             if (targetTransform != null)
             {
-                targetTransform.rotation = Quaternion.Euler(initialRotation);
-                currentHorizontalRotation = initialRotation.y;
-                rotationVelocity = 0f;
-                isDecelerating = false;
-                isAutoResetting = false;
-                lastInputTime = Time.time;
+                targetTransform.rotation = Quaternion.Euler(_initialRotation);
+                _currentHorizontalRotation = _initialRotation.y;
+                _rotationVelocity = 0f;
+                _isDecelerating = false;
+                _isAutoResetting = false;
+                _lastInputTime = Time.time;
             }
         }
         

@@ -13,10 +13,10 @@ namespace MageLock.Shop
         [SerializeField] private Image currencyIcon;
         [SerializeField] private bool useProductImage;
 
-        [Inject] private readonly IAssetManager assetManager;
+        [Inject] private readonly IAssetManager _assetManager;
 
-        private CurrencyType currencyType;
-        private int currencyAmount;
+        private CurrencyType _currencyType;
+        private int _currencyAmount;
 
         protected override void SetupProductSpecificUI()
         {
@@ -42,15 +42,15 @@ namespace MageLock.Shop
                 return;
             }
 
-            currencyType = currencyReward.CurrencyType;
-            currencyAmount = currencyReward.Amount;
+            _currencyType = currencyReward.CurrencyType;
+            _currencyAmount = currencyReward.Amount;
 
             if (currencyAmountText != null)
             {
-                currencyAmountText.text = currencyAmount.ToString();
+                currencyAmountText.text = _currencyAmount.ToString();
             }
 
-            if (currencyIcon != null && assetManager != null)
+            if (currencyIcon != null && _assetManager != null)
             {
                 if (useProductImage && ProductConfig.ProductIcon != null)
                 {
@@ -58,7 +58,7 @@ namespace MageLock.Shop
                 }
                 else
                 {
-                    currencyIcon.sprite = assetManager.GetCurrencyIcon(currencyType);
+                    currencyIcon.sprite = _assetManager.GetCurrencyIcon(_currencyType);
                 }
             }
         }

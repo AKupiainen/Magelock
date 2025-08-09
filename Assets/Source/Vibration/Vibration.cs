@@ -43,15 +43,9 @@
         private static AndroidJavaObject context;
         private static AndroidJavaClass vibrationEffect;
 #endif
-        private static bool initialized;
 
         public static void Init()
         {
-            if (initialized)
-            {
-                return;
-            }
-
 #if UNITY_ANDROID
 
             if (Application.isMobilePlatform)
@@ -67,8 +61,6 @@
                 }
             }
 #endif
-
-            initialized = true;
         }
 
 

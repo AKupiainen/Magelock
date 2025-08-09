@@ -12,11 +12,11 @@ namespace MageLock.Controls
         [SerializeField] private CameraController cameraController;
         [SerializeField] private BillboardText playerBillboardText;
         
-        private SimpleNetworkController controller;
-        private Vector2 lastSentInput;
+        private SimpleNetworkController _controller;
+        private Vector2 _lastSentInput;
         
-        private readonly NetworkVariable<PlayerNetworkState> networkState = new();
-        private readonly NetworkVariable<PlayerInfo> playerInfo = new();
+        private readonly NetworkVariable<PlayerNetworkState> _networkState = new();
+        private readonly NetworkVariable<PlayerInfo> _playerInfo = new();
         
         private struct InputData : INetworkSerializable
         {
@@ -52,11 +52,11 @@ namespace MageLock.Controls
         
         public override void OnNetworkSpawn()
         {    
-            controller = GetComponent<SimpleNetworkController>();
+            _controller = GetComponent<SimpleNetworkController>();
             
             if (IsOwner)
             {
-                controller.SetIsLocalPlayer(true);
+                _controller.SetIsLocalPlayer(true);
                 
                 SetupCamera();
                 
@@ -65,35 +65,35 @@ namespace MageLock.Controls
             }
             else
             {
-                controller.SetIsLocalPlayer(false);
+                _controller.SetIsLocalPlayer(false);
             }
             
             SetupPlayerBillboard();
             
-            playerInfo.OnValueChanged += OnPlayerInfoChanged;
-            networkState.OnValueChanged += OnNetworkStateChanged;
+            _playerInfo.OnValueChanged += OnPlayerInfoChanged;
+            _networkState.OnValueChanged += OnNetworkStateChanged;
         }
         
         private void Update()
         {
             if (!IsOwner) return;
             
-            controller.HandleInput();
-            Vector2 currentInput = controller.GetMoveInput();
+            _controller.HandleInput();
+            Vector2 currentInput = _controller.GetMoveInput();
             
-            if (Vector2.Distance(currentInput, lastSentInput) > 0.01f)
+            if (Vector2.Distance(currentInput, _lastSentInput) > 0.01f)
             {
                 if (IsHost)
                 {
-                    controller.SetNetworkInput(currentInput);
+                    _controller.SetNetworkInput(currentInput);
                 }
                 else
                 {
-                    controller.SetNetworkInput(currentInput);
+                    _controller.SetNetworkInput(currentInput);
                     SendInputServerRpc(new InputData { MoveInput = currentInput });
                 }
                 
-                lastSentInput = currentInput;
+                _lastSentInput = currentInput;
             }
         }
         
@@ -101,12 +101,12 @@ namespace MageLock.Controls
         {
             if (IsServer)
             {
-                controller.ProcessMovement();
+                _controller.ProcessMovement();
                 
-                float speed = controller.GetAnimationSpeed();
-                Vector2 currentInput = controller.GetMoveInput();
+                float speed = _controller.GetAnimationSpeed();
+                Vector2 currentInput = _controller.GetMoveInput();
                 
-                networkState.Value = new PlayerNetworkState 
+                _networkState.Value = new PlayerNetworkState 
                 { 
                     Speed = speed,
                     LastInput = currentInput
@@ -114,7 +114,7 @@ namespace MageLock.Controls
             }
             else if (IsOwner)
             {
-                controller.ProcessMovement();
+                _controller.ProcessMovement();
             }
         }
         
@@ -122,21 +122,21 @@ namespace MageLock.Controls
         {
             if (!IsOwner)
             {
-                controller.SetNetworkInput(newValue.LastInput);
-                controller.SetAnimationSpeed(newValue.Speed);
+                _controller.SetNetworkInput(newValue.LastInput);
+                _controller.SetAnimationSpeed(newValue.Speed);
             }
         }
         
         [ServerRpc]
         private void SendInputServerRpc(InputData inputData)
         {
-            controller.SetNetworkInput(inputData.MoveInput);
+            _controller.SetNetworkInput(inputData.MoveInput);
         }
         
         [ServerRpc]
         private void UpdatePlayerNameServerRpc(string playerName)
         {
-            playerInfo.Value = new PlayerInfo { PlayerName = playerName };
+            _playerInfo.Value = new PlayerInfo { PlayerName = playerName };
         }
         
         private void OnPlayerInfoChanged(PlayerInfo previousValue, PlayerInfo newValue)
@@ -149,8 +149,8 @@ namespace MageLock.Controls
         
         public override void OnNetworkDespawn()
         {
-            playerInfo.OnValueChanged -= OnPlayerInfoChanged;
-            networkState.OnValueChanged -= OnNetworkStateChanged;
+            _playerInfo.OnValueChanged -= OnPlayerInfoChanged;
+            _networkState.OnValueChanged -= OnNetworkStateChanged;
             
             if (IsOwner && cameraController != null)
             {
@@ -180,9 +180,9 @@ namespace MageLock.Controls
             {
                 playerBillboardText.gameObject.SetActive(true);
 
-                if (!string.IsNullOrEmpty(playerInfo.Value.PlayerName.ToString()))
+                if (!string.IsNullOrEmpty(_playerInfo.Value.PlayerName.ToString()))
                 {
-                    playerBillboardText.SetText(playerInfo.Value.PlayerName.ToString());
+                    playerBillboardText.SetText(_playerInfo.Value.PlayerName.ToString());
                 }
             }
             else

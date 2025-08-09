@@ -28,10 +28,10 @@ namespace MageLock.Networking
         [Header("Lobby Settings")]
         [SerializeField] private float lobbyHeartbeatInterval = 25f;
         
-        private NetworkMode currentNetworkMode;
-        private CancellationTokenSource matchmakingCancellationToken;
-        private CancellationTokenSource heartbeatCancellationToken;
-        private string currentLobbyId;
+        private NetworkMode _currentNetworkMode;
+        private CancellationTokenSource _matchmakingCancellationToken;
+        private CancellationTokenSource _heartbeatCancellationToken;
+        private string _currentLobbyId;
         public int MaxPlayers => maxPlayers;
         
         #region Unity Lifecycle
@@ -74,7 +74,7 @@ namespace MageLock.Networking
 
         public void StartMatch(NetworkMode mode)
         {
-            currentNetworkMode = mode;
+            _currentNetworkMode = mode;
 
             EventsBus.Trigger(new MatchmakingStartedEvent(mode));
 
@@ -98,14 +98,14 @@ namespace MageLock.Networking
         {
             Debug.Log("Cancelling matchmaking...");
 
-            matchmakingCancellationToken?.Cancel();
-            matchmakingCancellationToken?.Dispose();
-            matchmakingCancellationToken = null;
+            _matchmakingCancellationToken?.Cancel();
+            _matchmakingCancellationToken?.Dispose();
+            _matchmakingCancellationToken = null;
 
             StopHeartbeat();
 
-            string previousLobbyId = currentLobbyId;
-            currentLobbyId = null;
+            string previousLobbyId = _currentLobbyId;
+            _currentLobbyId = null;
 
             if (IsClient || IsHost)
             {
@@ -113,7 +113,7 @@ namespace MageLock.Networking
             }
 
             EventsBus.Trigger(new MatchmakingCancelledEvent("User cancelled matchmaking"));
-            EventsBus.Trigger(new NetworkStatusChangedEvent(currentNetworkMode, false, false, false, previousLobbyId));
+            EventsBus.Trigger(new NetworkStatusChangedEvent(_currentNetworkMode, false, false, false, previousLobbyId));
 
             Debug.Log("Matchmaking cancelled successfully.");
         }
@@ -127,7 +127,7 @@ namespace MageLock.Networking
             bool isApproved = true;
             string reason = string.Empty;
 
-            if (!IsServer && currentNetworkMode == NetworkMode.Offline)
+            if (!IsServer && _currentNetworkMode == NetworkMode.Offline)
             {
                 isApproved = false;
                 reason = "Private Match - Server not accepting connections";
@@ -138,7 +138,7 @@ namespace MageLock.Networking
                 isApproved = false;
                 reason = "Lobby Full";
 
-                EventsBus.Trigger(new LobbyFullEvent(currentNetworkMode, ConnectedClientsIds.Count));
+                EventsBus.Trigger(new LobbyFullEvent(_currentNetworkMode, ConnectedClientsIds.Count));
             }
 
             response.Approved = isApproved;
@@ -160,11 +160,11 @@ namespace MageLock.Networking
         private async void StartOnlineClient()
         {
 #if NETCODE_UGS
-            matchmakingCancellationToken = new CancellationTokenSource();
+            _matchmakingCancellationToken = new CancellationTokenSource();
 
-            EventsBus.Trigger(new NetworkStatusChangedEvent(currentNetworkMode, false, false, true));
+            EventsBus.Trigger(new NetworkStatusChangedEvent(_currentNetworkMode, false, false, true));
 
-            await ConnectToOnlineLobbyAsync(matchmakingCancellationToken.Token);
+            await ConnectToOnlineLobbyAsync(_matchmakingCancellationToken.Token);
 #endif
         }
 
@@ -192,8 +192,8 @@ namespace MageLock.Networking
                     {
                         StartClient();
 
-                        EventsBus.Trigger(new MatchmakingSuccessEvent(currentNetworkMode, false, maxPlayers));
-                        EventsBus.Trigger(new NetworkStatusChangedEvent(currentNetworkMode, true, false, false, currentLobbyId));
+                        EventsBus.Trigger(new MatchmakingSuccessEvent(_currentNetworkMode, false, maxPlayers));
+                        EventsBus.Trigger(new NetworkStatusChangedEvent(_currentNetworkMode, true, false, false, _currentLobbyId));
                     }
                 }
                 catch (LobbyServiceException ex) when (ex.Reason == LobbyExceptionReason.LobbyNotFound ||
@@ -210,8 +210,8 @@ namespace MageLock.Networking
 
                     if (!cancellationToken.IsCancellationRequested)
                     {
-                        EventsBus.Trigger(new MatchmakingSuccessEvent(currentNetworkMode, true, maxPlayers));
-                        EventsBus.Trigger(new NetworkStatusChangedEvent(currentNetworkMode, true, true, false, currentLobbyId));
+                        EventsBus.Trigger(new MatchmakingSuccessEvent(_currentNetworkMode, true, maxPlayers));
+                        EventsBus.Trigger(new NetworkStatusChangedEvent(_currentNetworkMode, true, true, false, _currentLobbyId));
                     }
                 }
             }
@@ -224,8 +224,8 @@ namespace MageLock.Networking
             {
                 Debug.LogError($"Unexpected error in online connection: {ex}");
 
-                EventsBus.Trigger(new MatchmakingFailedEvent(ex.Message, currentNetworkMode));
-                EventsBus.Trigger(new NetworkStatusChangedEvent(currentNetworkMode, false, false, false));
+                EventsBus.Trigger(new MatchmakingFailedEvent(ex.Message, _currentNetworkMode));
+                EventsBus.Trigger(new NetworkStatusChangedEvent(_currentNetworkMode, false, false, false));
             }
         }
 
@@ -247,7 +247,7 @@ namespace MageLock.Networking
                 return;
 
             SetupRelayServerData(allocation.ToRelayServerData(GetConnectionType()));
-            currentLobbyId = lobby.Id;
+            _currentLobbyId = lobby.Id;
         }
 
         private async Task CreateNewLobbyAndStartHost(CancellationToken cancellationToken)
@@ -291,7 +291,7 @@ namespace MageLock.Networking
                 return;
             }
 
-            currentLobbyId = lobby.Id;
+            _currentLobbyId = lobby.Id;
             
             StartHeartbeat(lobby.Id);
             StartHost();
@@ -334,15 +334,15 @@ namespace MageLock.Networking
         private async void StartHeartbeat(string lobbyId)
         {
             StopHeartbeat();
-            heartbeatCancellationToken = new CancellationTokenSource();
-            await HeartbeatAsync(lobbyId, heartbeatCancellationToken.Token);
+            _heartbeatCancellationToken = new CancellationTokenSource();
+            await HeartbeatAsync(lobbyId, _heartbeatCancellationToken.Token);
         }
 
         private void StopHeartbeat()
         {
-            heartbeatCancellationToken?.Cancel();
-            heartbeatCancellationToken?.Dispose();
-            heartbeatCancellationToken = null;
+            _heartbeatCancellationToken?.Cancel();
+            _heartbeatCancellationToken?.Dispose();
+            _heartbeatCancellationToken = null;
         }
 
         private async Task HeartbeatAsync(string lobbyId, CancellationToken cancellationToken)
@@ -408,7 +408,7 @@ namespace MageLock.Networking
 
         private void HandleServerStarted()
         {
-            EventsBus.Trigger(new ServerStartedEvent(currentNetworkMode, maxPlayers));
+            EventsBus.Trigger(new ServerStartedEvent(_currentNetworkMode, maxPlayers));
         }
 
         private void HandleClientConnected(ulong clientId)
@@ -442,9 +442,9 @@ namespace MageLock.Networking
                 return;
             }
 
-            if (IsHost && !string.IsNullOrEmpty(currentLobbyId))
+            if (IsHost && !string.IsNullOrEmpty(_currentLobbyId))
             {
-                await CleanupLobbyAsync(currentLobbyId);
+                await CleanupLobbyAsync(_currentLobbyId);
             }
         }
 
@@ -472,7 +472,7 @@ namespace MageLock.Networking
 
             try
             {
-                networkObject.Despawn(true);
+                networkObject.Despawn();
 
                 if (networkObject.gameObject != null)
                 {

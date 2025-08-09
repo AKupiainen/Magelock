@@ -20,7 +20,7 @@ namespace MageLock.JsonScriptableObject
                 string directory = Path.GetDirectoryName(filePath);
                 if (!Directory.Exists(directory))
                 {
-                    Directory.CreateDirectory(directory);
+                    if (directory != null) Directory.CreateDirectory(directory);
                 }
                 
                 File.WriteAllText(filePath, json);

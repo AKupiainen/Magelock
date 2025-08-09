@@ -5,37 +5,35 @@ namespace MageLock.Spells
 {
     public class Projectile : MonoBehaviour
     {
-        protected GameObject caster;
-        protected float damage;
-        protected float speed;
-        protected float lifetime;
-        
-        protected Action<Vector3, GameObject> onImpactCallback;
+        protected GameObject Caster;
+        protected float Damage;
+        protected float Speed;
+
+        protected Action<Vector3, GameObject> OnImpactCallback;
         
         public virtual void Initialize(GameObject caster, float damage, float speed, float lifetime, Action<Vector3, GameObject> onImpact = null)
         {
-            this.caster = caster;
-            this.damage = damage;
-            this.speed = speed;
-            this.lifetime = lifetime;
-            this.onImpactCallback = onImpact;
+            Caster = caster;
+            Damage = damage;
+            Speed = speed;
+            OnImpactCallback = onImpact;
             
             Destroy(gameObject, lifetime);
         }
         
         protected virtual void Update()
         {
-            transform.position += transform.forward * speed * Time.deltaTime;
+            transform.position += transform.forward * (Speed * Time.deltaTime);
         }
         
         protected virtual void OnTriggerEnter(Collider other)
         {
-            if (other.gameObject == caster) return;
+            if (other.gameObject == Caster) return;
             
             var health = other.GetComponent<IHealth>();
-            health?.TakeDamage(damage);
+            health?.TakeDamage(Damage);
             
-            onImpactCallback?.Invoke(transform.position, caster);
+            OnImpactCallback?.Invoke(transform.position, Caster);
             
             Destroy(gameObject);
         }

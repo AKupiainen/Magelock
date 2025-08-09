@@ -32,8 +32,8 @@ namespace MageLock.Events
     /// </summary>
     public class EventManager : IEventManager
     {
-        private readonly Dictionary<Type, List<Delegate>> eventSubscriptions = new();
-        private readonly object lockObject = new();
+        private readonly Dictionary<Type, List<Delegate>> _eventSubscriptions = new();
+        private readonly object _lockObject = new();
         
         /// <summary>
         /// Subscribe to an event type with a callback
@@ -48,17 +48,17 @@ namespace MageLock.Events
                 return;
             }
             
-            lock (lockObject)
+            lock (_lockObject)
             {
                 Type eventType = typeof(T);
                 
-                if (!eventSubscriptions.ContainsKey(eventType))
+                if (!_eventSubscriptions.ContainsKey(eventType))
                 {
-                    eventSubscriptions[eventType] = new List<Delegate>();
+                    _eventSubscriptions[eventType] = new List<Delegate>();
                 }
                 
-                eventSubscriptions[eventType].Add(callback);
-                Debug.Log($"Subscribed to event: {eventType.Name}. Total subscribers: {eventSubscriptions[eventType].Count}");
+                _eventSubscriptions[eventType].Add(callback);
+                Debug.Log($"Subscribed to event: {eventType.Name}. Total subscribers: {_eventSubscriptions[eventType].Count}");
             }
         }
         
@@ -75,21 +75,21 @@ namespace MageLock.Events
                 return;
             }
             
-            lock (lockObject)
+            lock (_lockObject)
             {
                 Type eventType = typeof(T);
                 
-                if (eventSubscriptions.ContainsKey(eventType))
+                if (_eventSubscriptions.ContainsKey(eventType))
                 {
-                    bool removed = eventSubscriptions[eventType].Remove(callback);
+                    bool removed = _eventSubscriptions[eventType].Remove(callback);
                     
                     if (removed)
                     {
-                        Debug.Log($"Unsubscribed from event: {eventType.Name}. Remaining subscribers: {eventSubscriptions[eventType].Count}");
+                        Debug.Log($"Unsubscribed from event: {eventType.Name}. Remaining subscribers: {_eventSubscriptions[eventType].Count}");
                         
-                        if (eventSubscriptions[eventType].Count == 0)
+                        if (_eventSubscriptions[eventType].Count == 0)
                         {
-                            eventSubscriptions.Remove(eventType);
+                            _eventSubscriptions.Remove(eventType);
                             Debug.Log($"Removed empty subscription list for: {eventType.Name}");
                         }
                     }
@@ -120,11 +120,11 @@ namespace MageLock.Events
             
             List<Delegate> subscribers = null;
             
-            lock (lockObject)
+            lock (_lockObject)
             {
                 Type eventType = typeof(T);
                 
-                if (eventSubscriptions.TryGetValue(eventType, out var subscription))
+                if (_eventSubscriptions.TryGetValue(eventType, out var subscription))
                 {
                     subscribers = new List<Delegate>(subscription);
                 }
@@ -159,14 +159,14 @@ namespace MageLock.Events
         /// <typeparam name="T">Event data type to clear</typeparam>
         public void UnsubscribeAll<T>() where T : IEventData
         {
-            lock (lockObject)
+            lock (_lockObject)
             {
                 Type eventType = typeof(T);
                 
-                if (eventSubscriptions.ContainsKey(eventType))
+                if (_eventSubscriptions.ContainsKey(eventType))
                 {
-                    int count = eventSubscriptions[eventType].Count;
-                    eventSubscriptions.Remove(eventType);
+                    int count = _eventSubscriptions[eventType].Count;
+                    _eventSubscriptions.Remove(eventType);
                     Debug.Log($"Unsubscribed all {count} callbacks for event: {eventType.Name}");
                 }
             }
@@ -177,15 +177,15 @@ namespace MageLock.Events
         /// </summary>
         public void ClearAllSubscriptions()
         {
-            lock (lockObject)
+            lock (_lockObject)
             {
                 int totalCount = 0;
-                foreach (var kvp in eventSubscriptions)
+                foreach (var kvp in _eventSubscriptions)
                 {
                     totalCount += kvp.Value.Count;
                 }
                 
-                eventSubscriptions.Clear();
+                _eventSubscriptions.Clear();
                 Debug.Log($"Cleared all event subscriptions. Total callbacks removed: {totalCount}");
             }
         }
@@ -197,13 +197,13 @@ namespace MageLock.Events
         /// <returns>Number of subscribers</returns>
         public int GetSubscriberCount<T>() where T : IEventData
         {
-            lock (lockObject)
+            lock (_lockObject)
             {
                 Type eventType = typeof(T);
                 
-                if (eventSubscriptions.ContainsKey(eventType))
+                if (_eventSubscriptions.ContainsKey(eventType))
                 {
-                    return eventSubscriptions[eventType].Count;
+                    return _eventSubscriptions[eventType].Count;
                 }
                 
                 return 0;
@@ -216,10 +216,10 @@ namespace MageLock.Events
         /// <returns>Array of registered event types</returns>
         public Type[] GetRegisteredEventTypes()
         {
-            lock (lockObject)
+            lock (_lockObject)
             {
-                var types = new Type[eventSubscriptions.Keys.Count];
-                eventSubscriptions.Keys.CopyTo(types, 0);
+                var types = new Type[_eventSubscriptions.Keys.Count];
+                _eventSubscriptions.Keys.CopyTo(types, 0);
                 return types;
             }
         }
@@ -231,17 +231,17 @@ namespace MageLock.Events
         [ContextMenu("Debug Print All Subscriptions")]
         public void DebugPrintAllSubscriptions()
         {
-            lock (lockObject)
+            lock (_lockObject)
             {
                 Debug.Log("=== Event Manager Subscriptions ===");
                 
-                if (eventSubscriptions.Count == 0)
+                if (_eventSubscriptions.Count == 0)
                 {
                     Debug.Log("No active subscriptions");
                     return;
                 }
                 
-                foreach (var kvp in eventSubscriptions)
+                foreach (var kvp in _eventSubscriptions)
                 {
                     Debug.Log($"Event: {kvp.Key.Name} - Subscribers: {kvp.Value.Count}");
                 }

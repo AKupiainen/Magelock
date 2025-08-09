@@ -10,12 +10,7 @@ namespace MageLock.Player
 
         public int GetCurrency(CurrencyType type)
         {
-            if (Currencies.TryGetValue(type, out int value))
-            {
-                return value;
-            }
-
-            return 0;
+            return Currencies.GetValueOrDefault(type, 0);
         }
 
         public void SetCurrency(CurrencyType type, int amount)

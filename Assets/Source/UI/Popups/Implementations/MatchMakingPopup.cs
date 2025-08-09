@@ -20,10 +20,10 @@ namespace MageLock.UI
         [SerializeField] private string gameSceneName = "GameScene";
         [SerializeField] private LocString loadingText;
         
-        [Inject] private NetworkManagerCustom networkManager;
+        [Inject] private NetworkManagerCustom _networkManager;
         
-        private float matchmakingTime;
-        private bool isLobbyFull;
+        private float _matchmakingTime;
+        private bool _isLobbyFull;
         
         public override void Initialize()
         {
@@ -51,10 +51,10 @@ namespace MageLock.UI
         
         private void StartMatchmaking()
         {
-            if (networkManager != null)
+            if (_networkManager != null)
             {
-                UpdatePlayerCount(networkManager.ConnectedClientsIds.Count, networkManager.MaxPlayers); 
-                networkManager.StartMatch(matchmakingMode);
+                UpdatePlayerCount(_networkManager.ConnectedClientsIds.Count, _networkManager.MaxPlayers); 
+                _networkManager.StartMatch(matchmakingMode);
             }
         }
         
@@ -78,16 +78,16 @@ namespace MageLock.UI
         
         private void LoadGameScene()
         {
-            if (networkManager != null && networkManager.IsHost && !isLobbyFull)
+            if (_networkManager != null && _networkManager.IsHost && !_isLobbyFull)
             {
-                isLobbyFull = true;
+                _isLobbyFull = true;
                 
                 if (timerText != null)
                 {
                     timerText.text = loadingText;
                 }
                 
-                networkManager.LoadSceneForAllClients(
+                _networkManager.LoadSceneForAllClients(
                     gameSceneName,
                     onSuccess: OnSceneLoadSuccess,
                     onFailure: OnSceneLoadFailure
@@ -106,9 +106,9 @@ namespace MageLock.UI
         {
             Debug.LogError($"Failed to load game scene: {errorMessage}");
             
-            if (networkManager != null)
+            if (_networkManager != null)
             {
-                networkManager.CancelMatchmaking();
+                _networkManager.CancelMatchmaking();
             }
             
             base.Close();
@@ -116,19 +116,19 @@ namespace MageLock.UI
         
         private void UpdateTimer()
         {
-            if (!isLobbyFull)
+            if (!_isLobbyFull)
             {
-                matchmakingTime += Time.deltaTime;
+                _matchmakingTime += Time.deltaTime;
                 UpdateTimerDisplay();
             }
         }
         
         private void UpdateTimerDisplay()
         {
-            if (timerText != null && !isLobbyFull)
+            if (timerText != null && !_isLobbyFull)
             {
-                int minutes = Mathf.FloorToInt(matchmakingTime / 60f);
-                int seconds = Mathf.FloorToInt(matchmakingTime % 60f);
+                int minutes = Mathf.FloorToInt(_matchmakingTime / 60f);
+                int seconds = Mathf.FloorToInt(_matchmakingTime % 60f);
                 timerText.text = $"{minutes:00}:{seconds:00}";
             }
         }
@@ -145,9 +145,9 @@ namespace MageLock.UI
         
         private void OnMatchmakingFailed(MatchmakingFailedEvent _)
         {
-            if (networkManager != null)
+            if (_networkManager != null)
             {
-                networkManager.CancelMatchmaking();
+                _networkManager.CancelMatchmaking();
             }
             
             base.Close();
@@ -155,9 +155,9 @@ namespace MageLock.UI
         
         private void OnCancelClicked()
         {
-            if (networkManager != null)
+            if (_networkManager != null)
             {
-                networkManager.CancelMatchmaking();
+                _networkManager.CancelMatchmaking();
             }
             
             base.Close(); 

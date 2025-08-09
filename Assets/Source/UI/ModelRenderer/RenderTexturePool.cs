@@ -5,15 +5,15 @@ namespace MageLock.ModelRenderer
 {
     public class RenderTexturePool
     {
-        private readonly int maxCapacity;
-        private readonly List<RenderTexture> textures;
+        private readonly int _maxCapacity;
+        private readonly List<RenderTexture> _textures;
 
         private static readonly RenderTexturePool SharedPool = new(maxCapacity: 10);
 
         public RenderTexturePool(int maxCapacity)
         {
-            this.maxCapacity = maxCapacity;
-            textures = new List<RenderTexture>(this.maxCapacity);
+            _maxCapacity = maxCapacity;
+            _textures = new List<RenderTexture>(_maxCapacity);
         }
 
         public static RenderTexture AcquireTexture(int width, int height, int depth, RenderTextureFormat format)
@@ -33,16 +33,16 @@ namespace MageLock.ModelRenderer
         {
             RemoveNullTextures();
 
-            for (int i = textures.Count - 1; i >= 0; i--)
+            for (int i = _textures.Count - 1; i >= 0; i--)
             {
-                RenderTexture texture = textures[i];
+                RenderTexture texture = _textures[i];
 
                 if (texture.width == width &&
                     texture.height == height &&
                     texture.depth == depth &&
                     texture.format == format)
                 {
-                    textures.RemoveAt(i);
+                    _textures.RemoveAt(i);
                     return texture;
                 }
             }
@@ -55,35 +55,35 @@ namespace MageLock.ModelRenderer
 
         private void RemoveNullTextures()
         {
-            for (int i = textures.Count - 1; i >= 0; i--)
+            for (int i = _textures.Count - 1; i >= 0; i--)
             {
-                if (textures[i] == null)
+                if (_textures[i] == null)
                 {
-                    textures.RemoveAt(i);
+                    _textures.RemoveAt(i);
                 }
             }
         }
 
         private void EnforcePoolCapacity()
         {
-            while (textures.Count > maxCapacity)
+            while (_textures.Count > _maxCapacity)
             {
-                if (textures[0] != null)
+                if (_textures[0] != null)
                 {
-                    textures[0].Release();
-                    Object.Destroy(textures[0]);
+                    _textures[0].Release();
+                    Object.Destroy(_textures[0]);
                 }
 
-                textures.RemoveAt(0);
+                _textures.RemoveAt(0);
             }
         }
 
         private void ReleaseTextureInternal(RenderTexture texture)
         {
-            if (!textures.Contains(texture))
+            if (!_textures.Contains(texture))
             {
                 texture.Release();
-                textures.Add(texture);
+                _textures.Add(texture);
             }
 
             EnforcePoolCapacity();

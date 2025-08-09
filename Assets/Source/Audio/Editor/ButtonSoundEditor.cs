@@ -11,11 +11,11 @@ namespace MageLock.Audio.Editor
     public class ButtonSoundSetupEditor : EditorWindow
     {
         [SerializeField] private Sfx defaultClickSfx;
-        private SerializedObject serializedObject;
-        private SerializedProperty clickSfxProperty;
+        private SerializedObject _serializedObject;
+        private SerializedProperty _clickSfxProperty;
         
-        private Vector2 scrollPosition;
-        private readonly List<ButtonInfo> foundButtons = new();
+        private Vector2 _scrollPosition;
+        private readonly List<ButtonInfo> _foundButtons = new();
         
         private struct ButtonInfo
         {
@@ -36,20 +36,20 @@ namespace MageLock.Audio.Editor
         
         private void OnEnable()
         {
-            serializedObject = new SerializedObject(this);
-            clickSfxProperty = serializedObject.FindProperty("defaultClickSfx");
+            _serializedObject = new SerializedObject(this);
+            _clickSfxProperty = _serializedObject.FindProperty("defaultClickSfx");
             
             FindAllButtons();
         }
         
         private void OnGUI()
         {
-            serializedObject.Update();
+            _serializedObject.Update();
             
             EditorGUILayout.LabelField("Button Sound Setup", EditorStyles.boldLabel);
             EditorGUILayout.Space();
             
-            EditorGUILayout.PropertyField(clickSfxProperty, new GUIContent("Default Click SFX"));
+            EditorGUILayout.PropertyField(_clickSfxProperty, new GUIContent("Default Click SFX"));
             EditorGUILayout.Space();
             
             if (GUILayout.Button("Refresh Button List"))
@@ -88,13 +88,13 @@ namespace MageLock.Audio.Editor
             }
             EditorGUILayout.EndHorizontal();
             
-            EditorGUILayout.LabelField($"Found Buttons ({foundButtons.Count})", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField($"Found Buttons ({_foundButtons.Count})", EditorStyles.boldLabel);
             
-            scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
+            _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
             
-            for (int i = 0; i < foundButtons.Count; i++)
+            for (int i = 0; i < _foundButtons.Count; i++)
             {
-                ButtonInfo buttonInfo = foundButtons[i];
+                ButtonInfo buttonInfo = _foundButtons[i];
                 
                 EditorGUILayout.BeginHorizontal();
                 
@@ -128,17 +128,17 @@ namespace MageLock.Audio.Editor
                 
                 EditorGUILayout.EndHorizontal();
                 
-                foundButtons[i] = buttonInfo;
+                _foundButtons[i] = buttonInfo;
             }
             
             EditorGUILayout.EndScrollView();
             
-            serializedObject.ApplyModifiedProperties();
+            _serializedObject.ApplyModifiedProperties();
         }
         
         private void FindAllButtons()
         {
-            foundButtons.Clear();
+            _foundButtons.Clear();
             
             FindButtonsInScene();
             FindButtonsInPrefabs();
@@ -164,7 +164,7 @@ namespace MageLock.Audio.Editor
                     IsSelected = false
                 };
                 
-                foundButtons.Add(info);
+                _foundButtons.Add(info);
             }
         }
         
@@ -192,7 +192,7 @@ namespace MageLock.Audio.Editor
                             IsSelected = false
                         };
                         
-                        foundButtons.Add(info);
+                        _foundButtons.Add(info);
                     }
                 }
             }
@@ -209,7 +209,7 @@ namespace MageLock.Audio.Editor
             int addedCount = 0;
             int skippedCount = 0;
             
-            foreach (ButtonInfo buttonInfo in foundButtons)
+            foreach (ButtonInfo buttonInfo in _foundButtons)
             {
                 if (!buttonInfo.IsSelected)
                     continue;
@@ -281,7 +281,7 @@ namespace MageLock.Audio.Editor
         {
             int removedCount = 0;
             
-            foreach (ButtonInfo buttonInfo in foundButtons)
+            foreach (ButtonInfo buttonInfo in _foundButtons)
             {
                 if (!buttonInfo.IsSelected || !buttonInfo.HasComponent)
                     continue;
@@ -386,21 +386,21 @@ namespace MageLock.Audio.Editor
         
         private void SelectAll(bool selected)
         {
-            for (int i = 0; i < foundButtons.Count; i++)
+            for (int i = 0; i < _foundButtons.Count; i++)
             {
-                ButtonInfo buttonInfo = foundButtons[i];
+                ButtonInfo buttonInfo = _foundButtons[i];
                 buttonInfo.IsSelected = selected;
-                foundButtons[i] = buttonInfo;
+                _foundButtons[i] = buttonInfo;
             }
         }
         
         private void SelectByComponentStatus(bool hasComponent)
         {
-            for (int i = 0; i < foundButtons.Count; i++)
+            for (int i = 0; i < _foundButtons.Count; i++)
             {
-                ButtonInfo buttonInfo = foundButtons[i];
+                ButtonInfo buttonInfo = _foundButtons[i];
                 buttonInfo.IsSelected = buttonInfo.HasComponent == hasComponent;
-                foundButtons[i] = buttonInfo;
+                _foundButtons[i] = buttonInfo;
             }
         }
     }

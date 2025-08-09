@@ -14,9 +14,9 @@ namespace MageLock.Utilies
     [CreateAssetMenu(fileName = "BootstrapLoadStep", menuName = "Load Step/Bootstrap Load Step")]
     public class BootstrapLoadStep : LoadStep
     {
-        [Inject] private ShopManager shopManager;
-        [Inject] private LocalizationService localizationService;
-        [Inject] private AudioManager audioManager;
+        [Inject] private ShopManager _shopManager;
+        [Inject] private LocalizationService _localizationService;
+        [Inject] private AudioManager _audioManager;
 
         public override async Task LoadTaskAsync()
         {
@@ -27,12 +27,12 @@ namespace MageLock.Utilies
 
             var settings = PlayerModel.GetSettings();
 
-            audioManager.InitializeSfxPool();
-            audioManager.SetMasterVolume(settings.masterVolume);
-            audioManager.SetBGMVolume(settings.musicVolume);
-            audioManager.SetSfxVolume(settings.soundEffectsVolume);
+            _audioManager.InitializeSfxPool();
+            _audioManager.SetMasterVolume(settings.masterVolume);
+            _audioManager.SetBGMVolume(settings.musicVolume);
+            _audioManager.SetSfxVolume(settings.soundEffectsVolume);
 
-            localizationService.SetLanguage(settings.language);
+            _localizationService.SetLanguage(settings.language);
 
             var options = new InitializationOptions();
             var profile = Guid.NewGuid().ToString()[..8];
@@ -41,7 +41,7 @@ namespace MageLock.Utilies
             await UnityServices.InitializeAsync(options);
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
 
-            shopManager.InitializeIAP();
+            _shopManager.InitializeIAP();
             Progress = 1f;
         }
     }

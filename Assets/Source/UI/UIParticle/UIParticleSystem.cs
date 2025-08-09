@@ -14,83 +14,77 @@ namespace MageLock.UI
         public bool fixedTime = true;
 
         [Tooltip("Enables 3d rotation for the particles")]
-        public bool use3dRotation = false;
+        public bool use3dRotation;
 
-        private Transform cachedTransform;
-        private ParticleSystem pSystem;
-        private ParticleSystem.Particle[] particles;
-        private UIVertex[] quad = new UIVertex[4];
-        private Vector4 imageUV = Vector4.zero;
-        private ParticleSystem.TextureSheetAnimationModule textureSheetAnimation;
-        private int textureSheetAnimationFrames;
-        private Vector2 textureSheetAnimationFrameSize;
-        private ParticleSystemRenderer pRenderer;
-        private bool isInitialised = false;
+        private Transform _cachedTransform;
+        private ParticleSystem _pSystem;
+        private ParticleSystem.Particle[] _particles;
+        private readonly UIVertex[] _quad = new UIVertex[4];
+        private Vector4 _imageUV = Vector4.zero;
+        private ParticleSystem.TextureSheetAnimationModule _textureSheetAnimation;
+        private int _textureSheetAnimationFrames;
+        private Vector2 _textureSheetAnimationFrameSize;
+        private ParticleSystemRenderer _pRenderer;
+        private bool _isInitialised;
 
-        private Material currentMaterial;
-        private Texture currentTexture;
-        private ParticleSystem.MainModule mainModule;
+        private Material _currentMaterial;
+        private Texture _currentTexture;
+        private ParticleSystem.MainModule _mainModule;
 
-        public override Texture mainTexture
+        public override Texture mainTexture => _currentTexture;
+
+        private bool Initialize()
         {
-            get
+            if (_cachedTransform == null)
             {
-                return currentTexture;
+                _cachedTransform = transform;
             }
-        }
-
-        protected bool Initialize()
-        {
-            if (cachedTransform == null)
+            if (_pSystem == null)
             {
-                cachedTransform = transform;
-            }
-            if (pSystem == null)
-            {
-                pSystem = GetComponent<ParticleSystem>();
+                _pSystem = GetComponent<ParticleSystem>();
 
-                if (pSystem == null)
+                if (_pSystem == null)
                 {
                     return false;
                 }
 
-                mainModule = pSystem.main;
-                if (pSystem.main.maxParticles > 14000)
+                _mainModule = _pSystem.main;
+                if (_pSystem.main.maxParticles > 14000)
                 {
-                    mainModule.maxParticles = 14000;
+                    _mainModule.maxParticles = 14000;
                 }
 
-                pRenderer = pSystem.GetComponent<ParticleSystemRenderer>();
-                if (pRenderer != null)
-                    pRenderer.enabled = false;
+                _pRenderer = _pSystem.GetComponent<ParticleSystemRenderer>();
+                if (_pRenderer != null)
+                    _pRenderer.enabled = false;
                 
-                currentMaterial = material;
+                _currentMaterial = material;
 
-                if (currentMaterial && currentMaterial.HasProperty(MainTex))
+                if (_currentMaterial && _currentMaterial.HasProperty(MainTex))
                 {
-                    currentTexture = currentMaterial.mainTexture;
-                    if (currentTexture == null)
-                        currentTexture = Texture2D.whiteTexture;
+                    _currentTexture = _currentMaterial.mainTexture;
+                    if (_currentTexture == null)
+                        _currentTexture = Texture2D.whiteTexture;
                 }
 
-                material = currentMaterial;
-                mainModule.scalingMode = ParticleSystemScalingMode.Hierarchy;
+                material = _currentMaterial;
+                _mainModule.scalingMode = ParticleSystemScalingMode.Hierarchy;
 
-                particles = null;
+                _particles = null;
             }
             
-            if (particles == null)
-                particles = new ParticleSystem.Particle[pSystem.main.maxParticles];
+            if (_particles == null)
+                _particles = new ParticleSystem.Particle[_pSystem.main.maxParticles];
 
-            imageUV = new Vector4(0, 0, 1, 1);
+            _imageUV = new Vector4(0, 0, 1, 1);
 
-            textureSheetAnimation = pSystem.textureSheetAnimation;
-            textureSheetAnimationFrames = 0;
-            textureSheetAnimationFrameSize = Vector2.zero;
-            if (textureSheetAnimation.enabled)
+            _textureSheetAnimation = _pSystem.textureSheetAnimation;
+            _textureSheetAnimationFrames = 0;
+            _textureSheetAnimationFrameSize = Vector2.zero;
+            if (_textureSheetAnimation.enabled)
             {
-                textureSheetAnimationFrames = textureSheetAnimation.numTilesX * textureSheetAnimation.numTilesY;
-                textureSheetAnimationFrameSize = new Vector2(1f / textureSheetAnimation.numTilesX, 1f / textureSheetAnimation.numTilesY);
+                _textureSheetAnimationFrames = _textureSheetAnimation.numTilesX * _textureSheetAnimation.numTilesY;
+                _textureSheetAnimationFrameSize = new Vector2(1f / _textureSheetAnimation.numTilesX, 1f / _textureSheetAnimation.numTilesY);
             }
 
             return true;
@@ -121,100 +115,100 @@ namespace MageLock.UI
                 return;
             }
 
-            if (!isInitialised && !pSystem.main.playOnAwake)
+            if (!_isInitialised && !_pSystem.main.playOnAwake)
             {
-                pSystem.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
-                isInitialised = true;
+                _pSystem.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+                _isInitialised = true;
             }
 
             Vector2 temp = Vector2.zero;
             Vector2 corner1 = Vector2.zero;
             Vector2 corner2 = Vector2.zero;
             
-            int count = pSystem.GetParticles(particles);
+            int count = _pSystem.GetParticles(_particles);
 
             for (int i = 0; i < count; ++i)
             {
-                ParticleSystem.Particle particle = particles[i];
-                Vector2 position = mainModule.simulationSpace == ParticleSystemSimulationSpace.Local ? particle.position : cachedTransform.InverseTransformPoint(particle.position);
+                ParticleSystem.Particle particle = _particles[i];
+                Vector2 position = _mainModule.simulationSpace == ParticleSystemSimulationSpace.Local ? particle.position : _cachedTransform.InverseTransformPoint(particle.position);
                
                 float rotation = -particle.rotation * Mathf.Deg2Rad;
                 float rotation90 = rotation + Mathf.PI / 2;
 
-                Color32 color = particle.GetCurrentColor(pSystem);
-                float size = particle.GetCurrentSize(pSystem) * 0.5f;
+                Color32 currentColor = particle.GetCurrentColor(_pSystem);
+                float size = particle.GetCurrentSize(_pSystem) * 0.5f;
 
-                if (mainModule.scalingMode == ParticleSystemScalingMode.Shape)
+                if (_mainModule.scalingMode == ParticleSystemScalingMode.Shape)
                     position /= canvas.scaleFactor;
 
-                Vector4 particleUV = imageUV;
+                Vector4 particleUV = _imageUV;
 
-                if (textureSheetAnimation.enabled)
+                if (_textureSheetAnimation.enabled)
                 {
                     float frameProgress = 1 - (particle.remainingLifetime / particle.startLifetime);
 
-                    if (textureSheetAnimation.frameOverTime.curveMin != null)
+                    if (_textureSheetAnimation.frameOverTime.curveMin != null)
                     {
-                        frameProgress = textureSheetAnimation.frameOverTime.curveMin.Evaluate(1 - (particle.remainingLifetime / particle.startLifetime));
+                        frameProgress = _textureSheetAnimation.frameOverTime.curveMin.Evaluate(1 - (particle.remainingLifetime / particle.startLifetime));
                     }
-                    else if (textureSheetAnimation.frameOverTime.curve != null)
+                    else if (_textureSheetAnimation.frameOverTime.curve != null)
                     {
-                        frameProgress = textureSheetAnimation.frameOverTime.curve.Evaluate(1 - (particle.remainingLifetime / particle.startLifetime));
+                        frameProgress = _textureSheetAnimation.frameOverTime.curve.Evaluate(1 - (particle.remainingLifetime / particle.startLifetime));
                     }
-                    else if (textureSheetAnimation.frameOverTime.constant > 0)
+                    else if (_textureSheetAnimation.frameOverTime.constant > 0)
                     {
-                        frameProgress = textureSheetAnimation.frameOverTime.constant - (particle.remainingLifetime / particle.startLifetime);
+                        frameProgress = _textureSheetAnimation.frameOverTime.constant - (particle.remainingLifetime / particle.startLifetime);
                     }
 
-                    frameProgress = Mathf.Repeat(frameProgress * textureSheetAnimation.cycleCount, 1);
+                    frameProgress = Mathf.Repeat(frameProgress * _textureSheetAnimation.cycleCount, 1);
                     int frame = 0;
 
-                    switch (textureSheetAnimation.animation)
+                    switch (_textureSheetAnimation.animation)
                     {
                         case ParticleSystemAnimationType.WholeSheet:
-                            frame = Mathf.FloorToInt(frameProgress * textureSheetAnimationFrames);
+                            frame = Mathf.FloorToInt(frameProgress * _textureSheetAnimationFrames);
                             break;
 
                         case ParticleSystemAnimationType.SingleRow:
-                            frame = Mathf.FloorToInt(frameProgress * textureSheetAnimation.numTilesX);
+                            frame = Mathf.FloorToInt(frameProgress * _textureSheetAnimation.numTilesX);
 
-                            int row = textureSheetAnimation.rowIndex;
-                            frame += row * textureSheetAnimation.numTilesX;
+                            int row = _textureSheetAnimation.rowIndex;
+                            frame += row * _textureSheetAnimation.numTilesX;
                             break;
                     }
 
-                    frame %= textureSheetAnimationFrames;
+                    frame %= _textureSheetAnimationFrames;
 
-                    particleUV.x = (frame % textureSheetAnimation.numTilesX) * textureSheetAnimationFrameSize.x;
-                    particleUV.y = 1.0f - Mathf.FloorToInt(frame / textureSheetAnimation.numTilesX) * textureSheetAnimationFrameSize.y;
-                    particleUV.z = particleUV.x + textureSheetAnimationFrameSize.x;
-                    particleUV.w = particleUV.y + textureSheetAnimationFrameSize.y;
+                    particleUV.x = (frame % _textureSheetAnimation.numTilesX) * _textureSheetAnimationFrameSize.x;
+                    particleUV.y = 1.0f - Mathf.FloorToInt(frame / _textureSheetAnimation.numTilesX) * _textureSheetAnimationFrameSize.y;
+                    particleUV.z = particleUV.x + _textureSheetAnimationFrameSize.x;
+                    particleUV.w = particleUV.y + _textureSheetAnimationFrameSize.y;
                 }
 
                 temp.x = particleUV.x;
                 temp.y = particleUV.y;
 
-                quad[0] = UIVertex.simpleVert;
-                quad[0].color = color;
-                quad[0].uv0 = temp;
+                _quad[0] = UIVertex.simpleVert;
+                _quad[0].color = currentColor;
+                _quad[0].uv0 = temp;
 
                 temp.x = particleUV.x;
                 temp.y = particleUV.w;
-                quad[1] = UIVertex.simpleVert;
-                quad[1].color = color;
-                quad[1].uv0 = temp;
+                _quad[1] = UIVertex.simpleVert;
+                _quad[1].color = currentColor;
+                _quad[1].uv0 = temp;
 
                 temp.x = particleUV.z;
                 temp.y = particleUV.w;
-                quad[2] = UIVertex.simpleVert;
-                quad[2].color = color;
-                quad[2].uv0 = temp;
+                _quad[2] = UIVertex.simpleVert;
+                _quad[2].color = currentColor;
+                _quad[2].uv0 = temp;
 
                 temp.x = particleUV.z;
                 temp.y = particleUV.y;
-                quad[3] = UIVertex.simpleVert;
-                quad[3].color = color;
-                quad[3].uv0 = temp;
+                _quad[3] = UIVertex.simpleVert;
+                _quad[3].color = currentColor;
+                _quad[3].uv0 = temp;
 
                 if (rotation == 0)
                 {
@@ -226,24 +220,24 @@ namespace MageLock.UI
 
                     temp.x = corner1.x;
                     temp.y = corner1.y;
-                    quad[0].position = temp;
+                    _quad[0].position = temp;
                     temp.x = corner1.x;
                     temp.y = corner2.y;
-                    quad[1].position = temp;
+                    _quad[1].position = temp;
                     temp.x = corner2.x;
                     temp.y = corner2.y;
-                    quad[2].position = temp;
+                    _quad[2].position = temp;
                     temp.x = corner2.x;
                     temp.y = corner1.y;
-                    quad[3].position = temp;
+                    _quad[3].position = temp;
                 }
                 else
                 {
                     if (use3dRotation)
                     {
-                        Vector3 pos3d = mainModule.simulationSpace == ParticleSystemSimulationSpace.Local ? particle.position : cachedTransform.InverseTransformPoint(particle.position);
+                        Vector3 pos3d = _mainModule.simulationSpace == ParticleSystemSimulationSpace.Local ? particle.position : _cachedTransform.InverseTransformPoint(particle.position);
 
-                        if (mainModule.scalingMode == ParticleSystemScalingMode.Shape)
+                        if (_mainModule.scalingMode == ParticleSystemScalingMode.Shape)
                             position /= canvas.scaleFactor;
 
                         Vector3[] verts = new Vector3[4]
@@ -256,24 +250,24 @@ namespace MageLock.UI
 
                         Quaternion particleRotation = Quaternion.Euler(particle.rotation3D);
 
-                        quad[0].position = pos3d + particleRotation * verts[0];
-                        quad[1].position = pos3d + particleRotation * verts[1];
-                        quad[2].position = pos3d + particleRotation * verts[2];
-                        quad[3].position = pos3d + particleRotation * verts[3];
+                        _quad[0].position = pos3d + particleRotation * verts[0];
+                        _quad[1].position = pos3d + particleRotation * verts[1];
+                        _quad[2].position = pos3d + particleRotation * verts[2];
+                        _quad[3].position = pos3d + particleRotation * verts[3];
                     }
                     else
                     {
                         Vector2 right = new Vector2(Mathf.Cos(rotation), Mathf.Sin(rotation)) * size;
                         Vector2 up = new Vector2(Mathf.Cos(rotation90), Mathf.Sin(rotation90)) * size;
 
-                        quad[0].position = position - right - up;
-                        quad[1].position = position - right + up;
-                        quad[2].position = position + right + up;
-                        quad[3].position = position + right - up;
+                        _quad[0].position = position - right - up;
+                        _quad[1].position = position - right + up;
+                        _quad[2].position = position + right + up;
+                        _quad[3].position = position + right - up;
                     }
                 }
 
-                vh.AddUIVertexQuad(quad);
+                vh.AddUIVertexQuad(_quad);
             }
         }
 
@@ -281,13 +275,13 @@ namespace MageLock.UI
         {
             if (!fixedTime && Application.isPlaying)
             {
-                pSystem.Simulate(Time.unscaledDeltaTime, false, false, true);
+                _pSystem.Simulate(Time.unscaledDeltaTime, false, false, true);
                 SetAllDirty();
 
-                if ((currentMaterial != null && currentTexture != currentMaterial.mainTexture) ||
-                    (material != null && currentMaterial != null && material.shader != currentMaterial.shader))
+                if ((_currentMaterial != null && _currentTexture != _currentMaterial.mainTexture) ||
+                    (material != null && _currentMaterial != null && material.shader != _currentMaterial.shader))
                 {
-                    pSystem = null;
+                    _pSystem = null;
                     Initialize();
                 }
             }
@@ -303,26 +297,26 @@ namespace MageLock.UI
             {
                 if (fixedTime)
                 {
-                    pSystem.Simulate(Time.unscaledDeltaTime, false, false, true);
+                    _pSystem.Simulate(Time.unscaledDeltaTime, false, false, true);
                     SetAllDirty();
-                    if ((currentMaterial != null && currentTexture != currentMaterial.mainTexture) ||
-                        (material != null && currentMaterial != null && material.shader != currentMaterial.shader))
+                    if ((_currentMaterial != null && _currentTexture != _currentMaterial.mainTexture) ||
+                        (material != null && _currentMaterial != null && material.shader != _currentMaterial.shader))
                     {
-                        pSystem = null;
+                        _pSystem = null;
                         Initialize();
                     }
                 }
             }
-            if (material == currentMaterial)
+            if (material == _currentMaterial)
                 return;
-            pSystem = null;
+            _pSystem = null;
             Initialize();
         }
 
         protected override void OnDestroy()
         {
-            currentMaterial = null;
-            currentTexture = null;
+            _currentMaterial = null;
+            _currentTexture = null;
         }
     }
 }

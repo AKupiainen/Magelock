@@ -14,7 +14,7 @@ namespace MageLock.UI
         [Header("Currency Configuration")]
         [SerializeField] private CurrencyType currencyType;
         
-        private System.Action<CurrencyType> onCurrencyClicked;
+        private System.Action<CurrencyType> _onCurrencyClicked;
         
         private void Awake()
         {
@@ -35,7 +35,7 @@ namespace MageLock.UI
         public void Initialize(CurrencyType type, System.Action<CurrencyType> clickCallback)
         {
             currencyType = type;
-            onCurrencyClicked = clickCallback;
+            _onCurrencyClicked = clickCallback;
             UpdateDisplay();
         }
         
@@ -54,19 +54,18 @@ namespace MageLock.UI
             {
                 return $"{amount / 1000000f:F1}M";
             }
-            else if (amount >= 1000)
+
+            if (amount >= 1000)
             {
                 return $"{amount / 1000f:F1}K";
             }
-            else
-            {
-                return amount.ToString();
-            }
+
+            return amount.ToString();
         }
         
         private void OnCurrencyButtonClicked()
         {
-            onCurrencyClicked?.Invoke(currencyType);
+            _onCurrencyClicked?.Invoke(currencyType);
         }
         
         public CurrencyType GetCurrencyType()

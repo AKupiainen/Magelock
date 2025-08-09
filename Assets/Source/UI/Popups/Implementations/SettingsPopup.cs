@@ -31,23 +31,23 @@ namespace MageLock.UI
         [SerializeField] private TextMeshProUGUI languageLabel;
         [SerializeField] private Image languageFlagImage;
 
-        [Inject] private LocalizationService localizationService;
-        [Inject] private AudioManager audioManager;
+        [Inject] private LocalizationService _localizationService;
+        [Inject] private AudioManager _audioManager;
 
-        private SettingsData currentSettings;
+        private SettingsData _currentSettings;
 
         public override void Initialize()
         {
             base.Initialize();
 
-            currentSettings = new SettingsData(PlayerModel.GetSettings());
+            _currentSettings = new SettingsData(PlayerModel.GetSettings());
 
             SetupSliders();
             SetupVibrationToggle();
             SetupLanguageButton();
 
-            UpdateLanguageDisplay(currentSettings.language);
-            UpdateVibrationVisual(currentSettings.vibrationEnabled);
+            UpdateLanguageDisplay(_currentSettings.language);
+            UpdateVibrationVisual(_currentSettings.vibrationEnabled);
             UpdateSliderIcons();
 
             LocalizationService.OnLanguageChangedCallback += OnLanguageChanged;
@@ -74,14 +74,14 @@ namespace MageLock.UI
             musicSlider.onValueChanged.AddListener(OnMusicChanged);
             soundSlider.onValueChanged.AddListener(OnSoundChanged);
 
-            musicSlider.value = currentSettings.musicVolume;
-            soundSlider.value = currentSettings.soundEffectsVolume;
+            musicSlider.value = _currentSettings.musicVolume;
+            soundSlider.value = _currentSettings.soundEffectsVolume;
         }
 
         private void SetupVibrationToggle()
         {
             vibrationSlider.onValueChanged.RemoveAllListeners();
-            vibrationSlider.value = currentSettings.vibrationEnabled ? 1f : 0f;
+            vibrationSlider.value = _currentSettings.vibrationEnabled ? 1f : 0f;
             vibrationSlider.onValueChanged.AddListener(OnVibrationChanged);
         }
 
@@ -93,16 +93,16 @@ namespace MageLock.UI
 
         private void OnMusicChanged(float value)
         {
-            currentSettings.musicVolume = value;
-            audioManager.SetBGMVolume(value);
+            _currentSettings.musicVolume = value;
+            _audioManager.SetBGMVolume(value);
             
             UpdateSliderIcons();
         }
 
         private void OnSoundChanged(float value)
         {
-            currentSettings.soundEffectsVolume = value;
-            audioManager.SetSfxVolume(value);
+            _currentSettings.soundEffectsVolume = value;
+            _audioManager.SetSfxVolume(value);
 
             UpdateSliderIcons();
         }
@@ -110,7 +110,7 @@ namespace MageLock.UI
         private void OnVibrationChanged(float value)
         {
             bool isOn = value > 0.5f;
-            currentSettings.vibrationEnabled = isOn;
+            _currentSettings.vibrationEnabled = isOn;
             UpdateVibrationVisual(isOn);
         }
 
@@ -121,14 +121,14 @@ namespace MageLock.UI
 
         private void OnLanguageChanged(SystemLanguage language)
         {
-            currentSettings.language = language;
+            _currentSettings.language = language;
             UpdateLanguageDisplay(language);
         }
 
         private void UpdateLanguageDisplay(SystemLanguage language)
         {
-            languageFlagImage.sprite = localizationService.GetLanguageData.GetLanguageImage(language);
-            languageLabel.text = localizationService.GetLanguageData.GetDisplayName(language);
+            languageFlagImage.sprite = _localizationService.GetLanguageData.GetLanguageImage(language);
+            languageLabel.text = _localizationService.GetLanguageData.GetDisplayName(language);
         }
 
         private void UpdateVibrationVisual(bool isOn)
@@ -151,7 +151,7 @@ namespace MageLock.UI
 
         public void SaveChanges()
         {
-            PlayerModel.SetSettings(currentSettings);
+            PlayerModel.SetSettings(_currentSettings);
         }
     }
 }

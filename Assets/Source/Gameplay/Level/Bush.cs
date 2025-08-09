@@ -9,16 +9,16 @@ namespace MageLock.Gameplay
         [Header("Settings")]
         [SerializeField] private float revealDistance = 2f;
         
-        private static readonly HashSet<NetworkObject> playersInAnyBush = new HashSet<NetworkObject>();
+        private static readonly HashSet<NetworkObject> PlayersInAnyBush = new HashSet<NetworkObject>();
         private static readonly Dictionary<NetworkObject, HashSet<Bush>> playerBushes = new Dictionary<NetworkObject, HashSet<Bush>>();
         private static readonly Dictionary<NetworkObject, Renderer[]> playerRenderers = new Dictionary<NetworkObject, Renderer[]>();
         
-        private readonly HashSet<NetworkObject> playersInThisBush = new HashSet<NetworkObject>();
+        private readonly HashSet<NetworkObject> _playersInThisBush = new HashSet<NetworkObject>();
         
         private void Awake()
         {
-            var collider = GetComponent<Collider>();
-            if (collider) collider.isTrigger = true;
+            var bushCollider = GetComponent<Collider>();
+            if (bushCollider) bushCollider.isTrigger = true;
         }
         
         private void OnTriggerEnter(Collider other)
@@ -26,8 +26,8 @@ namespace MageLock.Gameplay
             var networkObject = other.GetComponent<NetworkObject>();
             if (!networkObject || !networkObject.IsSpawned) return;
             
-            playersInThisBush.Add(networkObject);
-            playersInAnyBush.Add(networkObject);
+            _playersInThisBush.Add(networkObject);
+            PlayersInAnyBush.Add(networkObject);
             
             if (!playerBushes.ContainsKey(networkObject))
                 playerBushes[networkObject] = new HashSet<Bush>();
@@ -42,7 +42,7 @@ namespace MageLock.Gameplay
             var networkObject = other.GetComponent<NetworkObject>();
             if (!networkObject) return;
             
-            playersInThisBush.Remove(networkObject);
+            _playersInThisBush.Remove(networkObject);
             
             if (playerBushes.ContainsKey(networkObject))
             {
@@ -50,7 +50,7 @@ namespace MageLock.Gameplay
                 if (playerBushes[networkObject].Count == 0)
                 {
                     playerBushes.Remove(networkObject);
-                    playersInAnyBush.Remove(networkObject);
+                    PlayersInAnyBush.Remove(networkObject);
                     
                     if (playerRenderers.ContainsKey(networkObject))
                     {
@@ -92,7 +92,7 @@ namespace MageLock.Gameplay
             {
                 playerRenderers.Remove(player);
                 playerBushes.Remove(player);
-                playersInAnyBush.Remove(player);
+                PlayersInAnyBush.Remove(player);
             }
         }
         
@@ -101,12 +101,12 @@ namespace MageLock.Gameplay
             if (player == localPlayer)
                 return true;
             
-            bool playerInBush = playersInAnyBush.Contains(player);
+            bool playerInBush = PlayersInAnyBush.Contains(player);
             
             if (!playerInBush)
                 return true;
             
-            bool localInBush = playersInAnyBush.Contains(localPlayer);
+            bool localInBush = PlayersInAnyBush.Contains(localPlayer);
             
             if (localInBush && SharesBush(player, localPlayer))
                 return true;
@@ -119,11 +119,11 @@ namespace MageLock.Gameplay
         
         private static bool SharesBush(NetworkObject p1, NetworkObject p2)
         {
-            if (!playerBushes.ContainsKey(p1) || !playerBushes.ContainsKey(p2))
+            if (!playerBushes.ContainsKey(p1) || !playerBushes.TryGetValue(p2, out var playerBush))
                 return false;
             
             foreach (var bush in playerBushes[p1])
-                if (playerBushes[p2].Contains(bush))
+                if (playerBush.Contains(bush))
                     return true;
             
             return false;
@@ -137,7 +137,7 @@ namespace MageLock.Gameplay
         
         private static NetworkObject GetLocalPlayer()
         {
-            var players = Object.FindObjectsOfType<NetworkObject>();
+            var players = FindObjectsOfType<NetworkObject>();
             foreach (var player in players)
                 if (player && player.IsLocalPlayer && player.IsPlayerObject)
                     return player;
@@ -146,21 +146,21 @@ namespace MageLock.Gameplay
         
         private void OnDestroy()
         {
-            playersInThisBush.Clear();
+            _playersInThisBush.Clear();
         }
         
         private void OnDrawGizmos()
         {
             Gizmos.color = new Color(0, 1, 0, 0.3f);
-            var collider = GetComponent<Collider>();
-            if (!collider) return;
+            var bushCollider = GetComponent<Collider>();
+            if (!bushCollider) return;
             
             Matrix4x4 oldMatrix = Gizmos.matrix;
             Gizmos.matrix = Matrix4x4.TRS(transform.position, transform.rotation, transform.lossyScale);
             
-            if (collider is BoxCollider box)
+            if (bushCollider is BoxCollider box)
                 Gizmos.DrawCube(box.center, box.size);
-            else if (collider is SphereCollider sphere)
+            else if (bushCollider is SphereCollider sphere)
                 Gizmos.DrawSphere(sphere.center, sphere.radius);
             
             Gizmos.matrix = oldMatrix;

@@ -9,12 +9,12 @@ namespace MageLock.Editor
 {
     public class RemoveDeletedScripts : EditorWindow
     {
-        private Vector2 scrollPosition;
-        private bool includePrefabs = true;
-        private bool includeScenes = true;
-        private bool showProgress;
-        private readonly List<string> processedAssets = new();
-        private readonly List<string> assetsWithMissingScripts = new();
+        private Vector2 _scrollPosition;
+        private bool _includePrefabs = true;
+        private bool _includeScenes = true;
+        private bool _showProgress;
+        private readonly List<string> _processedAssets = new();
+        private readonly List<string> _assetsWithMissingScripts = new();
         
         [MenuItem("MageLock/Remove Deleted Scripts")]
         public static void ShowWindow()
@@ -34,12 +34,12 @@ namespace MageLock.Editor
             
             GUILayout.Space(10);
             
-            includePrefabs = EditorGUILayout.Toggle("Include Prefabs", includePrefabs);
-            includeScenes = EditorGUILayout.Toggle("Include Scenes", includeScenes);
+            _includePrefabs = EditorGUILayout.Toggle("Include Prefabs", _includePrefabs);
+            _includeScenes = EditorGUILayout.Toggle("Include Scenes", _includeScenes);
             
             GUILayout.Space(10);
             
-            EditorGUI.BeginDisabledGroup(showProgress);
+            EditorGUI.BeginDisabledGroup(_showProgress);
             
             if (GUILayout.Button("Remove Deleted Scripts", GUILayout.Height(30)))
             {
@@ -53,26 +53,26 @@ namespace MageLock.Editor
             
             EditorGUI.EndDisabledGroup();
             
-            if (showProgress)
+            if (_showProgress)
             {
                 GUILayout.Space(10);
                 EditorGUILayout.LabelField("Processing...", EditorStyles.boldLabel);
             }
             
-            if (processedAssets.Count > 0)
+            if (_processedAssets.Count > 0)
             {
                 GUILayout.Space(20);
-                EditorGUILayout.LabelField($"Processed Assets: {processedAssets.Count}", EditorStyles.boldLabel);
-                EditorGUILayout.LabelField($"Assets with Missing Scripts: {assetsWithMissingScripts.Count}", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField($"Processed Assets: {_processedAssets.Count}", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField($"Assets with Missing Scripts: {_assetsWithMissingScripts.Count}", EditorStyles.boldLabel);
                 
-                if (assetsWithMissingScripts.Count > 0)
+                if (_assetsWithMissingScripts.Count > 0)
                 {
                     GUILayout.Space(10);
                     EditorGUILayout.LabelField("Assets that had missing scripts:", EditorStyles.boldLabel);
                     
-                    scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.Height(200));
+                    _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition, GUILayout.Height(200));
                     
-                    foreach (string assetPath in assetsWithMissingScripts)
+                    foreach (string assetPath in _assetsWithMissingScripts)
                     {
                         EditorGUILayout.SelectableLabel(assetPath, GUILayout.Height(16));
                     }
@@ -84,20 +84,20 @@ namespace MageLock.Editor
         
         private void RemoveDeletedScriptsFromAssets()
         {
-            showProgress = true;
-            processedAssets.Clear();
-            assetsWithMissingScripts.Clear();
+            _showProgress = true;
+            _processedAssets.Clear();
+            _assetsWithMissingScripts.Clear();
             
             try
             {
                 AssetDatabase.StartAssetEditing();
                 
-                if (includePrefabs)
+                if (_includePrefabs)
                 {
                     ProcessPrefabs();
                 }
                 
-                if (includeScenes)
+                if (_includeScenes)
                 {
                     ProcessScenes();
                 }
@@ -107,11 +107,11 @@ namespace MageLock.Editor
                 AssetDatabase.StopAssetEditing();
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
-                showProgress = false;
+                _showProgress = false;
             }
             
-            Debug.Log($"Removed deleted scripts operation completed. Processed {processedAssets.Count} assets, " +
-                     $"found missing scripts in {assetsWithMissingScripts.Count} assets.");
+            Debug.Log($"Removed deleted scripts operation completed. Processed {_processedAssets.Count} assets, " +
+                     $"found missing scripts in {_assetsWithMissingScripts.Count} assets.");
         }
         
         private void ProcessPrefabs()
@@ -136,7 +136,7 @@ namespace MageLock.Editor
         
         private void ProcessPrefab(string assetPath)
         {
-            processedAssets.Add(assetPath);
+            _processedAssets.Add(assetPath);
             
             if (AssetDatabase.IsOpenForEdit(assetPath) == false)
             {
@@ -164,7 +164,7 @@ namespace MageLock.Editor
                 
                 if (hasDeletedScripts)
                 {
-                    assetsWithMissingScripts.Add(assetPath);
+                    _assetsWithMissingScripts.Add(assetPath);
                     PrefabUtility.SaveAsPrefabAsset(prefabRoot, assetPath);
                 }
             }
@@ -212,7 +212,7 @@ namespace MageLock.Editor
             Scene scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
             if (!scene.IsValid()) return;
             
-            processedAssets.Add(scenePath);
+            _processedAssets.Add(scenePath);
             
             GameObject[] rootObjects = scene.GetRootGameObjects();
             bool hasDeletedScripts = false;
@@ -233,7 +233,7 @@ namespace MageLock.Editor
             
             if (hasDeletedScripts)
             {
-                assetsWithMissingScripts.Add(scenePath);
+                _assetsWithMissingScripts.Add(scenePath);
                 EditorSceneManager.MarkSceneDirty(scene);
                 EditorSceneManager.SaveScene(scene);
             }

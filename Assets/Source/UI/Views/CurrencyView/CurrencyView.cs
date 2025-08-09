@@ -8,7 +8,7 @@ namespace MageLock.UI
     public class CurrencyView : BaseView
     {
         [Header("Currency Widgets")]
-        [SerializeField] private List<CurrencyWidget> currencyWidgets = new List<CurrencyWidget>();
+        [SerializeField] private List<CurrencyWidget> currencyWidgets = new();
         
         protected override void Initialize()
         {

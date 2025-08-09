@@ -9,22 +9,22 @@ namespace MageLock.JsonScriptableObject.Editor
     [CustomEditor(typeof(JsonScriptableObjectBase), true)]
     public class JsonScriptableObjectInspector : UnityEditor.Editor
     {
-        private JsonScriptableObjectBase jsonScriptableObject;
-        private ReorderableList reorderableList;
-        private SerializedProperty serializedListProperty;
+        private JsonScriptableObjectBase _jsonScriptableObject;
+        private ReorderableList _reorderableList;
+        private SerializedProperty _serializedListProperty;
 
         private void OnEnable()
         {
-            jsonScriptableObject = (JsonScriptableObjectBase)target;
+            _jsonScriptableObject = (JsonScriptableObjectBase)target;
 
-            var type = jsonScriptableObject.GetType();
+            var type = _jsonScriptableObject.GetType();
             foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
             {
                 if (typeof(IList).IsAssignableFrom(field.FieldType))
                 {
-                    serializedListProperty = serializedObject.FindProperty(field.Name);
+                    _serializedListProperty = serializedObject.FindProperty(field.Name);
                     
-                    if (serializedListProperty != null && serializedListProperty.isArray)
+                    if (_serializedListProperty != null && _serializedListProperty.isArray)
                     {
                         SetupReorderableList();
                         break;
@@ -35,23 +35,23 @@ namespace MageLock.JsonScriptableObject.Editor
 
         private void SetupReorderableList()
         {
-            if (serializedListProperty == null || !serializedListProperty.isArray) return;
+            if (_serializedListProperty == null || !_serializedListProperty.isArray) return;
 
             serializedObject.Update();
 
-            reorderableList = new ReorderableList(serializedObject, serializedListProperty,
+            _reorderableList = new ReorderableList(serializedObject, _serializedListProperty,
                 draggable: true, displayHeader: true, displayAddButton: true, displayRemoveButton: true);
 
-            reorderableList.drawHeaderCallback = rect =>
+            _reorderableList.drawHeaderCallback = rect =>
             {
-                EditorGUI.LabelField(rect, ObjectNames.NicifyVariableName(serializedListProperty.displayName));
+                EditorGUI.LabelField(rect, ObjectNames.NicifyVariableName(_serializedListProperty.displayName));
             };
 
-            reorderableList.drawElementCallback = (rect, index, isActive, isFocused) =>
+            _reorderableList.drawElementCallback = (rect, index, _, _) =>
             {
-                if (index >= serializedListProperty.arraySize) return;
+                if (index >= _serializedListProperty.arraySize) return;
 
-                SerializedProperty elementProperty = serializedListProperty.GetArrayElementAtIndex(index);
+                SerializedProperty elementProperty = _serializedListProperty.GetArrayElementAtIndex(index);
                 if (elementProperty == null)
                 {
                     EditorGUI.LabelField(rect, $"Element {index}: null");
@@ -65,44 +65,44 @@ namespace MageLock.JsonScriptableObject.Editor
                 EditorGUI.PropertyField(rect, elementProperty, true);
             };
 
-            reorderableList.elementHeightCallback = index =>
+            _reorderableList.elementHeightCallback = index =>
             {
-                if (index >= serializedListProperty.arraySize) 
+                if (index >= _serializedListProperty.arraySize) 
                     return EditorGUIUtility.singleLineHeight;
 
-                SerializedProperty elementProperty = serializedListProperty.GetArrayElementAtIndex(index);
+                SerializedProperty elementProperty = _serializedListProperty.GetArrayElementAtIndex(index);
                 if (elementProperty == null) 
                     return EditorGUIUtility.singleLineHeight;
 
                 return EditorGUI.GetPropertyHeight(elementProperty, true) + 4; 
             };
 
-            reorderableList.onReorderCallback = list =>
+            _reorderableList.onReorderCallback = _ =>
             {
-                EditorUtility.SetDirty(jsonScriptableObject);
+                EditorUtility.SetDirty(_jsonScriptableObject);
                 serializedObject.ApplyModifiedProperties();
             };
 
-            reorderableList.onAddCallback = list =>
+            _reorderableList.onAddCallback = _ =>
             {
-                serializedListProperty.arraySize++;
+                _serializedListProperty.arraySize++;
                 
-                SerializedProperty newElement = serializedListProperty.GetArrayElementAtIndex(serializedListProperty.arraySize - 1);
+                SerializedProperty newElement = _serializedListProperty.GetArrayElementAtIndex(_serializedListProperty.arraySize - 1);
                 
                 if (newElement != null)
                 {
                     ResetSerializedPropertyToDefault(newElement);
                 }
 
-                EditorUtility.SetDirty(jsonScriptableObject);
+                EditorUtility.SetDirty(_jsonScriptableObject);
             };
 
-            reorderableList.onRemoveCallback = list =>
+            _reorderableList.onRemoveCallback = list =>
             {
                 if (EditorUtility.DisplayDialog("Remove Element", "Are you sure you want to remove this element?", "Yes", "No"))
                 {
                     ReorderableList.defaultBehaviours.DoRemoveButton(list);
-                    EditorUtility.SetDirty(jsonScriptableObject);
+                    EditorUtility.SetDirty(_jsonScriptableObject);
                 }
             };
         }
@@ -168,10 +168,10 @@ namespace MageLock.JsonScriptableObject.Editor
 
             GUILayout.Space(10);
 
-            if (reorderableList != null && serializedListProperty != null && serializedListProperty.isArray)
+            if (_reorderableList != null && _serializedListProperty != null && _serializedListProperty.isArray)
             {
                 EditorGUILayout.BeginVertical("box");
-                reorderableList.DoLayoutList();
+                _reorderableList.DoLayoutList();
                 EditorGUILayout.EndVertical();
             }
             else
@@ -181,13 +181,13 @@ namespace MageLock.JsonScriptableObject.Editor
 
             if (serializedObject.ApplyModifiedProperties())
             {
-                EditorUtility.SetDirty(jsonScriptableObject);
+                EditorUtility.SetDirty(_jsonScriptableObject);
             }
         }
 
         private void ExportJsonToClipboard()
         {
-            string jsonData = JsonUtility.ToJson(jsonScriptableObject, true);
+            string jsonData = JsonUtility.ToJson(_jsonScriptableObject, true);
             
             if (!string.IsNullOrEmpty(jsonData))
             {
@@ -206,8 +206,8 @@ namespace MageLock.JsonScriptableObject.Editor
 
             if (!string.IsNullOrEmpty(filePath))
             {
-                jsonScriptableObject.ImportFromJson(filePath);
-                EditorUtility.SetDirty(jsonScriptableObject);
+                _jsonScriptableObject.ImportFromJson(filePath);
+                EditorUtility.SetDirty(_jsonScriptableObject);
                 AssetDatabase.SaveAssets();
             }
         }

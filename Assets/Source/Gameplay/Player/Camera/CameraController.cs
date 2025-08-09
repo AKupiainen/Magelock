@@ -21,7 +21,7 @@ namespace MageLock.Gameplay
         
         private void LateUpdate()
         {
-            if (target == null) return;
+            if (!target) return;
             
             UpdateCameraPosition();
             UpdateCameraRotation();

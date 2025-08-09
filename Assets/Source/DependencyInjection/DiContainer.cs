@@ -14,14 +14,14 @@ namespace MageLock.DependencyInjection
             get { return _instance ??= new DIContainer(); }
         }
 
-        private readonly Dictionary<Type, object> singletonInstances = new();
-        private readonly Dictionary<Type, Func<object>> factories = new();
-        private readonly Dictionary<Type, LifetimeType> lifetimes = new();
-        private readonly Dictionary<string, Type> namedBindings = new();
-        private readonly Dictionary<string, object> namedSingletons = new();
-        private readonly HashSet<Type> currentlyResolving = new();
-        private readonly HashSet<GameObject> managedGameObjects = new();
-        private readonly Dictionary<Type, List<Type>> interfaceImplementations = new();
+        private readonly Dictionary<Type, object> _singletonInstances = new();
+        private readonly Dictionary<Type, Func<object>> _factories = new();
+        private readonly Dictionary<Type, LifetimeType> _lifetimes = new();
+        private readonly Dictionary<string, Type> _namedBindings = new();
+        private readonly Dictionary<string, object> _namedSingletons = new();
+        private readonly HashSet<Type> _currentlyResolving = new();
+        private readonly HashSet<GameObject> _managedGameObjects = new();
+        private readonly Dictionary<Type, List<Type>> _interfaceImplementations = new();
 
         private enum LifetimeType
         {
@@ -42,9 +42,9 @@ namespace MageLock.DependencyInjection
 
             var type = typeof(T);
             var key = $"{type.FullName}#{name}";
-            namedSingletons[key] = instance;
-            namedBindings[name] = type;
-            lifetimes[type] = LifetimeType.Singleton;
+            _namedSingletons[key] = instance;
+            _namedBindings[name] = type;
+            _lifetimes[type] = LifetimeType.Singleton;
             
             Inject(instance);
             Debug.Log($"[DIContainer] Registered named singleton: {name} ({typeof(T).Name})");
@@ -56,8 +56,8 @@ namespace MageLock.DependencyInjection
                 throw new ArgumentNullException(nameof(instance));
 
             var type = typeof(T);
-            singletonInstances[type] = instance;
-            lifetimes[type] = LifetimeType.Singleton;
+            _singletonInstances[type] = instance;
+            _lifetimes[type] = LifetimeType.Singleton;
             
             Inject(instance);
         }
@@ -73,24 +73,24 @@ namespace MageLock.DependencyInjection
             var interfaceType = typeof(TInterface);
             var implementationType = typeof(TImplementation);
             
-            lifetimes[interfaceType] = LifetimeType.Singleton;
+            _lifetimes[interfaceType] = LifetimeType.Singleton;
             
-            if (!interfaceImplementations.ContainsKey(interfaceType))
+            if (!_interfaceImplementations.ContainsKey(interfaceType))
             {
-                interfaceImplementations[interfaceType] = new List<Type>();
+                _interfaceImplementations[interfaceType] = new List<Type>();
             }
             
-            interfaceImplementations[interfaceType].Add(implementationType);
+            _interfaceImplementations[interfaceType].Add(implementationType);
             
-            factories[interfaceType] = () =>
+            _factories[interfaceType] = () =>
             {
-                if (!singletonInstances.ContainsKey(interfaceType))
+                if (!_singletonInstances.ContainsKey(interfaceType))
                 {
                     var instance = new TImplementation();
                     Inject(instance);
-                    singletonInstances[interfaceType] = instance;
+                    _singletonInstances[interfaceType] = instance;
                 }
-                return singletonInstances[interfaceType];
+                return _singletonInstances[interfaceType];
             };
         }
 
@@ -100,20 +100,20 @@ namespace MageLock.DependencyInjection
                 throw new ArgumentNullException(nameof(factory));
 
             var type = typeof(T);
-            lifetimes[type] = LifetimeType.Singleton;
+            _lifetimes[type] = LifetimeType.Singleton;
             
-            factories[type] = () =>
+            _factories[type] = () =>
             {
-                if (!singletonInstances.ContainsKey(type))
+                if (!_singletonInstances.ContainsKey(type))
                 {
                     var instance = factory();
                     if (instance != null)
                     {
                         Inject(instance);
-                        singletonInstances[type] = instance;
+                        _singletonInstances[type] = instance;
                     }
                 }
-                return singletonInstances[type];
+                return _singletonInstances[type];
             };
         }
 
@@ -123,13 +123,13 @@ namespace MageLock.DependencyInjection
                 throw new ArgumentNullException(nameof(instance));
 
             var type = typeof(T);
-            singletonInstances[type] = instance;
-            lifetimes[type] = LifetimeType.Singleton;
+            _singletonInstances[type] = instance;
+            _lifetimes[type] = LifetimeType.Singleton;
             
             if (dontDestroyOnLoad)
             {
                 UnityEngine.Object.DontDestroyOnLoad(instance.gameObject);
-                managedGameObjects.Add(instance.gameObject);
+                _managedGameObjects.Add(instance.gameObject);
             }
             
             Inject(instance);
@@ -144,13 +144,13 @@ namespace MageLock.DependencyInjection
                 throw new ArgumentNullException(nameof(instance));
 
             var interfaceType = typeof(TInterface);
-            singletonInstances[interfaceType] = instance;
-            lifetimes[interfaceType] = LifetimeType.Singleton;
+            _singletonInstances[interfaceType] = instance;
+            _lifetimes[interfaceType] = LifetimeType.Singleton;
             
             if (dontDestroyOnLoad)
             {
                 UnityEngine.Object.DontDestroyOnLoad(instance.gameObject);
-                managedGameObjects.Add(instance.gameObject);
+                _managedGameObjects.Add(instance.gameObject);
             }
             
             Inject(instance);
@@ -168,16 +168,16 @@ namespace MageLock.DependencyInjection
             where TImplementation : MonoBehaviour, TInterface
         {
             var interfaceType = typeof(TInterface);
-            lifetimes[interfaceType] = LifetimeType.Singleton;
+            _lifetimes[interfaceType] = LifetimeType.Singleton;
             
-            factories[interfaceType] = () =>
+            _factories[interfaceType] = () =>
             {
-                if (!singletonInstances.ContainsKey(interfaceType))
+                if (!_singletonInstances.ContainsKey(interfaceType))
                 {
                     var singletonInstance = InstantiateMonoBehaviour<TImplementation>(dontDestroyOnLoad, gameObjectName);
-                    singletonInstances[interfaceType] = singletonInstance;
+                    _singletonInstances[interfaceType] = singletonInstance;
                 }
-                return singletonInstances[interfaceType];
+                return _singletonInstances[interfaceType];
             };
         }
 
@@ -194,16 +194,16 @@ namespace MageLock.DependencyInjection
                 throw new ArgumentNullException(nameof(prefab));
 
             var interfaceType = typeof(TInterface);
-            lifetimes[interfaceType] = LifetimeType.Singleton;
+            _lifetimes[interfaceType] = LifetimeType.Singleton;
             
-            factories[interfaceType] = () =>
+            _factories[interfaceType] = () =>
             {
-                if (!singletonInstances.ContainsKey(interfaceType))
+                if (!_singletonInstances.ContainsKey(interfaceType))
                 {
                     var singletonInstance = InstantiateFromPrefab<TImplementation>(prefab, dontDestroyOnLoad);
-                    singletonInstances[interfaceType] = singletonInstance;
+                    _singletonInstances[interfaceType] = singletonInstance;
                 }
-                return singletonInstances[interfaceType];
+                return _singletonInstances[interfaceType];
             };
         }
 
@@ -218,15 +218,15 @@ namespace MageLock.DependencyInjection
             var interfaceType = typeof(TInterface);
             var implementationType = typeof(TImplementation);
             
-            lifetimes[interfaceType] = LifetimeType.Transient;
+            _lifetimes[interfaceType] = LifetimeType.Transient;
             
-            if (!interfaceImplementations.ContainsKey(interfaceType))
+            if (!_interfaceImplementations.ContainsKey(interfaceType))
             {
-                interfaceImplementations[interfaceType] = new List<Type>();
+                _interfaceImplementations[interfaceType] = new List<Type>();
             }
-            interfaceImplementations[interfaceType].Add(implementationType);
+            _interfaceImplementations[interfaceType].Add(implementationType);
             
-            factories[interfaceType] = () =>
+            _factories[interfaceType] = () =>
             {
                 var implementation = new TImplementation();
                 Inject(implementation);
@@ -240,9 +240,9 @@ namespace MageLock.DependencyInjection
                 throw new ArgumentNullException(nameof(factory));
 
             var type = typeof(T);
-            lifetimes[type] = LifetimeType.Transient;
+            _lifetimes[type] = LifetimeType.Transient;
             
-            factories[type] = () =>
+            _factories[type] = () =>
             {
                 var target = factory();
                 if (target != null)
@@ -272,13 +272,13 @@ namespace MageLock.DependencyInjection
                 }
             }
 
-            singletonInstances[collectionType] = instanceList;
-            singletonInstances[arrayType] = instances;
-            singletonInstances[listType] = instanceList;
+            _singletonInstances[collectionType] = instanceList;
+            _singletonInstances[arrayType] = instances;
+            _singletonInstances[listType] = instanceList;
             
-            lifetimes[collectionType] = LifetimeType.Singleton;
-            lifetimes[arrayType] = LifetimeType.Singleton;
-            lifetimes[listType] = LifetimeType.Singleton;
+            _lifetimes[collectionType] = LifetimeType.Singleton;
+            _lifetimes[arrayType] = LifetimeType.Singleton;
+            _lifetimes[listType] = LifetimeType.Singleton;
         }
 
         #endregion
@@ -298,7 +298,7 @@ namespace MageLock.DependencyInjection
             var type = typeof(T);
             var key = $"{type.FullName}#{name}";
             
-            if (namedSingletons.TryGetValue(key, out object service))
+            if (_namedSingletons.TryGetValue(key, out object service))
             {
                 return (T)service;
             }
@@ -308,21 +308,21 @@ namespace MageLock.DependencyInjection
 
         public object GetService(Type type)
         {
-            if (currentlyResolving.Contains(type))
+            if (_currentlyResolving.Contains(type))
             {
                 throw new InvalidOperationException($"Circular dependency detected while resolving {type.Name}");
             }
 
             try
             {
-                currentlyResolving.Add(type);
+                _currentlyResolving.Add(type);
 
-                if (singletonInstances.TryGetValue(type, out object service))
+                if (_singletonInstances.TryGetValue(type, out object service))
                 {
                     return service;
                 }
 
-                if (factories.TryGetValue(type, out Func<object> factory))
+                if (_factories.TryGetValue(type, out Func<object> factory))
                 {
                     return factory();
                 }
@@ -336,7 +336,7 @@ namespace MageLock.DependencyInjection
             }
             finally
             {
-                currentlyResolving.Remove(type);
+                _currentlyResolving.Remove(type);
             }
         }
 
@@ -344,12 +344,12 @@ namespace MageLock.DependencyInjection
         {
             var interfaceType = typeof(T);
             
-            if (singletonInstances.TryGetValue(typeof(IEnumerable<T>), out object collection))
+            if (_singletonInstances.TryGetValue(typeof(IEnumerable<T>), out object collection))
             {
                 return (IEnumerable<T>)collection;
             }
             
-            if (interfaceImplementations.TryGetValue(interfaceType, out List<Type> implementations))
+            if (_interfaceImplementations.TryGetValue(interfaceType, out List<Type> implementations))
             {
                 var services = new List<T>();
                 foreach (var implType in implementations)
@@ -415,7 +415,7 @@ namespace MageLock.DependencyInjection
             if (dontDestroyOnLoad)
             {
                 UnityEngine.Object.DontDestroyOnLoad(gameObject);
-                managedGameObjects.Add(gameObject);
+                _managedGameObjects.Add(gameObject);
             }
             
             Inject(component);
@@ -439,7 +439,7 @@ namespace MageLock.DependencyInjection
             if (dontDestroyOnLoad)
             {
                 UnityEngine.Object.DontDestroyOnLoad(gameObject);
-                managedGameObjects.Add(gameObject);
+                _managedGameObjects.Add(gameObject);
             }
             
             InjectIntoHierarchy(gameObject);
@@ -696,7 +696,7 @@ namespace MageLock.DependencyInjection
             try
             {
                 var key = $"{type.FullName}#{name}";
-                return namedSingletons.TryGetValue(key, out service);
+                return _namedSingletons.TryGetValue(key, out service);
             }
             catch
             {
@@ -745,8 +745,8 @@ namespace MageLock.DependencyInjection
                 service = Activator.CreateInstance(type);
                 Inject(service);
                 
-                singletonInstances[type] = service;
-                lifetimes[type] = LifetimeType.Singleton;
+                _singletonInstances[type] = service;
+                _lifetimes[type] = LifetimeType.Singleton;
                 
                 return true;
             }
@@ -810,7 +810,7 @@ namespace MageLock.DependencyInjection
 
         public bool IsRegistered(Type type)
         {
-            return singletonInstances.ContainsKey(type) || factories.ContainsKey(type);
+            return _singletonInstances.ContainsKey(type) || _factories.ContainsKey(type);
         }
 
         public bool IsRegistered<T>()
@@ -824,14 +824,14 @@ namespace MageLock.DependencyInjection
             
             var type = typeof(T);
             var key = $"{type.FullName}#{name}";
-            return namedSingletons.ContainsKey(key);
+            return _namedSingletons.ContainsKey(key);
         }
 
         public void ValidateRegistrations()
         {
             var errors = new List<string>();
             
-            foreach (var kvp in factories)
+            foreach (var kvp in _factories)
             {
                 try
                 {
@@ -855,7 +855,7 @@ namespace MageLock.DependencyInjection
 
         public void Clear()
         {
-            foreach (var singletonInstance in singletonInstances.Values)
+            foreach (var singletonInstance in _singletonInstances.Values)
             {
                 if (singletonInstance is IDisposable disposable)
                 {
@@ -870,7 +870,7 @@ namespace MageLock.DependencyInjection
                 }
             }
 
-            foreach (var gameObject in managedGameObjects)
+            foreach (var gameObject in _managedGameObjects)
             {
                 if (gameObject != null)
                 {
@@ -878,23 +878,22 @@ namespace MageLock.DependencyInjection
                 }
             }
 
-            singletonInstances.Clear();
-            factories.Clear();
-            lifetimes.Clear();
-            namedBindings.Clear();
-            namedSingletons.Clear();
-            interfaceImplementations.Clear();
-            currentlyResolving.Clear();
-            managedGameObjects.Clear();
+            _singletonInstances.Clear();
+            _factories.Clear();
+            _lifetimes.Clear();
+            _namedBindings.Clear();
+            _namedSingletons.Clear();
+            _interfaceImplementations.Clear();
+            _currentlyResolving.Clear();
+            _managedGameObjects.Clear();
         }
 
-        // Additional helper methods for better functionality
         public Type[] GetRegisteredTypes()
         {
             var types = new HashSet<Type>();
-            foreach (var type in singletonInstances.Keys)
+            foreach (var type in _singletonInstances.Keys)
                 types.Add(type);
-            foreach (var type in factories.Keys)
+            foreach (var type in _factories.Keys)
                 types.Add(type);
             return types.ToArray();
         }
@@ -903,18 +902,18 @@ namespace MageLock.DependencyInjection
         {
             var type = typeof(T);
             
-            if (singletonInstances.TryGetValue(type, out var instance))
+            if (_singletonInstances.TryGetValue(type, out var instance))
             {
                 if (instance is IDisposable disposable)
                 {
                     disposable.Dispose();
                 }
-                singletonInstances.Remove(type);
+                _singletonInstances.Remove(type);
             }
             
-            factories.Remove(type);
-            lifetimes.Remove(type);
-            interfaceImplementations.Remove(type);
+            _factories.Remove(type);
+            _lifetimes.Remove(type);
+            _interfaceImplementations.Remove(type);
         }
 
         public bool HasCircularDependency(Type rootType)

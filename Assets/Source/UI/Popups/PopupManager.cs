@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-using MageLock.Utilies;
 using MageLock.Events;
 using MageLock.DependencyInjection;
 
@@ -29,17 +28,17 @@ namespace MageLock.UI
         [SerializeField] private List<PopupPrefabEntry> popupPrefabs = new();
         [SerializeField] private int basePopupSortOrder = 1000;
         
-        private readonly Stack<GameObject> activePopups = new();
-        private readonly Dictionary<PopupType, GameObject> activePopupsByType = new();
-        private readonly Dictionary<GameObject, int> popupSortOrders = new();
-        private int currentSortOrder;
+        private readonly Stack<GameObject> _activePopups = new();
+        private readonly Dictionary<PopupType, GameObject> _activePopupsByType = new();
+        private readonly Dictionary<GameObject, int> _popupSortOrders = new();
+        private int _currentSortOrder;
 
-        [Inject] private DIContainer diContainer;
+        [Inject] private DIContainer _diContainer;
 
         private void Awake()
         {
-            currentSortOrder = basePopupSortOrder;
-            diContainer ??= DIContainer.Instance;
+            _currentSortOrder = basePopupSortOrder;
+            _diContainer ??= DIContainer.Instance;
         }
 
         private GameObject GetPopupPrefab(PopupType popupType)
@@ -64,7 +63,7 @@ namespace MageLock.UI
 
         public bool IsPopupActive(PopupType popupType)
         {
-            return activePopupsByType.ContainsKey(popupType);
+            return _activePopupsByType.ContainsKey(popupType);
         }
 
         public GameObject ShowPopup(PopupType popupType)
@@ -72,7 +71,7 @@ namespace MageLock.UI
             if (IsPopupActive(popupType))
             {
                 Debug.LogWarning($"Popup of type {popupType} is already active. Cannot open duplicate.");
-                return activePopupsByType[popupType];
+                return _activePopupsByType[popupType];
             }
 
             GameObject prefab = GetPopupPrefab(popupType);
@@ -115,8 +114,8 @@ namespace MageLock.UI
                 popupComponent.Initialize();
             }
 
-            activePopups.Push(popupInstance);
-            activePopupsByType[popupType] = popupInstance;
+            _activePopups.Push(popupInstance);
+            _activePopupsByType[popupType] = popupInstance;
 
             Debug.Log($"[PopupManager] Successfully created and injected popup: {popupType} with GameObject: {popupInstance.name}");
 
@@ -131,7 +130,7 @@ namespace MageLock.UI
                 return;
             }
 
-            if (diContainer == null)
+            if (_diContainer == null)
             {
                 Debug.LogError("[PopupManager] DIContainer is null. Cannot inject dependencies into popup.");
                 return;
@@ -141,7 +140,7 @@ namespace MageLock.UI
             {
                 Debug.Log($"[PopupManager] Starting dependency injection for popup: {popupInstance.name}");
                 
-                diContainer.InjectIntoHierarchy(popupInstance);
+                _diContainer.InjectIntoHierarchy(popupInstance);
                 
                 Debug.Log($"[PopupManager] Completed dependency injection for popup hierarchy: {popupInstance.name}");
             }
@@ -168,10 +167,10 @@ namespace MageLock.UI
             }
 
             canvas.renderMode = RenderMode.ScreenSpaceCamera;
-            canvas.sortingOrder = currentSortOrder;
+            canvas.sortingOrder = _currentSortOrder;
             
-            popupSortOrders[popupInstance] = currentSortOrder;
-            currentSortOrder++;
+            _popupSortOrders[popupInstance] = _currentSortOrder;
+            _currentSortOrder++;
         }
 
         public T ShowPopup<T>(PopupType popupType, object data = null) where T : Popup
@@ -185,8 +184,8 @@ namespace MageLock.UI
                 if (popupComponent != null && data != null)
                 {
                     popupComponent.SetData(data);
-                    return popupComponent;
                 }
+                
                 return popupComponent;
             }
 
@@ -195,21 +194,21 @@ namespace MageLock.UI
 
         public void CloseTopPopup()
         {
-            if (activePopups.Count > 0)
+            if (_activePopups.Count > 0)
             {
-                GameObject popup = activePopups.Pop();
+                GameObject popup = _activePopups.Pop();
         
                 if (popup == null)
                 {
                     Debug.LogWarning("[PopupManager] Popup GameObject was destroyed during scene transition.");
             
-                    if (activePopups.Count == 0)
+                    if (_activePopups.Count == 0)
                     {
-                        currentSortOrder = basePopupSortOrder;
+                        _currentSortOrder = basePopupSortOrder;
                     }
                     else
                     {
-                        currentSortOrder--;
+                        _currentSortOrder--;
                     }
                     
                     return;
@@ -219,21 +218,21 @@ namespace MageLock.UI
 
                 if (popupComponent != null)
                 {
-                    activePopupsByType.Remove(popupComponent.PopupType);
+                    _activePopupsByType.Remove(popupComponent.PopupType);
                 }
         
-                if (popupSortOrders.ContainsKey(popup))
+                if (_popupSortOrders.ContainsKey(popup))
                 {
-                    popupSortOrders.Remove(popup);
+                    _popupSortOrders.Remove(popup);
                 }
         
-                if (activePopups.Count == 0)
+                if (_activePopups.Count == 0)
                 {
-                    currentSortOrder = basePopupSortOrder;
+                    _currentSortOrder = basePopupSortOrder;
                 }
                 else
                 {
-                    currentSortOrder--;
+                    _currentSortOrder--;
                 }
         
                 Debug.Log($"[PopupManager] Closing popup: {popup.name}");
@@ -243,27 +242,27 @@ namespace MageLock.UI
 
         public void CloseAllPopups()
         {
-            Debug.Log($"[PopupManager] Closing all {activePopups.Count} active popups");
+            Debug.Log($"[PopupManager] Closing all {_activePopups.Count} active popups");
             
-            while (activePopups.Count > 0)
+            while (_activePopups.Count > 0)
             {
-                GameObject popup = activePopups.Pop();
+                GameObject popup = _activePopups.Pop();
                 Destroy(popup);
             }
             
-            activePopupsByType.Clear();
-            popupSortOrders.Clear();
-            currentSortOrder = basePopupSortOrder;
+            _activePopupsByType.Clear();
+            _popupSortOrders.Clear();
+            _currentSortOrder = basePopupSortOrder;
         }
 
         public int GetActivePopupCount()
         {
-            return activePopups.Count;
+            return _activePopups.Count;
         }
 
         public PopupType[] GetActivePopupTypes()
         {
-            return activePopupsByType.Keys.ToArray();
+            return _activePopupsByType.Keys.ToArray();
         }
     }
 

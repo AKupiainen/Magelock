@@ -7,7 +7,13 @@ namespace MageLock.Gameplay
     public class BillboardText : MonoBehaviour
     {
         [SerializeField] private TextMeshPro textMesh;
-        
+        private Camera _camera;
+
+        private void Start()
+        {
+            _camera = Camera.main;
+        }
+
         private void Awake()
         {
             if (textMesh == null)
@@ -24,10 +30,10 @@ namespace MageLock.Gameplay
             Vector3 forward = Vector3.forward;
             Vector3 up = Vector3.up;
             
-            if (Camera.main != null)
+            if (_camera)
             {
-                forward = Camera.main.transform.forward;
-                up = Camera.main.transform.up;
+                forward = _camera.transform.forward;
+                up = _camera.transform.up;
             }
             
             Quaternion targetRotation = Quaternion.LookRotation(forward, up);

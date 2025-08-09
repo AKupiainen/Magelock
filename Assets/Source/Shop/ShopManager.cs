@@ -11,10 +11,10 @@ namespace MageLock.Shop
         [Header("Shop Configuration")]
         [SerializeField] private List<ShopProductBaseConfig> allProducts;
 
-        private IStoreController storeController;
-        private IExtensionProvider extensionProvider;
+        private IStoreController _storeController;
+        private IExtensionProvider _extensionProvider;
 
-        private Dictionary<string, IAPProductConfig> iapProductMap;
+        private Dictionary<string, IAPProductConfig> _iapProductMap;
 
         public System.Action<ShopProductBaseConfig> OnPurchaseCompleted;
         public System.Action<ShopProductBaseConfig> OnPurchaseFailedEvent;
@@ -28,14 +28,14 @@ namespace MageLock.Shop
 
             var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
 
-            iapProductMap = new Dictionary<string, IAPProductConfig>();
+            _iapProductMap = new Dictionary<string, IAPProductConfig>();
 
             foreach (var product in allProducts)
             {
                 if (product is IAPProductConfig iapProduct)
                 {
                     builder.AddProduct(iapProduct.ProductId, ProductType.Consumable);
-                    iapProductMap[iapProduct.ProductId] = iapProduct;
+                    _iapProductMap[iapProduct.ProductId] = iapProduct;
                 }
             }
 
@@ -44,7 +44,7 @@ namespace MageLock.Shop
 
         public bool IsInitialized()
         {
-            return storeController != null && extensionProvider != null;
+            return _storeController != null && _extensionProvider != null;
         }
 
         public void BuyProduct(ShopProductBaseConfig product)
@@ -100,7 +100,7 @@ namespace MageLock.Shop
                 return;
             }
 
-            storeController.InitiatePurchase(productId);
+            _storeController.InitiatePurchase(productId);
         }
 
         public List<ShopProductBaseConfig> GetAllProducts()
@@ -110,7 +110,7 @@ namespace MageLock.Shop
 
         public ShopProductBaseConfig GetProductById(string productId)
         {
-            return iapProductMap != null && iapProductMap.TryGetValue(productId, out var product)
+            return _iapProductMap != null && _iapProductMap.TryGetValue(productId, out var product)
                 ? product
                 : null;
         }
@@ -119,7 +119,7 @@ namespace MageLock.Shop
         {
             if (!IsInitialized()) return string.Empty;
 
-            var product = storeController.products.WithID(productId);
+            var product = _storeController.products.WithID(productId);
 
             return product != null && product.availableToPurchase
                 ? product.metadata.localizedPriceString
@@ -130,7 +130,7 @@ namespace MageLock.Shop
         {
             if (!IsInitialized()) return false;
 
-            var product = storeController.products.WithID(productId);
+            var product = _storeController.products.WithID(productId);
             return product != null && product.availableToPurchase;
         }
 
@@ -139,8 +139,8 @@ namespace MageLock.Shop
         public void OnInitialized(IStoreController controller, IExtensionProvider extensions)
         {
             Debug.Log("Unity IAP Initialized Successfully.");
-            storeController = controller;
-            extensionProvider = extensions;
+            _storeController = controller;
+            _extensionProvider = extensions;
         }
 
         public void OnInitializeFailed(InitializationFailureReason error, string message)
@@ -157,7 +157,7 @@ namespace MageLock.Shop
         {
             string productId = args.purchasedProduct.definition.id;
 
-            if (iapProductMap.TryGetValue(productId, out var product))
+            if (_iapProductMap.TryGetValue(productId, out var product))
             {
                 Debug.Log($"Processing IAP purchase: {product.ProductName}");
 
@@ -187,7 +187,7 @@ namespace MageLock.Shop
         {
             Debug.LogError($"Purchase of product {product.definition.id} failed: {failureReason}");
 
-            if (iapProductMap.TryGetValue(product.definition.id, out var productConfig))
+            if (_iapProductMap.TryGetValue(product.definition.id, out var productConfig))
             {
                 OnPurchaseFailedEvent?.Invoke(productConfig);
             }
@@ -197,7 +197,7 @@ namespace MageLock.Shop
         {
             Debug.LogError($"Purchase of product {product.definition.id} failed: {failureDescription.reason} - {failureDescription.message}");
 
-            if (iapProductMap.TryGetValue(product.definition.id, out var productConfig))
+            if (_iapProductMap.TryGetValue(product.definition.id, out var productConfig))
             {
                 OnPurchaseFailedEvent?.Invoke(productConfig);
             }

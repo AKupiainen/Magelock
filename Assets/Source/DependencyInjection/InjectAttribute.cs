@@ -11,19 +11,12 @@ namespace MageLock.DependencyInjection
         /// <summary>
         /// Optional name for named dependency resolution
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; }
 
         /// <summary>
         /// Whether this injection is required. If false, injection failures will be logged but not cause exceptions
         /// </summary>
         public bool Required { get; set; } = true;
-
-        public InjectAttribute() { }
-        
-        public InjectAttribute(string name)
-        {
-            Name = name;
-        }
     }
 
     /// <summary>
@@ -35,10 +28,8 @@ namespace MageLock.DependencyInjection
         /// <summary>
         /// Default value to use if dependency cannot be resolved
         /// </summary>
-        public object DefaultValue { get; set; }
+        public object DefaultValue { get; }
 
-        public OptionalInjectAttribute() { }
-        
         public OptionalInjectAttribute(object defaultValue)
         {
             DefaultValue = defaultValue;
@@ -71,7 +62,7 @@ namespace MageLock.DependencyInjection
         /// <summary>
         /// Execution order for multiple PostInject methods. Lower values execute first
         /// </summary>
-        public int Order { get; set; } = 0;
+        public int Order => 0;
     }
 
     /// <summary>
@@ -88,7 +79,7 @@ namespace MageLock.DependencyInjection
         /// <summary>
         /// Expected value of the condition member for injection to occur
         /// </summary>
-        public bool ExpectedValue { get; set; } = true;
+        public bool ExpectedValue => true;
 
         public ConditionalInjectAttribute(string conditionMember)
         {

@@ -8,7 +8,8 @@ namespace MageLock.UI
     {
         [SerializeField] private Transform languageButtonContainer;
         [SerializeField] private GameObject languageButtonPrefab;
-        [Inject] private LocalizationService localizationService;
+        
+        [Inject] private LocalizationService _localizationService;
 
         public override void Initialize()
         {
@@ -23,7 +24,7 @@ namespace MageLock.UI
                 Destroy(child.gameObject);
             }
 
-            foreach (var data in localizationService.LocalizationDatas)
+            foreach (var data in _localizationService.LocalizationDatas)
             {
                 LanguageButton languageButton = DIContainer.Instance.InstantiateFromPrefab<LanguageButton>(
                     languageButtonPrefab,

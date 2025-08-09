@@ -40,48 +40,48 @@ namespace MageLock.Graphics.Editor
 
     public class ToonShaderGUI : ShaderGUI
     {
-        private MaterialProperty mainTex;
-        private MaterialProperty color;
-        private MaterialProperty shadowThreshold;
-        private MaterialProperty shadowSmoothness;
-        private MaterialProperty shadowColor;
-        private MaterialProperty lightRampTex;
-        private MaterialProperty lightRampOffset;
-        private MaterialProperty posterizeLevels;
-        private MaterialProperty posterizePower;
-        private MaterialProperty useRimLight;
-        private MaterialProperty rimColor;
-        private MaterialProperty rimPower;
-        private MaterialProperty rimIntensity;
-        private MaterialProperty rimSmoothness;
-        private MaterialProperty useSpecular;
-        private MaterialProperty specularColor;
-        private MaterialProperty specularSize;
-        private MaterialProperty specularSmoothness;
-        private MaterialProperty specularSteps;
-        private MaterialProperty useOutline;
-        private MaterialProperty outlineColor;
-        private MaterialProperty outlineWidth;
-        private MaterialProperty outlineAdaptive;
-        private MaterialProperty useHalftone;
-        private MaterialProperty halftoneTex;
-        private MaterialProperty halftoneScale;
-        private MaterialProperty halftoneThreshold;
-        private MaterialProperty halftoneSmoothness;
-        private MaterialProperty indirectLightStrength;
-        private MaterialProperty lightWrapAround;
-        private MaterialProperty receiveShadows;
+        private MaterialProperty _mainTex;
+        private MaterialProperty _color;
+        private MaterialProperty _shadowThreshold;
+        private MaterialProperty _shadowSmoothness;
+        private MaterialProperty _shadowColor;
+        private MaterialProperty _lightRampTex;
+        private MaterialProperty _lightRampOffset;
+        private MaterialProperty _posterizeLevels;
+        private MaterialProperty _posterizePower;
+        private MaterialProperty _useRimLight;
+        private MaterialProperty _rimColor;
+        private MaterialProperty _rimPower;
+        private MaterialProperty _rimIntensity;
+        private MaterialProperty _rimSmoothness;
+        private MaterialProperty _useSpecular;
+        private MaterialProperty _specularColor;
+        private MaterialProperty _specularSize;
+        private MaterialProperty _specularSmoothness;
+        private MaterialProperty _specularSteps;
+        private MaterialProperty _useOutline;
+        private MaterialProperty _outlineColor;
+        private MaterialProperty _outlineWidth;
+        private MaterialProperty _outlineAdaptive;
+        private MaterialProperty _useHalftone;
+        private MaterialProperty _halftoneTex;
+        private MaterialProperty _halftoneScale;
+        private MaterialProperty _halftoneThreshold;
+        private MaterialProperty _halftoneSmoothness;
+        private MaterialProperty _indirectLightStrength;
+        private MaterialProperty _lightWrapAround;
+        private MaterialProperty _receiveShadows;
 
-        private GUIStyle headerStyle;
-        private GUIStyle sectionStyle;
-        private GUIStyle presetButtonStyle;
-        private GUIStyle randomizeButtonStyle;
-        private GUIStyle toggleButtonStyle;
+        private GUIStyle _headerStyle;
+        private GUIStyle _sectionStyle;
+        private GUIStyle _presetButtonStyle;
+        private GUIStyle _randomizeButtonStyle;
+        private GUIStyle _toggleButtonStyle;
 
-        private readonly Color accentColor = new(0.3f, 0.7f, 1f);
-        private readonly Color warningColor = new(1f, 0.6f, 0.2f);
-        private readonly Color successColor = new(0.3f, 0.8f, 0.3f);
-        private readonly Color errorColor = new(1f, 0.3f, 0.3f);
+        private readonly Color _accentColor = new(0.3f, 0.7f, 1f);
+        private readonly Color _warningColor = new(1f, 0.6f, 0.2f);
+        private readonly Color _successColor = new(0.3f, 0.8f, 0.3f);
+        private readonly Color _errorColor = new(1f, 0.3f, 0.3f);
 
         private static bool _showMainSettings = true;
         private static bool _showShadingSettings = true;
@@ -91,23 +91,27 @@ namespace MageLock.Graphics.Editor
         private static bool _showHalftoneSettings;
         private static bool _showAdvancedSettings;
         private static bool _showPresets = true;
-        private bool stylesInitialized;
+        private bool _stylesInitialized;
         
-        public ToonShaderGUI() { }
-
-        public ToonShaderGUI(MaterialProperty halftoneScale)
+        public ToonShaderGUI(MaterialProperty specularSize)
         {
-            this.halftoneScale = halftoneScale;
+            _specularSize = specularSize;
+        }
+
+        public ToonShaderGUI(MaterialProperty halftoneScale, MaterialProperty specularSize)
+        {
+            _halftoneScale = halftoneScale;
+            _specularSize = specularSize;
         }
 
         public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] properties)
         {
             FindProperties(properties);
 
-            if (!stylesInitialized)
+            if (!_stylesInitialized)
             {
                 SetupStyles();
-                stylesInitialized = true;
+                _stylesInitialized = true;
             }
 
             Material material = materialEditor.target as Material;
@@ -139,64 +143,64 @@ namespace MageLock.Graphics.Editor
 
         void FindProperties(MaterialProperty[] props)
         {
-            mainTex = FindProperty("_MainTex", props, false);
-            color = FindProperty("_Color", props, false);
-            shadowThreshold = FindProperty("_ShadowThreshold", props, false);
-            shadowSmoothness = FindProperty("_ShadowSmoothness", props, false);
-            shadowColor = FindProperty("_ShadowColor", props, false);
-            lightRampTex = FindProperty("_LightRampTex", props, false);
-            lightRampOffset = FindProperty("_RampOffset", props, false);
-            posterizeLevels = FindProperty("_PosterizeLevels", props, false);
-            posterizePower = FindProperty("_PosterizePower", props, false);
-            useRimLight = FindProperty("_UseRimLight", props, false);
-            rimColor = FindProperty("_RimColor", props, false);
-            rimPower = FindProperty("_RimPower", props, false);
-            rimIntensity = FindProperty("_RimIntensity", props, false);
-            rimSmoothness = FindProperty("_RimSmoothness", props, false);
-            useSpecular = FindProperty("_UseSpecular", props, false);
-            specularColor = FindProperty("_SpecularColor", props, false);
-            specularSize = FindProperty("_SpecularSize", props, false);
-            specularSmoothness = FindProperty("_SpecularSmoothness", props, false);
-            specularSteps = FindProperty("_SpecularSteps", props, false);
-            useOutline = FindProperty("_UseOutline", props, false);
-            outlineColor = FindProperty("_OutlineColor", props, false);
-            outlineWidth = FindProperty("_OutlineWidth", props, false);
-            outlineAdaptive = FindProperty("_OutlineAdaptive", props, false);
-            useHalftone = FindProperty("_UseHalftone", props, false);
-            halftoneTex = FindProperty("_HalftoneTex", props, false);
-            halftoneScale = FindProperty("_HalftoneScale", props, false);
-            halftoneThreshold = FindProperty("_HalftoneThreshold", props, false);
-            halftoneSmoothness = FindProperty("_HalftoneSmoothness", props, false);
-            indirectLightStrength = FindProperty("_IndirectLightStrength", props, false);
-            lightWrapAround = FindProperty("_LightWrapAround", props, false);
-            receiveShadows = FindProperty("_ReceiveShadows", props, false);
+            _mainTex = FindProperty("_MainTex", props, false);
+            _color = FindProperty("_Color", props, false);
+            _shadowThreshold = FindProperty("_ShadowThreshold", props, false);
+            _shadowSmoothness = FindProperty("_ShadowSmoothness", props, false);
+            _shadowColor = FindProperty("_ShadowColor", props, false);
+            _lightRampTex = FindProperty("_LightRampTex", props, false);
+            _lightRampOffset = FindProperty("_RampOffset", props, false);
+            _posterizeLevels = FindProperty("_PosterizeLevels", props, false);
+            _posterizePower = FindProperty("_PosterizePower", props, false);
+            _useRimLight = FindProperty("_UseRimLight", props, false);
+            _rimColor = FindProperty("_RimColor", props, false);
+            _rimPower = FindProperty("_RimPower", props, false);
+            _rimIntensity = FindProperty("_RimIntensity", props, false);
+            _rimSmoothness = FindProperty("_RimSmoothness", props, false);
+            _useSpecular = FindProperty("_UseSpecular", props, false);
+            _specularColor = FindProperty("_SpecularColor", props, false);
+            _specularSize = FindProperty("_SpecularSize", props, false);
+            _specularSmoothness = FindProperty("_SpecularSmoothness", props, false);
+            _specularSteps = FindProperty("_SpecularSteps", props, false);
+            _useOutline = FindProperty("_UseOutline", props, false);
+            _outlineColor = FindProperty("_OutlineColor", props, false);
+            _outlineWidth = FindProperty("_OutlineWidth", props, false);
+            _outlineAdaptive = FindProperty("_OutlineAdaptive", props, false);
+            _useHalftone = FindProperty("_UseHalftone", props, false);
+            _halftoneTex = FindProperty("_HalftoneTex", props, false);
+            _halftoneScale = FindProperty("_HalftoneScale", props, false);
+            _halftoneThreshold = FindProperty("_HalftoneThreshold", props, false);
+            _halftoneSmoothness = FindProperty("_HalftoneSmoothness", props, false);
+            _indirectLightStrength = FindProperty("_IndirectLightStrength", props, false);
+            _lightWrapAround = FindProperty("_LightWrapAround", props, false);
+            _receiveShadows = FindProperty("_ReceiveShadows", props, false);
         }
 
         void SetupStyles()
         {
-            headerStyle = new GUIStyle(EditorStyles.boldLabel);
-            headerStyle.fontSize = 18;
-            headerStyle.normal.textColor = accentColor;
-            headerStyle.alignment = TextAnchor.MiddleCenter;
+            _headerStyle = new GUIStyle(EditorStyles.boldLabel);
+            _headerStyle.fontSize = 18;
+            _headerStyle.normal.textColor = _accentColor;
+            _headerStyle.alignment = TextAnchor.MiddleCenter;
 
-            sectionStyle = new GUIStyle(EditorStyles.boldLabel);
-            sectionStyle.fontSize = 12;
-            sectionStyle.normal.textColor = new Color(0.9f, 0.9f, 0.9f);
+            _sectionStyle = new GUIStyle(EditorStyles.boldLabel);
+            _sectionStyle.fontSize = 12;
+            _sectionStyle.normal.textColor = new Color(0.9f, 0.9f, 0.9f);
 
-            presetButtonStyle = new GUIStyle(GUI.skin.button);
-            presetButtonStyle.fontSize = 10;
-            presetButtonStyle.fontStyle = FontStyle.Bold;
-            presetButtonStyle.fixedHeight = 25;
+            _presetButtonStyle = new GUIStyle(GUI.skin.button);
+            _presetButtonStyle.fontSize = 10;
+            _presetButtonStyle.fontStyle = FontStyle.Bold;
+            _presetButtonStyle.fixedHeight = 25;
 
-            randomizeButtonStyle = new GUIStyle(GUI.skin.button);
-            randomizeButtonStyle.fontSize = 9;
-            randomizeButtonStyle.fontStyle = FontStyle.Bold;
-            randomizeButtonStyle.fixedHeight = 18;
-            randomizeButtonStyle.fixedWidth = 65;
+            _randomizeButtonStyle = new GUIStyle(GUI.skin.button);
+            _randomizeButtonStyle.fontSize = 9;
+            _randomizeButtonStyle.fontStyle = FontStyle.Bold;
+            _randomizeButtonStyle.fixedHeight = 18;
+            _randomizeButtonStyle.fixedWidth = 65;
 
-            toggleButtonStyle = new GUIStyle(GUI.skin.button);
-            toggleButtonStyle.fontSize = 10;
-            toggleButtonStyle.fixedHeight = 20;
+            _toggleButtonStyle = new GUIStyle(GUI.skin.button);
+            _toggleButtonStyle.fontSize = 10;
+            _toggleButtonStyle.fixedHeight = 20;
         }
 
         void DrawHeader()
@@ -206,11 +210,11 @@ namespace MageLock.Graphics.Editor
             var headerRect = GUILayoutUtility.GetRect(0, 35, GUILayout.ExpandWidth(true));
             var originalColor = GUI.color;
 
-            GUI.color = new Color(accentColor.r, accentColor.g, accentColor.b, 0.2f);
+            GUI.color = new Color(_accentColor.r, _accentColor.g, _accentColor.b, 0.2f);
             GUI.DrawTexture(headerRect, EditorGUIUtility.whiteTexture);
             GUI.color = originalColor;
 
-            GUI.Label(headerRect, "🎨 TOON SHADER", headerStyle);
+            GUI.Label(headerRect, "🎨 TOON SHADER", _headerStyle);
 
             EditorGUILayout.Space(5);
             DrawSeparator();
@@ -218,7 +222,7 @@ namespace MageLock.Graphics.Editor
 
         void DrawPresetSection(Material material)
         {
-            DrawSectionHeader("🎯 Style Presets", ref _showPresets, successColor);
+            DrawSectionHeader("🎯 Style Presets", ref _showPresets, _successColor);
 
             if (_showPresets)
             {
@@ -248,31 +252,31 @@ namespace MageLock.Graphics.Editor
 
         void DrawMainSection(MaterialEditor materialEditor)
         {
-            DrawSectionHeader("🎨 Main Color", ref _showMainSettings, accentColor);
+            DrawSectionHeader("🎨 Main Color", ref _showMainSettings, _accentColor);
 
             if (_showMainSettings)
             {
                 using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
                 {
-                    if (mainTex != null)
+                    if (_mainTex != null)
                     {
-                        materialEditor.ShaderProperty(mainTex, "Main Texture");
+                        materialEditor.ShaderProperty(_mainTex, "Main Texture");
                     }
 
                     using (new EditorGUILayout.HorizontalScope())
                     {
-                        if (color != null)
+                        if (_color != null)
                         {
-                            materialEditor.ShaderProperty(color, "Base Color");
+                            materialEditor.ShaderProperty(_color, "Base Color");
                         }
 
                         DrawRandomizeButton(() =>
                         {
-                            if (color != null)
+                            if (_color != null)
                             {
-                                color.colorValue = Random.ColorHSV(0f, 1f, 0.4f, 1f, 0.6f, 1f);
+                                _color.colorValue = Random.ColorHSV(0f, 1f, 0.4f, 1f, 0.6f, 1f);
                             }
-                        }, warningColor);
+                        }, _warningColor);
                     }
                 }
             }
@@ -288,44 +292,44 @@ namespace MageLock.Graphics.Editor
                 {
                     using (new EditorGUILayout.HorizontalScope())
                     {
-                        EditorGUILayout.LabelField("Shadow Settings", sectionStyle, GUILayout.Width(120));
+                        EditorGUILayout.LabelField("Shadow Settings", _sectionStyle, GUILayout.Width(120));
                         GUILayout.FlexibleSpace();
                         DrawRandomizeButton(() => RandomizeShadingSettings(), new Color(1f, 0.7f, 0.3f));
                     }
 
-                    if (shadowThreshold != null)
+                    if (_shadowThreshold != null)
                     {
-                        materialEditor.ShaderProperty(shadowThreshold, "Shadow Threshold");
+                        materialEditor.ShaderProperty(_shadowThreshold, "Shadow Threshold");
                     }
-                    if (shadowSmoothness != null)
+                    if (_shadowSmoothness != null)
                     {
-                        materialEditor.ShaderProperty(shadowSmoothness, "Shadow Smoothness");
+                        materialEditor.ShaderProperty(_shadowSmoothness, "Shadow Smoothness");
                     }
-                    if (shadowColor != null)
+                    if (_shadowColor != null)
                     {
-                        materialEditor.ShaderProperty(shadowColor, "Shadow Color");
-                    }
-
-                    EditorGUILayout.Space(5);
-                    EditorGUILayout.LabelField("Ramp Shading", sectionStyle);
-                    if (lightRampTex != null)
-                    {
-                        materialEditor.ShaderProperty(lightRampTex, "Light Ramp Texture");
-                    }
-                    if (lightRampOffset != null)
-                    {
-                        materialEditor.ShaderProperty(lightRampOffset, "Light Ramp Offset");
+                        materialEditor.ShaderProperty(_shadowColor, "Shadow Color");
                     }
 
                     EditorGUILayout.Space(5);
-                    EditorGUILayout.LabelField("Posterize Shading", sectionStyle);
-                    if (posterizeLevels != null)
+                    EditorGUILayout.LabelField("Ramp Shading", _sectionStyle);
+                    if (_lightRampTex != null)
                     {
-                        materialEditor.ShaderProperty(posterizeLevels, "Posterize Levels");
+                        materialEditor.ShaderProperty(_lightRampTex, "Light Ramp Texture");
                     }
-                    if (posterizePower != null)
+                    if (_lightRampOffset != null)
                     {
-                        materialEditor.ShaderProperty(posterizePower, "Posterize Power");
+                        materialEditor.ShaderProperty(_lightRampOffset, "Light Ramp Offset");
+                    }
+
+                    EditorGUILayout.Space(5);
+                    EditorGUILayout.LabelField("Posterize Shading", _sectionStyle);
+                    if (_posterizeLevels != null)
+                    {
+                        materialEditor.ShaderProperty(_posterizeLevels, "Posterize Levels");
+                    }
+                    if (_posterizePower != null)
+                    {
+                        materialEditor.ShaderProperty(_posterizePower, "Posterize Power");
                     }
                 }
             }
@@ -333,7 +337,7 @@ namespace MageLock.Graphics.Editor
 
         void DrawRimLightSection(MaterialEditor materialEditor)
         {
-            DrawSectionHeader("✨ Rim Lighting", ref _showRimSettings, new Color(0.4f, 0.8f, 1f), useRimLight);
+            DrawSectionHeader("✨ Rim Lighting", ref _showRimSettings, new Color(0.4f, 0.8f, 1f), _useRimLight);
 
             if (_showRimSettings)
             {
@@ -341,29 +345,29 @@ namespace MageLock.Graphics.Editor
                 {
                     using (new EditorGUILayout.HorizontalScope())
                     {
-                        EditorGUILayout.LabelField("Rim Light Settings", sectionStyle, GUILayout.Width(120));
+                        EditorGUILayout.LabelField("Rim Light Settings", _sectionStyle, GUILayout.Width(120));
                         GUILayout.FlexibleSpace();
                         DrawRandomizeButton(() => RandomizeRimSettings(), new Color(0.3f, 0.8f, 1f));
                     }
 
-                    bool useRim = useRimLight != null && useRimLight.floatValue > 0.5f;
+                    bool useRim = _useRimLight != null && _useRimLight.floatValue > 0.5f;
                     using (new EditorGUI.DisabledScope(!useRim))
                     {
-                        if (rimColor != null)
+                        if (_rimColor != null)
                         {
-                            materialEditor.ShaderProperty(rimColor, "Rim Color");
+                            materialEditor.ShaderProperty(_rimColor, "Rim Color");
                         }
-                        if (rimPower != null)
+                        if (_rimPower != null)
                         {
-                            materialEditor.ShaderProperty(rimPower, "Rim Power");
+                            materialEditor.ShaderProperty(_rimPower, "Rim Power");
                         }
-                        if (rimIntensity != null)
+                        if (_rimIntensity != null)
                         {
-                            materialEditor.ShaderProperty(rimIntensity, "Rim Intensity");
+                            materialEditor.ShaderProperty(_rimIntensity, "Rim Intensity");
                         }
-                        if (rimSmoothness != null)
+                        if (_rimSmoothness != null)
                         {
-                            materialEditor.ShaderProperty(rimSmoothness, "Rim Smoothness");
+                            materialEditor.ShaderProperty(_rimSmoothness, "Rim Smoothness");
                         }
                     }
                 }
@@ -372,7 +376,7 @@ namespace MageLock.Graphics.Editor
 
         void DrawSpecularSection(MaterialEditor materialEditor)
         {
-            DrawSectionHeader("💎 Specular", ref _showSpecularSettings, new Color(1f, 1f, 0.4f), useSpecular);
+            DrawSectionHeader("💎 Specular", ref _showSpecularSettings, new Color(1f, 1f, 0.4f), _useSpecular);
 
             if (_showSpecularSettings)
             {
@@ -380,29 +384,29 @@ namespace MageLock.Graphics.Editor
                 {
                     using (new EditorGUILayout.HorizontalScope())
                     {
-                        EditorGUILayout.LabelField("Specular Settings", sectionStyle, GUILayout.Width(120));
+                        EditorGUILayout.LabelField("Specular Settings", _sectionStyle, GUILayout.Width(120));
                         GUILayout.FlexibleSpace();
                         DrawRandomizeButton(RandomizeSpecularSettings, new Color(1f, 1f, 0.3f));
                     }
 
-                    bool useSpec = useSpecular != null && useSpecular.floatValue > 0.5f;
+                    bool useSpec = _useSpecular != null && _useSpecular.floatValue > 0.5f;
                     using (new EditorGUI.DisabledScope(!useSpec))
                     {
-                        if (specularColor != null)
+                        if (_specularColor != null)
                         {
-                            materialEditor.ShaderProperty(specularColor, "Specular Color");
+                            materialEditor.ShaderProperty(_specularColor, "Specular Color");
                         }
-                        if (specularSize != null)
+                        if (_specularSize != null)
                         {
-                            materialEditor.ShaderProperty(specularSize, "Specular Size");
+                            materialEditor.ShaderProperty(_specularSize, "Specular Size");
                         }
-                        if (specularSmoothness != null)
+                        if (_specularSmoothness != null)
                         {
-                            materialEditor.ShaderProperty(specularSmoothness, "Specular Smoothness");
+                            materialEditor.ShaderProperty(_specularSmoothness, "Specular Smoothness");
                         }
-                        if (specularSteps != null)
+                        if (_specularSteps != null)
                         {
-                            materialEditor.ShaderProperty(specularSteps, "Specular Steps");
+                            materialEditor.ShaderProperty(_specularSteps, "Specular Steps");
                         }
                     }
                 }
@@ -411,7 +415,7 @@ namespace MageLock.Graphics.Editor
 
         void DrawOutlineSection(MaterialEditor materialEditor)
         {
-            DrawSectionHeader("🖼️ Outline", ref _showOutlineSettings, new Color(0.8f, 0.4f, 1f), useOutline);
+            DrawSectionHeader("🖼️ Outline", ref _showOutlineSettings, new Color(0.8f, 0.4f, 1f), _useOutline);
 
             if (_showOutlineSettings)
             {
@@ -419,25 +423,25 @@ namespace MageLock.Graphics.Editor
                 {
                     using (new EditorGUILayout.HorizontalScope())
                     {
-                        EditorGUILayout.LabelField("Outline Settings", sectionStyle, GUILayout.Width(120));
+                        EditorGUILayout.LabelField("Outline Settings", _sectionStyle, GUILayout.Width(120));
                         GUILayout.FlexibleSpace();
                         DrawRandomizeButton(RandomizeOutlineSettings, new Color(0.8f, 0.3f, 1f));
                     }
 
-                    bool useOutline = this.useOutline != null && this.useOutline.floatValue > 0.5f;
+                    bool useOutline = this._useOutline != null && this._useOutline.floatValue > 0.5f;
                     using (new EditorGUI.DisabledScope(!useOutline))
                     {
-                        if (outlineColor != null)
+                        if (_outlineColor != null)
                         {
-                            materialEditor.ShaderProperty(outlineColor, "Outline Color");
+                            materialEditor.ShaderProperty(_outlineColor, "Outline Color");
                         }
-                        if (outlineWidth != null)
+                        if (_outlineWidth != null)
                         {
-                            materialEditor.ShaderProperty(outlineWidth, "Outline Width");
+                            materialEditor.ShaderProperty(_outlineWidth, "Outline Width");
                         }
-                        if (outlineAdaptive != null)
+                        if (_outlineAdaptive != null)
                         {
-                            materialEditor.ShaderProperty(outlineAdaptive, "Outline Adaptive");
+                            materialEditor.ShaderProperty(_outlineAdaptive, "Outline Adaptive");
                         }
                     }
                 }
@@ -446,7 +450,7 @@ namespace MageLock.Graphics.Editor
 
         void DrawHalftoneSection(MaterialEditor materialEditor)
         {
-            DrawSectionHeader("🔲 Halftone", ref _showHalftoneSettings, new Color(1f, 0.6f, 0.2f), useHalftone);
+            DrawSectionHeader("🔲 Halftone", ref _showHalftoneSettings, new Color(1f, 0.6f, 0.2f), _useHalftone);
 
             if (_showHalftoneSettings)
             {
@@ -454,29 +458,29 @@ namespace MageLock.Graphics.Editor
                 {
                     using (new EditorGUILayout.HorizontalScope())
                     {
-                        EditorGUILayout.LabelField("Halftone Settings", sectionStyle, GUILayout.Width(120));
+                        EditorGUILayout.LabelField("Halftone Settings", _sectionStyle, GUILayout.Width(120));
                         GUILayout.FlexibleSpace();
                         DrawRandomizeButton(() => RandomizeHalftoneSettings(), new Color(1f, 0.5f, 0.1f));
                     }
 
-                    bool useHalftone = this.useHalftone != null && this.useHalftone.floatValue > 0.5f;
+                    bool useHalftone = this._useHalftone != null && this._useHalftone.floatValue > 0.5f;
                     using (new EditorGUI.DisabledScope(!useHalftone))
                     {
-                        if (halftoneTex != null)
+                        if (_halftoneTex != null)
                         {
-                            materialEditor.ShaderProperty(halftoneTex, "Halftone Texture");
+                            materialEditor.ShaderProperty(_halftoneTex, "Halftone Texture");
                         }
-                        if (halftoneScale != null)
+                        if (_halftoneScale != null)
                         {
-                            materialEditor.ShaderProperty(halftoneScale, "Halftone Scale");
+                            materialEditor.ShaderProperty(_halftoneScale, "Halftone Scale");
                         }
-                        if (halftoneThreshold != null)
+                        if (_halftoneThreshold != null)
                         {
-                            materialEditor.ShaderProperty(halftoneThreshold, "Halftone Threshold");
+                            materialEditor.ShaderProperty(_halftoneThreshold, "Halftone Threshold");
                         }
-                        if (halftoneSmoothness != null)
+                        if (_halftoneSmoothness != null)
                         {
-                            materialEditor.ShaderProperty(halftoneSmoothness, "Halftone Smoothness");
+                            materialEditor.ShaderProperty(_halftoneSmoothness, "Halftone Smoothness");
                         }
                     }
                 }
@@ -493,22 +497,22 @@ namespace MageLock.Graphics.Editor
                 {
                     using (new EditorGUILayout.HorizontalScope())
                     {
-                        EditorGUILayout.LabelField("Advanced Settings", sectionStyle, GUILayout.Width(120));
+                        EditorGUILayout.LabelField("Advanced Settings", _sectionStyle, GUILayout.Width(120));
                         GUILayout.FlexibleSpace();
                         DrawRandomizeButton(RandomizeAdvancedSettings, new Color(0.5f, 0.9f, 0.5f));
                     }
 
-                    if (indirectLightStrength != null)
+                    if (_indirectLightStrength != null)
                     {
-                        materialEditor.ShaderProperty(indirectLightStrength, "Indirect Light Strength");
+                        materialEditor.ShaderProperty(_indirectLightStrength, "Indirect Light Strength");
                     }
-                    if (lightWrapAround != null)
+                    if (_lightWrapAround != null)
                     {
-                        materialEditor.ShaderProperty(lightWrapAround, "Light Wrap Around");
+                        materialEditor.ShaderProperty(_lightWrapAround, "Light Wrap Around");
                     }
-                    if (receiveShadows != null)
+                    if (_receiveShadows != null)
                     {
-                        materialEditor.ShaderProperty(receiveShadows, "Receive Shadows");
+                        materialEditor.ShaderProperty(_receiveShadows, "Receive Shadows");
                     }
                 }
             }
@@ -518,13 +522,13 @@ namespace MageLock.Graphics.Editor
         {
             using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
             {
-                EditorGUILayout.LabelField("🛠️ Utilities", sectionStyle);
+                EditorGUILayout.LabelField("🛠️ Utilities", _sectionStyle);
                 EditorGUILayout.Space(3);
 
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     var randomAllColor = GUI.backgroundColor;
-                    GUI.backgroundColor = errorColor;
+                    GUI.backgroundColor = _errorColor;
                     if (GUILayout.Button("🎲 RANDOMIZE ALL", GUILayout.Height(30)))
                     {
                         RandomizeAllSettings();
@@ -580,9 +584,9 @@ namespace MageLock.Graphics.Editor
                 var toggleRect = new Rect(headerRect.x + headerRect.width - 60, headerRect.y + 2, 50, 20);
                 var oldColor = GUI.backgroundColor;
                 bool isOn = toggleProp.floatValue > 0.5f;
-                GUI.backgroundColor = isOn ? successColor : new Color(0.5f, 0.5f, 0.5f);
+                GUI.backgroundColor = isOn ? _successColor : new Color(0.5f, 0.5f, 0.5f);
 
-                if (GUI.Button(toggleRect, isOn ? "ON" : "OFF", toggleButtonStyle))
+                if (GUI.Button(toggleRect, isOn ? "ON" : "OFF", _toggleButtonStyle))
                 {
                     toggleProp.floatValue = isOn ? 0f : 1f;
                 }
@@ -593,7 +597,7 @@ namespace MageLock.Graphics.Editor
 
         void DrawPresetButton(string label, System.Action action)
         {
-            if (GUILayout.Button(label, presetButtonStyle))
+            if (GUILayout.Button(label, _presetButtonStyle))
             {
                 action.Invoke();
             }
@@ -604,7 +608,7 @@ namespace MageLock.Graphics.Editor
             var oldColor = GUI.backgroundColor;
             GUI.backgroundColor = color;
 
-            if (GUILayout.Button("🎲", randomizeButtonStyle))
+            if (GUILayout.Button("🎲", _randomizeButtonStyle))
             {
                 action.Invoke();
             }
@@ -622,25 +626,25 @@ namespace MageLock.Graphics.Editor
 
         void UpdateShaderKeywords(Material material)
         {
-            if (useRimLight != null)
+            if (_useRimLight != null)
             {
-                SetKeyword(material, "_USERIMLIGHT_ON", useRimLight.floatValue > 0.5f);
+                SetKeyword(material, "_USERIMLIGHT_ON", _useRimLight.floatValue > 0.5f);
             }
-            if (useSpecular != null)
+            if (_useSpecular != null)
             {
-                SetKeyword(material, "_USESPECULAR_ON", useSpecular.floatValue > 0.5f);
+                SetKeyword(material, "_USESPECULAR_ON", _useSpecular.floatValue > 0.5f);
             }
-            if (useOutline != null)
+            if (_useOutline != null)
             {
-                SetKeyword(material, "_USEOUTLINE_ON", useOutline.floatValue > 0.5f);
+                SetKeyword(material, "_USEOUTLINE_ON", _useOutline.floatValue > 0.5f);
             }
-            if (useHalftone != null)
+            if (_useHalftone != null)
             {
-                SetKeyword(material, "_USEHALFTONE_ON", useHalftone.floatValue > 0.5f);
+                SetKeyword(material, "_USEHALFTONE_ON", _useHalftone.floatValue > 0.5f);
             }
-            if (receiveShadows != null)
+            if (_receiveShadows != null)
             {
-                SetKeyword(material, "_RECEIVESHADOWS_ON", receiveShadows.floatValue > 0.5f);
+                SetKeyword(material, "_RECEIVESHADOWS_ON", _receiveShadows.floatValue > 0.5f);
             }
         }
 
@@ -660,130 +664,130 @@ namespace MageLock.Graphics.Editor
 
         void ApplyAnimePreset(Material material)
         {
-            if (color != null) { color.colorValue = new Color(0.95f, 0.9f, 0.85f); }
-            if (shadowThreshold != null) { shadowThreshold.floatValue = 0.6f; }
-            if (shadowSmoothness != null) { shadowSmoothness.floatValue = 0.15f; }
-            if (shadowColor != null) { shadowColor.colorValue = new Color(0.4f, 0.4f, 0.6f); }
-            if (useRimLight != null) { useRimLight.floatValue = 1f; }
-            if (rimColor != null) { rimColor.colorValue = Color.cyan; }
-            if (rimPower != null) { rimPower.floatValue = 3f; }
-            if (rimIntensity != null) { rimIntensity.floatValue = 2f; }
-            if (useOutline != null) { useOutline.floatValue = 1f; }
-            if (outlineWidth != null) { outlineWidth.floatValue = 0.008f; }
-            if (outlineColor != null) { outlineColor.colorValue = Color.black; }
+            if (_color != null) { _color.colorValue = new Color(0.95f, 0.9f, 0.85f); }
+            if (_shadowThreshold != null) { _shadowThreshold.floatValue = 0.6f; }
+            if (_shadowSmoothness != null) { _shadowSmoothness.floatValue = 0.15f; }
+            if (_shadowColor != null) { _shadowColor.colorValue = new Color(0.4f, 0.4f, 0.6f); }
+            if (_useRimLight != null) { _useRimLight.floatValue = 1f; }
+            if (_rimColor != null) { _rimColor.colorValue = Color.cyan; }
+            if (_rimPower != null) { _rimPower.floatValue = 3f; }
+            if (_rimIntensity != null) { _rimIntensity.floatValue = 2f; }
+            if (_useOutline != null) { _useOutline.floatValue = 1f; }
+            if (_outlineWidth != null) { _outlineWidth.floatValue = 0.008f; }
+            if (_outlineColor != null) { _outlineColor.colorValue = Color.black; }
             UpdateShaderKeywords(material);
         }
 
         void ApplyComicPreset(Material material)
         {
-            if (color != null) { color.colorValue = new Color(0.8f, 0.8f, 0.9f); }
-            if (shadowThreshold != null) { shadowThreshold.floatValue = 0.4f; }
-            if (shadowSmoothness != null) { shadowSmoothness.floatValue = 0.05f; }
-            if (shadowColor != null) { shadowColor.colorValue = new Color(0.2f, 0.2f, 0.4f); }
-            if (useRimLight != null) { useRimLight.floatValue = 1f; }
-            if (rimColor != null) { rimColor.colorValue = Color.white; }
-            if (rimPower != null) { rimPower.floatValue = 4f; }
-            if (rimIntensity != null) { rimIntensity.floatValue = 1.5f; }
-            if (useSpecular != null) { useSpecular.floatValue = 1f; }
-            if (specularSteps != null) { specularSteps.floatValue = 3f; }
-            if (useOutline != null) { useOutline.floatValue = 1f; }
-            if (outlineWidth != null) { outlineWidth.floatValue = 0.012f; }
+            if (_color != null) { _color.colorValue = new Color(0.8f, 0.8f, 0.9f); }
+            if (_shadowThreshold != null) { _shadowThreshold.floatValue = 0.4f; }
+            if (_shadowSmoothness != null) { _shadowSmoothness.floatValue = 0.05f; }
+            if (_shadowColor != null) { _shadowColor.colorValue = new Color(0.2f, 0.2f, 0.4f); }
+            if (_useRimLight != null) { _useRimLight.floatValue = 1f; }
+            if (_rimColor != null) { _rimColor.colorValue = Color.white; }
+            if (_rimPower != null) { _rimPower.floatValue = 4f; }
+            if (_rimIntensity != null) { _rimIntensity.floatValue = 1.5f; }
+            if (_useSpecular != null) { _useSpecular.floatValue = 1f; }
+            if (_specularSteps != null) { _specularSteps.floatValue = 3f; }
+            if (_useOutline != null) { _useOutline.floatValue = 1f; }
+            if (_outlineWidth != null) { _outlineWidth.floatValue = 0.012f; }
             UpdateShaderKeywords(material);
         }
 
         void ApplyGamePreset(Material material)
         {
-            if (color != null) { color.colorValue = new Color(0.8f, 0.9f, 0.7f); }
-            if (shadowThreshold != null) { shadowThreshold.floatValue = 0.5f; }
-            if (shadowSmoothness != null) { shadowSmoothness.floatValue = 0.2f; }
-            if (shadowColor != null) { shadowColor.colorValue = new Color(0.3f, 0.3f, 0.5f); }
-            if (useRimLight != null) { useRimLight.floatValue = 1f; }
-            if (rimColor != null) { rimColor.colorValue = Color.yellow; }
-            if (rimPower != null) { rimPower.floatValue = 2f; }
-            if (rimIntensity != null) { rimIntensity.floatValue = 1.2f; }
-            if (useOutline != null) { useOutline.floatValue = 1f; }
-            if (outlineWidth != null) { outlineWidth.floatValue = 0.006f; }
-            if (lightWrapAround != null) { lightWrapAround.floatValue = 0.3f; }
+            if (_color != null) { _color.colorValue = new Color(0.8f, 0.9f, 0.7f); }
+            if (_shadowThreshold != null) { _shadowThreshold.floatValue = 0.5f; }
+            if (_shadowSmoothness != null) { _shadowSmoothness.floatValue = 0.2f; }
+            if (_shadowColor != null) { _shadowColor.colorValue = new Color(0.3f, 0.3f, 0.5f); }
+            if (_useRimLight != null) { _useRimLight.floatValue = 1f; }
+            if (_rimColor != null) { _rimColor.colorValue = Color.yellow; }
+            if (_rimPower != null) { _rimPower.floatValue = 2f; }
+            if (_rimIntensity != null) { _rimIntensity.floatValue = 1.2f; }
+            if (_useOutline != null) { _useOutline.floatValue = 1f; }
+            if (_outlineWidth != null) { _outlineWidth.floatValue = 0.006f; }
+            if (_lightWrapAround != null) { _lightWrapAround.floatValue = 0.3f; }
             UpdateShaderKeywords(material);
         }
 
         void ApplyRetroPreset(Material material)
         {
-            if (color != null) { color.colorValue = new Color(0.9f, 0.7f, 0.8f); }
-            if (shadowThreshold != null) { shadowThreshold.floatValue = 0.3f; }
-            if (shadowSmoothness != null) { shadowSmoothness.floatValue = 0.02f; }
-            if (shadowColor != null) { shadowColor.colorValue = new Color(0.2f, 0.1f, 0.3f); }
-            if (useRimLight != null) { useRimLight.floatValue = 0f; }
-            if (useSpecular != null) { useSpecular.floatValue = 1f; }
-            if (specularSteps != null) { specularSteps.floatValue = 4f; }
-            if (useOutline != null) { useOutline.floatValue = 1f; }
-            if (outlineWidth != null) { outlineWidth.floatValue = 0.015f; }
+            if (_color != null) { _color.colorValue = new Color(0.9f, 0.7f, 0.8f); }
+            if (_shadowThreshold != null) { _shadowThreshold.floatValue = 0.3f; }
+            if (_shadowSmoothness != null) { _shadowSmoothness.floatValue = 0.02f; }
+            if (_shadowColor != null) { _shadowColor.colorValue = new Color(0.2f, 0.1f, 0.3f); }
+            if (_useRimLight != null) { _useRimLight.floatValue = 0f; }
+            if (_useSpecular != null) { _useSpecular.floatValue = 1f; }
+            if (_specularSteps != null) { _specularSteps.floatValue = 4f; }
+            if (_useOutline != null) { _useOutline.floatValue = 1f; }
+            if (_outlineWidth != null) { _outlineWidth.floatValue = 0.015f; }
             UpdateShaderKeywords(material);
         }
 
         void ApplySoftPreset(Material material)
         {
-            if (color != null) { color.colorValue = new Color(0.9f, 0.85f, 0.8f); }
-            if (shadowThreshold != null) { shadowThreshold.floatValue = 0.7f; }
-            if (shadowSmoothness != null) { shadowSmoothness.floatValue = 0.3f; }
-            if (shadowColor != null) { shadowColor.colorValue = new Color(0.5f, 0.4f, 0.6f); }
-            if (useRimLight != null) { useRimLight.floatValue = 1f; }
-            if (rimColor != null) { rimColor.colorValue = new Color(1f, 0.8f, 0.6f); }
-            if (rimPower != null) { rimPower.floatValue = 1.5f; }
-            if (rimIntensity != null) { rimIntensity.floatValue = 0.8f; }
-            if (rimSmoothness != null) { rimSmoothness.floatValue = 0.8f; }
-            if (useOutline != null) { useOutline.floatValue = 0f; }
-            if (lightWrapAround != null) { lightWrapAround.floatValue = 0.5f; }
+            if (_color != null) { _color.colorValue = new Color(0.9f, 0.85f, 0.8f); }
+            if (_shadowThreshold != null) { _shadowThreshold.floatValue = 0.7f; }
+            if (_shadowSmoothness != null) { _shadowSmoothness.floatValue = 0.3f; }
+            if (_shadowColor != null) { _shadowColor.colorValue = new Color(0.5f, 0.4f, 0.6f); }
+            if (_useRimLight != null) { _useRimLight.floatValue = 1f; }
+            if (_rimColor != null) { _rimColor.colorValue = new Color(1f, 0.8f, 0.6f); }
+            if (_rimPower != null) { _rimPower.floatValue = 1.5f; }
+            if (_rimIntensity != null) { _rimIntensity.floatValue = 0.8f; }
+            if (_rimSmoothness != null) { _rimSmoothness.floatValue = 0.8f; }
+            if (_useOutline != null) { _useOutline.floatValue = 0f; }
+            if (_lightWrapAround != null) { _lightWrapAround.floatValue = 0.5f; }
             UpdateShaderKeywords(material);
         }
 
         void ApplyNeonPreset(Material material)
         {
-            if (color != null) { color.colorValue = new Color(0.1f, 0.1f, 0.2f); }
-            if (shadowThreshold != null) { shadowThreshold.floatValue = 0.2f; }
-            if (shadowSmoothness != null) { shadowSmoothness.floatValue = 0.1f; }
-            if (shadowColor != null) { shadowColor.colorValue = new Color(0.05f, 0.05f, 0.1f); }
-            if (useRimLight != null) { useRimLight.floatValue = 1f; }
-            if (rimColor != null) { rimColor.colorValue = new Color(0f, 1f, 1f); }
-            if (rimPower != null) { rimPower.floatValue = 2f; }
-            if (rimIntensity != null) { rimIntensity.floatValue = 3f; }
-            if (useSpecular != null) { useSpecular.floatValue = 1f; }
-            if (specularColor != null) { specularColor.colorValue = new Color(1f, 0f, 1f); }
-            if (useOutline != null) { useOutline.floatValue = 1f; }
-            if (outlineColor != null) { outlineColor.colorValue = new Color(0f, 0.5f, 1f); }
-            if (outlineWidth != null) { outlineWidth.floatValue = 0.01f; }
+            if (_color != null) { _color.colorValue = new Color(0.1f, 0.1f, 0.2f); }
+            if (_shadowThreshold != null) { _shadowThreshold.floatValue = 0.2f; }
+            if (_shadowSmoothness != null) { _shadowSmoothness.floatValue = 0.1f; }
+            if (_shadowColor != null) { _shadowColor.colorValue = new Color(0.05f, 0.05f, 0.1f); }
+            if (_useRimLight != null) { _useRimLight.floatValue = 1f; }
+            if (_rimColor != null) { _rimColor.colorValue = new Color(0f, 1f, 1f); }
+            if (_rimPower != null) { _rimPower.floatValue = 2f; }
+            if (_rimIntensity != null) { _rimIntensity.floatValue = 3f; }
+            if (_useSpecular != null) { _useSpecular.floatValue = 1f; }
+            if (_specularColor != null) { _specularColor.colorValue = new Color(1f, 0f, 1f); }
+            if (_useOutline != null) { _useOutline.floatValue = 1f; }
+            if (_outlineColor != null) { _outlineColor.colorValue = new Color(0f, 0.5f, 1f); }
+            if (_outlineWidth != null) { _outlineWidth.floatValue = 0.01f; }
             UpdateShaderKeywords(material);
         }
 
         void ApplyMoodyPreset(Material material)
         {
-            if (color != null) { color.colorValue = new Color(0.4f, 0.3f, 0.5f); }
-            if (shadowThreshold != null) { shadowThreshold.floatValue = 0.8f; }
-            if (shadowSmoothness != null) { shadowSmoothness.floatValue = 0.25f; }
-            if (shadowColor != null) { shadowColor.colorValue = new Color(0.1f, 0.1f, 0.2f); }
-            if (useRimLight != null) { useRimLight.floatValue = 1f; }
-            if (rimColor != null) { rimColor.colorValue = new Color(0.8f, 0.4f, 0.2f); }
-            if (rimPower != null) { rimPower.floatValue = 4f; }
-            if (rimIntensity != null) { rimIntensity.floatValue = 1f; }
-            if (indirectLightStrength != null) { indirectLightStrength.floatValue = 0.1f; }
-            if (useOutline != null) { useOutline.floatValue = 1f; }
-            if (outlineColor != null) { outlineColor.colorValue = new Color(0.1f, 0.1f, 0.1f); }
+            if (_color != null) { _color.colorValue = new Color(0.4f, 0.3f, 0.5f); }
+            if (_shadowThreshold != null) { _shadowThreshold.floatValue = 0.8f; }
+            if (_shadowSmoothness != null) { _shadowSmoothness.floatValue = 0.25f; }
+            if (_shadowColor != null) { _shadowColor.colorValue = new Color(0.1f, 0.1f, 0.2f); }
+            if (_useRimLight != null) { _useRimLight.floatValue = 1f; }
+            if (_rimColor != null) { _rimColor.colorValue = new Color(0.8f, 0.4f, 0.2f); }
+            if (_rimPower != null) { _rimPower.floatValue = 4f; }
+            if (_rimIntensity != null) { _rimIntensity.floatValue = 1f; }
+            if (_indirectLightStrength != null) { _indirectLightStrength.floatValue = 0.1f; }
+            if (_useOutline != null) { _useOutline.floatValue = 1f; }
+            if (_outlineColor != null) { _outlineColor.colorValue = new Color(0.1f, 0.1f, 0.1f); }
             UpdateShaderKeywords(material);
         }
 
         void ApplyBrightPreset(Material material)
         {
-            if (color != null) { color.colorValue = Color.white; }
-            if (shadowThreshold != null) { shadowThreshold.floatValue = 0.3f; }
-            if (shadowSmoothness != null) { shadowSmoothness.floatValue = 0.2f; }
-            if (shadowColor != null) { shadowColor.colorValue = new Color(0.7f, 0.7f, 0.8f); }
-            if (useRimLight != null) { useRimLight.floatValue = 1f; }
-            if (rimColor != null) { rimColor.colorValue = new Color(1f, 1f, 0.8f); }
-            if (rimPower != null) { rimPower.floatValue = 1f; }
-            if (rimIntensity != null) { rimIntensity.floatValue = 1f; }
-            if (indirectLightStrength != null) { indirectLightStrength.floatValue = 0.8f; }
-            if (lightWrapAround != null) { lightWrapAround.floatValue = 0.4f; }
-            if (useOutline != null) { useOutline.floatValue = 0f; }
+            if (_color != null) { _color.colorValue = Color.white; }
+            if (_shadowThreshold != null) { _shadowThreshold.floatValue = 0.3f; }
+            if (_shadowSmoothness != null) { _shadowSmoothness.floatValue = 0.2f; }
+            if (_shadowColor != null) { _shadowColor.colorValue = new Color(0.7f, 0.7f, 0.8f); }
+            if (_useRimLight != null) { _useRimLight.floatValue = 1f; }
+            if (_rimColor != null) { _rimColor.colorValue = new Color(1f, 1f, 0.8f); }
+            if (_rimPower != null) { _rimPower.floatValue = 1f; }
+            if (_rimIntensity != null) { _rimIntensity.floatValue = 1f; }
+            if (_indirectLightStrength != null) { _indirectLightStrength.floatValue = 0.8f; }
+            if (_lightWrapAround != null) { _lightWrapAround.floatValue = 0.4f; }
+            if (_useOutline != null) { _useOutline.floatValue = 0f; }
             UpdateShaderKeywords(material);
         }
 
@@ -793,59 +797,59 @@ namespace MageLock.Graphics.Editor
 
         void RandomizeShadingSettings()
         {
-            if (shadowThreshold != null) { shadowThreshold.floatValue = Random.Range(0.2f, 0.8f); }
-            if (shadowSmoothness != null) { shadowSmoothness.floatValue = Random.Range(0.05f, 0.3f); }
-            if (shadowColor != null) { shadowColor.colorValue = Random.ColorHSV(0f, 1f, 0.3f, 0.7f, 0.2f, 0.8f); }
-            if (lightRampOffset != null) { lightRampOffset.floatValue = Random.Range(-0.5f, 0.5f); }
-            if (posterizeLevels != null) { posterizeLevels.floatValue = Random.Range(2f, 8f); }
-            if (posterizePower != null) { posterizePower.floatValue = Random.Range(0.5f, 2.5f); }
+            if (_shadowThreshold != null) { _shadowThreshold.floatValue = Random.Range(0.2f, 0.8f); }
+            if (_shadowSmoothness != null) { _shadowSmoothness.floatValue = Random.Range(0.05f, 0.3f); }
+            if (_shadowColor != null) { _shadowColor.colorValue = Random.ColorHSV(0f, 1f, 0.3f, 0.7f, 0.2f, 0.8f); }
+            if (_lightRampOffset != null) { _lightRampOffset.floatValue = Random.Range(-0.5f, 0.5f); }
+            if (_posterizeLevels != null) { _posterizeLevels.floatValue = Random.Range(2f, 8f); }
+            if (_posterizePower != null) { _posterizePower.floatValue = Random.Range(0.5f, 2.5f); }
         }
 
         void RandomizeRimSettings()
         {
-            if (rimColor != null) { rimColor.colorValue = Random.ColorHSV(0f, 1f, 0.7f, 1f, 0.8f, 1f); }
-            if (rimPower != null) { rimPower.floatValue = Random.Range(1f, 8f); }
-            if (rimIntensity != null) { rimIntensity.floatValue = Random.Range(0.5f, 3f); }
-            if (rimSmoothness != null) { rimSmoothness.floatValue = Random.Range(0.1f, 0.8f); }
+            if (_rimColor != null) { _rimColor.colorValue = Random.ColorHSV(0f, 1f, 0.7f, 1f, 0.8f, 1f); }
+            if (_rimPower != null) { _rimPower.floatValue = Random.Range(1f, 8f); }
+            if (_rimIntensity != null) { _rimIntensity.floatValue = Random.Range(0.5f, 3f); }
+            if (_rimSmoothness != null) { _rimSmoothness.floatValue = Random.Range(0.1f, 0.8f); }
         }
 
         void RandomizeSpecularSettings()
         {
-            if (specularColor != null) { specularColor.colorValue = Random.ColorHSV(0f, 1f, 0.8f, 1f, 0.9f, 1f); }
-            if (specularSize != null) { specularSize.floatValue = Random.Range(0.05f, 0.4f); }
-            if (specularSmoothness != null) { specularSmoothness.floatValue = Random.Range(0.1f, 0.9f); }
-            if (specularSteps != null) { specularSteps.floatValue = Random.Range(1f, 5f); }
+            if (_specularColor != null) { _specularColor.colorValue = Random.ColorHSV(0f, 1f, 0.8f, 1f, 0.9f, 1f); }
+            if (_specularSize != null) { _specularSize.floatValue = Random.Range(0.05f, 0.4f); }
+            if (_specularSmoothness != null) { _specularSmoothness.floatValue = Random.Range(0.1f, 0.9f); }
+            if (_specularSteps != null) { _specularSteps.floatValue = Random.Range(1f, 5f); }
         }
 
         void RandomizeOutlineSettings()
         {
-            if (outlineColor != null) { outlineColor.colorValue = Random.ColorHSV(0f, 1f, 0f, 0.3f, 0f, 0.5f); }
-            if (outlineWidth != null) { outlineWidth.floatValue = Random.Range(0.002f, 0.015f); }
-            if (outlineAdaptive != null) { outlineAdaptive.floatValue = Random.Range(0f, 0.8f); }
+            if (_outlineColor != null) { _outlineColor.colorValue = Random.ColorHSV(0f, 1f, 0f, 0.3f, 0f, 0.5f); }
+            if (_outlineWidth != null) { _outlineWidth.floatValue = Random.Range(0.002f, 0.015f); }
+            if (_outlineAdaptive != null) { _outlineAdaptive.floatValue = Random.Range(0f, 0.8f); }
         }
 
         void RandomizeHalftoneSettings()
         {
-            if (halftoneScale != null) { halftoneScale.floatValue = Random.Range(5f, 20f); }
-            if (halftoneThreshold != null) { halftoneThreshold.floatValue = Random.Range(0.2f, 0.8f); }
-            if (halftoneSmoothness != null) { halftoneSmoothness.floatValue = Random.Range(0.05f, 0.3f); }
+            if (_halftoneScale != null) { _halftoneScale.floatValue = Random.Range(5f, 20f); }
+            if (_halftoneThreshold != null) { _halftoneThreshold.floatValue = Random.Range(0.2f, 0.8f); }
+            if (_halftoneSmoothness != null) { _halftoneSmoothness.floatValue = Random.Range(0.05f, 0.3f); }
         }
 
         void RandomizeAdvancedSettings()
         {
-            if (indirectLightStrength != null) { indirectLightStrength.floatValue = Random.Range(0.1f, 0.8f); }
-            if (lightWrapAround != null) { lightWrapAround.floatValue = Random.Range(0f, 0.6f); }
-            if (receiveShadows != null) { receiveShadows.floatValue = Random.value > 0.3f ? 1f : 0f; }
+            if (_indirectLightStrength != null) { _indirectLightStrength.floatValue = Random.Range(0.1f, 0.8f); }
+            if (_lightWrapAround != null) { _lightWrapAround.floatValue = Random.Range(0f, 0.6f); }
+            if (_receiveShadows != null) { _receiveShadows.floatValue = Random.value > 0.3f ? 1f : 0f; }
         }
 
         void RandomizeAllSettings()
         {
-            if (color != null) { color.colorValue = Random.ColorHSV(0f, 1f, 0.4f, 1f, 0.6f, 1f); }
+            if (_color != null) { _color.colorValue = Random.ColorHSV(0f, 1f, 0.4f, 1f, 0.6f, 1f); }
 
-            if (useRimLight != null) { useRimLight.floatValue = Random.value > 0.3f ? 1f : 0f; }
-            if (useSpecular != null) { useSpecular.floatValue = Random.value > 0.4f ? 1f : 0f; }
-            if (useOutline != null) { useOutline.floatValue = Random.value > 0.2f ? 1f : 0f; }
-            if (useHalftone != null) { useHalftone.floatValue = Random.value > 0.7f ? 1f : 0f; }
+            if (_useRimLight != null) { _useRimLight.floatValue = Random.value > 0.3f ? 1f : 0f; }
+            if (_useSpecular != null) { _useSpecular.floatValue = Random.value > 0.4f ? 1f : 0f; }
+            if (_useOutline != null) { _useOutline.floatValue = Random.value > 0.2f ? 1f : 0f; }
+            if (_useHalftone != null) { _useHalftone.floatValue = Random.value > 0.7f ? 1f : 0f; }
 
             RandomizeShadingSettings();
             RandomizeRimSettings();
@@ -857,34 +861,34 @@ namespace MageLock.Graphics.Editor
 
         void ResetToDefault(Material material)
         {
-            if (color != null) { color.colorValue = Color.white; }
-            if (shadowThreshold != null) { shadowThreshold.floatValue = 0.5f; }
-            if (shadowSmoothness != null) { shadowSmoothness.floatValue = 0.1f; }
-            if (shadowColor != null) { shadowColor.colorValue = new Color(0.3f, 0.3f, 0.3f, 1f); }
-            if (lightRampOffset != null) { lightRampOffset.floatValue = 0f; }
-            if (posterizeLevels != null) { posterizeLevels.floatValue = 3f; }
-            if (posterizePower != null) { posterizePower.floatValue = 1f; }
-            if (useRimLight != null) { useRimLight.floatValue = 1f; }
-            if (rimColor != null) { rimColor.colorValue = Color.white; }
-            if (rimPower != null) { rimPower.floatValue = 2f; }
-            if (rimIntensity != null) { rimIntensity.floatValue = 1f; }
-            if (rimSmoothness != null) { rimSmoothness.floatValue = 0.5f; }
-            if (useSpecular != null) { useSpecular.floatValue = 1f; }
-            if (specularColor != null) { specularColor.colorValue = Color.white; }
-            if (specularSize != null) { specularSize.floatValue = 0.1f; }
-            if (specularSmoothness != null) { specularSmoothness.floatValue = 0.5f; }
-            if (specularSteps != null) { specularSteps.floatValue = 1f; }
-            if (useOutline != null) { useOutline.floatValue = 1f; }
-            if (outlineColor != null) { outlineColor.colorValue = Color.black; }
-            if (outlineWidth != null) { outlineWidth.floatValue = 0.005f; }
-            if (outlineAdaptive != null) { outlineAdaptive.floatValue = 0f; }
-            if (useHalftone != null) { useHalftone.floatValue = 0f; }
-            if (halftoneScale != null) { halftoneScale.floatValue = 10f; }
-            if (halftoneThreshold != null) { halftoneThreshold.floatValue = 0.5f; }
-            if (halftoneSmoothness != null) { halftoneSmoothness.floatValue = 0.1f; }
-            if (indirectLightStrength != null) { indirectLightStrength.floatValue = 0.3f; }
-            if (lightWrapAround != null) { lightWrapAround.floatValue = 0f; }
-            if (receiveShadows != null) { receiveShadows.floatValue = 1f; }
+            if (_color != null) { _color.colorValue = Color.white; }
+            if (_shadowThreshold != null) { _shadowThreshold.floatValue = 0.5f; }
+            if (_shadowSmoothness != null) { _shadowSmoothness.floatValue = 0.1f; }
+            if (_shadowColor != null) { _shadowColor.colorValue = new Color(0.3f, 0.3f, 0.3f, 1f); }
+            if (_lightRampOffset != null) { _lightRampOffset.floatValue = 0f; }
+            if (_posterizeLevels != null) { _posterizeLevels.floatValue = 3f; }
+            if (_posterizePower != null) { _posterizePower.floatValue = 1f; }
+            if (_useRimLight != null) { _useRimLight.floatValue = 1f; }
+            if (_rimColor != null) { _rimColor.colorValue = Color.white; }
+            if (_rimPower != null) { _rimPower.floatValue = 2f; }
+            if (_rimIntensity != null) { _rimIntensity.floatValue = 1f; }
+            if (_rimSmoothness != null) { _rimSmoothness.floatValue = 0.5f; }
+            if (_useSpecular != null) { _useSpecular.floatValue = 1f; }
+            if (_specularColor != null) { _specularColor.colorValue = Color.white; }
+            if (_specularSize != null) { _specularSize.floatValue = 0.1f; }
+            if (_specularSmoothness != null) { _specularSmoothness.floatValue = 0.5f; }
+            if (_specularSteps != null) { _specularSteps.floatValue = 1f; }
+            if (_useOutline != null) { _useOutline.floatValue = 1f; }
+            if (_outlineColor != null) { _outlineColor.colorValue = Color.black; }
+            if (_outlineWidth != null) { _outlineWidth.floatValue = 0.005f; }
+            if (_outlineAdaptive != null) { _outlineAdaptive.floatValue = 0f; }
+            if (_useHalftone != null) { _useHalftone.floatValue = 0f; }
+            if (_halftoneScale != null) { _halftoneScale.floatValue = 10f; }
+            if (_halftoneThreshold != null) { _halftoneThreshold.floatValue = 0.5f; }
+            if (_halftoneSmoothness != null) { _halftoneSmoothness.floatValue = 0.1f; }
+            if (_indirectLightStrength != null) { _indirectLightStrength.floatValue = 0.3f; }
+            if (_lightWrapAround != null) { _lightWrapAround.floatValue = 0f; }
+            if (_receiveShadows != null) { _receiveShadows.floatValue = 1f; }
 
             UpdateShaderKeywords(material);
         }
@@ -897,39 +901,39 @@ namespace MageLock.Graphics.Editor
         {
             var settings = new ToonShaderSettings();
 
-            if (color != null) settings.color = color.colorValue;
-            if (shadowThreshold != null) settings.shadowThreshold = shadowThreshold.floatValue;
-            if (shadowSmoothness != null) settings.shadowSmoothness = shadowSmoothness.floatValue;
-            if (shadowColor != null) settings.shadowColor = shadowColor.colorValue;
-            if (lightRampOffset != null) settings.lightRampOffset = lightRampOffset.floatValue;
-            if (posterizeLevels != null) settings.posterizeLevels = posterizeLevels.floatValue;
-            if (posterizePower != null) settings.posterizePower = posterizePower.floatValue;
+            if (_color != null) settings.color = _color.colorValue;
+            if (_shadowThreshold != null) settings.shadowThreshold = _shadowThreshold.floatValue;
+            if (_shadowSmoothness != null) settings.shadowSmoothness = _shadowSmoothness.floatValue;
+            if (_shadowColor != null) settings.shadowColor = _shadowColor.colorValue;
+            if (_lightRampOffset != null) settings.lightRampOffset = _lightRampOffset.floatValue;
+            if (_posterizeLevels != null) settings.posterizeLevels = _posterizeLevels.floatValue;
+            if (_posterizePower != null) settings.posterizePower = _posterizePower.floatValue;
 
-            if (useRimLight != null) settings.useRimLight = useRimLight.floatValue;
-            if (rimColor != null) settings.rimColor = rimColor.colorValue;
-            if (rimPower != null) settings.rimPower = rimPower.floatValue;
-            if (rimIntensity != null) settings.rimIntensity = rimIntensity.floatValue;
-            if (rimSmoothness != null) settings.rimSmoothness = rimSmoothness.floatValue;
+            if (_useRimLight != null) settings.useRimLight = _useRimLight.floatValue;
+            if (_rimColor != null) settings.rimColor = _rimColor.colorValue;
+            if (_rimPower != null) settings.rimPower = _rimPower.floatValue;
+            if (_rimIntensity != null) settings.rimIntensity = _rimIntensity.floatValue;
+            if (_rimSmoothness != null) settings.rimSmoothness = _rimSmoothness.floatValue;
 
-            if (useSpecular != null) settings.useSpecular = useSpecular.floatValue;
-            if (specularColor != null) settings.specularColor = specularColor.colorValue;
-            if (specularSize != null) settings.specularSize = specularSize.floatValue;
-            if (specularSmoothness != null) settings.specularSmoothness = specularSmoothness.floatValue;
-            if (specularSteps != null) settings.specularSteps = specularSteps.floatValue;
+            if (_useSpecular != null) settings.useSpecular = _useSpecular.floatValue;
+            if (_specularColor != null) settings.specularColor = _specularColor.colorValue;
+            if (_specularSize != null) settings.specularSize = _specularSize.floatValue;
+            if (_specularSmoothness != null) settings.specularSmoothness = _specularSmoothness.floatValue;
+            if (_specularSteps != null) settings.specularSteps = _specularSteps.floatValue;
 
-            if (useOutline != null) settings.useOutline = useOutline.floatValue;
-            if (outlineColor != null) settings.outlineColor = outlineColor.colorValue;
-            if (outlineWidth != null) settings.outlineWidth = outlineWidth.floatValue;
-            if (outlineAdaptive != null) settings.outlineAdaptive = outlineAdaptive.floatValue;
+            if (_useOutline != null) settings.useOutline = _useOutline.floatValue;
+            if (_outlineColor != null) settings.outlineColor = _outlineColor.colorValue;
+            if (_outlineWidth != null) settings.outlineWidth = _outlineWidth.floatValue;
+            if (_outlineAdaptive != null) settings.outlineAdaptive = _outlineAdaptive.floatValue;
 
-            if (useHalftone != null) settings.useHalftone = useHalftone.floatValue;
-            if (halftoneScale != null) settings.halftoneScale = halftoneScale.floatValue;
-            if (halftoneThreshold != null) settings.halftoneThreshold = halftoneThreshold.floatValue;
-            if (halftoneSmoothness != null) settings.halftoneSmoothness = halftoneSmoothness.floatValue;
+            if (_useHalftone != null) settings.useHalftone = _useHalftone.floatValue;
+            if (_halftoneScale != null) settings.halftoneScale = _halftoneScale.floatValue;
+            if (_halftoneThreshold != null) settings.halftoneThreshold = _halftoneThreshold.floatValue;
+            if (_halftoneSmoothness != null) settings.halftoneSmoothness = _halftoneSmoothness.floatValue;
 
-            if (indirectLightStrength != null) settings.indirectLightStrength = indirectLightStrength.floatValue;
-            if (lightWrapAround != null) settings.lightWrapAround = lightWrapAround.floatValue;
-            if (receiveShadows != null) settings.receiveShadows = receiveShadows.floatValue;
+            if (_indirectLightStrength != null) settings.indirectLightStrength = _indirectLightStrength.floatValue;
+            if (_lightWrapAround != null) settings.lightWrapAround = _lightWrapAround.floatValue;
+            if (_receiveShadows != null) settings.receiveShadows = _receiveShadows.floatValue;
 
             string json = JsonUtility.ToJson(settings, true);
             EditorGUIUtility.systemCopyBuffer = json;
@@ -956,39 +960,39 @@ namespace MageLock.Graphics.Editor
                     return;
                 }
 
-                if (color != null) color.colorValue = settings.color;
-                if (shadowThreshold != null) shadowThreshold.floatValue = settings.shadowThreshold;
-                if (shadowSmoothness != null) shadowSmoothness.floatValue = settings.shadowSmoothness;
-                if (shadowColor != null) shadowColor.colorValue = settings.shadowColor;
-                if (lightRampOffset != null) lightRampOffset.floatValue = settings.lightRampOffset;
-                if (posterizeLevels != null) posterizeLevels.floatValue = settings.posterizeLevels;
-                if (posterizePower != null) posterizePower.floatValue = settings.posterizePower;
+                if (_color != null) _color.colorValue = settings.color;
+                if (_shadowThreshold != null) _shadowThreshold.floatValue = settings.shadowThreshold;
+                if (_shadowSmoothness != null) _shadowSmoothness.floatValue = settings.shadowSmoothness;
+                if (_shadowColor != null) _shadowColor.colorValue = settings.shadowColor;
+                if (_lightRampOffset != null) _lightRampOffset.floatValue = settings.lightRampOffset;
+                if (_posterizeLevels != null) _posterizeLevels.floatValue = settings.posterizeLevels;
+                if (_posterizePower != null) _posterizePower.floatValue = settings.posterizePower;
 
-                if (useRimLight != null) useRimLight.floatValue = settings.useRimLight;
-                if (rimColor != null) rimColor.colorValue = settings.rimColor;
-                if (rimPower != null) rimPower.floatValue = settings.rimPower;
-                if (rimIntensity != null) rimIntensity.floatValue = settings.rimIntensity;
-                if (rimSmoothness != null) rimSmoothness.floatValue = settings.rimSmoothness;
+                if (_useRimLight != null) _useRimLight.floatValue = settings.useRimLight;
+                if (_rimColor != null) _rimColor.colorValue = settings.rimColor;
+                if (_rimPower != null) _rimPower.floatValue = settings.rimPower;
+                if (_rimIntensity != null) _rimIntensity.floatValue = settings.rimIntensity;
+                if (_rimSmoothness != null) _rimSmoothness.floatValue = settings.rimSmoothness;
 
-                if (useSpecular != null) useSpecular.floatValue = settings.useSpecular;
-                if (specularColor != null) specularColor.colorValue = settings.specularColor;
-                if (specularSize != null) specularSize.floatValue = settings.specularSize;
-                if (specularSmoothness != null) specularSmoothness.floatValue = settings.specularSmoothness;
-                if (specularSteps != null) specularSteps.floatValue = settings.specularSteps;
+                if (_useSpecular != null) _useSpecular.floatValue = settings.useSpecular;
+                if (_specularColor != null) _specularColor.colorValue = settings.specularColor;
+                if (_specularSize != null) _specularSize.floatValue = settings.specularSize;
+                if (_specularSmoothness != null) _specularSmoothness.floatValue = settings.specularSmoothness;
+                if (_specularSteps != null) _specularSteps.floatValue = settings.specularSteps;
 
-                if (useOutline != null) useOutline.floatValue = settings.useOutline;
-                if (outlineColor != null) outlineColor.colorValue = settings.outlineColor;
-                if (outlineWidth != null) outlineWidth.floatValue = settings.outlineWidth;
-                if (outlineAdaptive != null) outlineAdaptive.floatValue = settings.outlineAdaptive;
+                if (_useOutline != null) _useOutline.floatValue = settings.useOutline;
+                if (_outlineColor != null) _outlineColor.colorValue = settings.outlineColor;
+                if (_outlineWidth != null) _outlineWidth.floatValue = settings.outlineWidth;
+                if (_outlineAdaptive != null) _outlineAdaptive.floatValue = settings.outlineAdaptive;
 
-                if (useHalftone != null) useHalftone.floatValue = settings.useHalftone;
-                if (halftoneScale != null) halftoneScale.floatValue = settings.halftoneScale;
-                if (halftoneThreshold != null) halftoneThreshold.floatValue = settings.halftoneThreshold;
-                if (halftoneSmoothness != null) halftoneSmoothness.floatValue = settings.halftoneSmoothness;
+                if (_useHalftone != null) _useHalftone.floatValue = settings.useHalftone;
+                if (_halftoneScale != null) _halftoneScale.floatValue = settings.halftoneScale;
+                if (_halftoneThreshold != null) _halftoneThreshold.floatValue = settings.halftoneThreshold;
+                if (_halftoneSmoothness != null) _halftoneSmoothness.floatValue = settings.halftoneSmoothness;
 
-                if (indirectLightStrength != null) indirectLightStrength.floatValue = settings.indirectLightStrength;
-                if (lightWrapAround != null) lightWrapAround.floatValue = settings.lightWrapAround;
-                if (receiveShadows != null) receiveShadows.floatValue = settings.receiveShadows;
+                if (_indirectLightStrength != null) _indirectLightStrength.floatValue = settings.indirectLightStrength;
+                if (_lightWrapAround != null) _lightWrapAround.floatValue = settings.lightWrapAround;
+                if (_receiveShadows != null) _receiveShadows.floatValue = settings.receiveShadows;
 
                 UpdateShaderKeywords(material);
                 Debug.Log("Toon Shader settings pasted successfully!");

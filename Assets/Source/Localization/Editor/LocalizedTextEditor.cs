@@ -8,14 +8,14 @@ namespace MageLock.Localization.Editor
     [CustomEditor(typeof(LocalizedText))]
     public class LocalizedTextEditor : UnityEditor.Editor
     {
-        private SerializedProperty localizationKeyProperty;
-        private List<string> availableKeys = new();
-        private string[] keyArray;
-        private int selectedKeyIndex = -1;
+        private SerializedProperty _localizationKeyProperty;
+        private List<string> _availableKeys = new();
+        private string[] _keyArray;
+        private int _selectedKeyIndex = -1;
 
         private void OnEnable()
         {
-            localizationKeyProperty = serializedObject.FindProperty("localizationKey");
+            _localizationKeyProperty = serializedObject.FindProperty("localizationKey");
             RefreshAvailableKeys();
         }
 
@@ -27,19 +27,19 @@ namespace MageLock.Localization.Editor
             EditorGUILayout.LabelField("Localization Settings", EditorStyles.boldLabel);
 
             EditorGUI.BeginDisabledGroup(true);
-            EditorGUILayout.PropertyField(localizationKeyProperty, new GUIContent("Current Key"));
+            EditorGUILayout.PropertyField(_localizationKeyProperty, new GUIContent("Current Key"));
             EditorGUI.EndDisabledGroup();
 
-            if (keyArray != null && keyArray.Length > 0)
+            if (_keyArray != null && _keyArray.Length > 0)
             {
-                string currentKey = localizationKeyProperty.stringValue;
-                selectedKeyIndex = System.Array.IndexOf(keyArray, currentKey);
+                string currentKey = _localizationKeyProperty.stringValue;
+                _selectedKeyIndex = System.Array.IndexOf(_keyArray, currentKey);
                 
                 EditorGUI.BeginChangeCheck();
-                selectedKeyIndex = EditorGUILayout.Popup("Select Key", selectedKeyIndex, keyArray);
-                if (EditorGUI.EndChangeCheck() && selectedKeyIndex >= 0 && selectedKeyIndex < keyArray.Length)
+                _selectedKeyIndex = EditorGUILayout.Popup("Select Key", _selectedKeyIndex, _keyArray);
+                if (EditorGUI.EndChangeCheck() && _selectedKeyIndex >= 0 && _selectedKeyIndex < _keyArray.Length)
                 {
-                    localizationKeyProperty.stringValue = keyArray[selectedKeyIndex];
+                    _localizationKeyProperty.stringValue = _keyArray[_selectedKeyIndex];
                     serializedObject.ApplyModifiedProperties();
                 }
 
@@ -103,7 +103,7 @@ namespace MageLock.Localization.Editor
 
         private void RefreshAvailableKeys()
         {
-            availableKeys.Clear();
+            _availableKeys.Clear();
             
             string[] guids = AssetDatabase.FindAssets("t:LocalizationData");
             if (guids.Length > 0)
@@ -124,12 +124,12 @@ namespace MageLock.Localization.Editor
                     }
                 }
                 
-                availableKeys = uniqueKeys.ToList();
-                availableKeys.Sort();
-                keyArray = availableKeys.ToArray();
+                _availableKeys = uniqueKeys.ToList();
+                _availableKeys.Sort();
+                _keyArray = _availableKeys.ToArray();
                 
-                string currentKey = localizationKeyProperty.stringValue;
-                selectedKeyIndex = System.Array.IndexOf(keyArray, currentKey);
+                string currentKey = _localizationKeyProperty.stringValue;
+                _selectedKeyIndex = System.Array.IndexOf(_keyArray, currentKey);
             }
         }
     }

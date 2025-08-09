@@ -13,27 +13,27 @@ namespace MageLock.UI
         [SerializeField] private Image languageFlagImage;
         [SerializeField] private GameObject checkmarkObject;
 
-        [Inject] private LocalizationService localizationService;
+        [Inject] private LocalizationService _localizationService;
 
-        private SystemLanguage language;
-        private Button button;
+        private SystemLanguage _language;
+        private Button _button;
 
         private void Awake()
         {
-            button = GetComponent<Button>();
-            button.onClick.AddListener(OnButtonClicked);
+            _button = GetComponent<Button>();
+            _button.onClick.AddListener(OnButtonClicked);
         }
 
         public void Initialize(SystemLanguage languageToSet)
         {
-            this.language = languageToSet;
-            languageFlagImage.sprite = localizationService.GetLanguageData.GetLanguageImage(languageToSet);
+            _language = languageToSet;
+            languageFlagImage.sprite = _localizationService.GetLanguageData.GetLanguageImage(languageToSet);
             checkmarkObject.SetActive(PlayerModel.GetSettings().language == languageToSet);
         }
 
         private void OnButtonClicked()
         {
-            localizationService.SetLanguage(this.language);
+            _localizationService.SetLanguage(this._language);
             PopupController.CloseCurrentPopup();
         }
     }

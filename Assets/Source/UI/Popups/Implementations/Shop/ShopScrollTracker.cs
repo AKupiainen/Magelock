@@ -22,8 +22,7 @@ namespace MageLock.UI
         [Header("Tracking Settings")]
         [SerializeField] private float activationThreshold = 0.5f; 
         
-        private int currentActiveIndex = -1;
-        private Camera uiCamera;
+        private int _currentActiveIndex = -1;
         
         private void Start()
         {
@@ -32,10 +31,6 @@ namespace MageLock.UI
                 
             if (contentTransform == null && scrollRect != null)
                 contentTransform = scrollRect.content;
-                
-            Canvas canvas = GetComponentInParent<Canvas>();
-            if (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay)
-                uiCamera = canvas.worldCamera;
                 
             if (scrollRect != null)
                 scrollRect.onValueChanged.AddListener(OnScrollChanged);
@@ -67,11 +62,11 @@ namespace MageLock.UI
                 
             int newActiveIndex = GetActiveSection();
             
-            if (newActiveIndex != currentActiveIndex)
+            if (newActiveIndex != _currentActiveIndex)
             {
-                if (currentActiveIndex >= 0 && currentActiveIndex < sectionTitles.Count)
+                if (_currentActiveIndex >= 0 && _currentActiveIndex < sectionTitles.Count)
                 {
-                    sectionTitles[currentActiveIndex].color = inactiveColor;
+                    sectionTitles[_currentActiveIndex].color = inactiveColor;
                 }
                 
                 if (newActiveIndex >= 0 && newActiveIndex < sectionTitles.Count)
@@ -79,7 +74,7 @@ namespace MageLock.UI
                     sectionTitles[newActiveIndex].color = activeColor;
                 }
                 
-                currentActiveIndex = newActiveIndex;
+                _currentActiveIndex = newActiveIndex;
             }
         }
         
@@ -159,7 +154,7 @@ namespace MageLock.UI
             }
             
             sectionTitles[index].color = activeColor;
-            currentActiveIndex = index;
+            _currentActiveIndex = index;
         }
         
         public void ScrollToSection(int index)

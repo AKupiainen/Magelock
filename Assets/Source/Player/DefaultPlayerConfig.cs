@@ -16,7 +16,7 @@ namespace MageLock.Player
         
         [Header("Starting Player Info")]
         [SerializeField] private int startingLevel = 1;
-        [SerializeField] private int startingExperience = 0;
+        [SerializeField] private int startingExperience;
         
         public int StartingCoins => startingCoins;
         public int StartingGems => startingGems;

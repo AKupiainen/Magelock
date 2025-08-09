@@ -7,13 +7,13 @@
 
 	public class ParticleHelperTools : EditorWindow
 	{
-		private float scaleMultiplier = 1f;
+		private float _scaleMultiplier = 1f;
 
-		private Color targetColor;
-        private float hueDifference;
-        private float saturationDifference;
-        private float targetHue;
-        private float targetSaturation;
+		private Color _targetColor;
+        private float _hueDifference;
+        private float _saturationDifference;
+        private float _targetHue;
+        private float _targetSaturation;
         
 		[MenuItem("Tools/Particle Helper Tools")]
 		private static void ShowWindow()
@@ -27,7 +27,7 @@
 
 			GUILayout.BeginHorizontal();
 
-            scaleMultiplier = EditorGUILayout.Slider(scaleMultiplier, 0.01f, 4.0f);
+            _scaleMultiplier = EditorGUILayout.Slider(_scaleMultiplier, 0.01f, 4.0f);
 
 			GUILayout.EndHorizontal();
 
@@ -52,7 +52,7 @@
 
 			GUILayout.BeginHorizontal();
 
-			targetColor = EditorGUILayout.ColorField("New Color", targetColor);
+			_targetColor = EditorGUILayout.ColorField("New Color", _targetColor);
 
 			GUILayout.EndHorizontal();
 
@@ -64,7 +64,7 @@
 
                 foreach (ParticleSystem particleSystem in particleSystems)
                 {
-                    HueShiftParticleSystem(particleSystem, targetColor);
+                    HueShiftParticleSystem(particleSystem, _targetColor);
                 }
 			}
 
@@ -77,46 +77,46 @@
         {
 		    if (parent != particles.gameObject) 
             {
-			    particles.transform.localPosition *= scaleMultiplier;
+			    particles.transform.localPosition *= _scaleMultiplier;
 		    }
             
 		    SerializedObject serializedParticles = new(particles);
 
-		    serializedParticles.FindProperty("InitialModule.gravityModifier.scalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("InitialModule.gravityModifier.minScalar").floatValue *= scaleMultiplier;
+		    serializedParticles.FindProperty("InitialModule.gravityModifier.scalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("InitialModule.gravityModifier.minScalar").floatValue *= _scaleMultiplier;
             
-		    serializedParticles.FindProperty("NoiseModule.strength.scalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("NoiseModule.strength.minScalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("NoiseModule.strengthY.scalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("NoiseModule.strengthY.minScalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("NoiseModule.strengthZ.scalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("NoiseModule.strengthZ.minScalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("NoiseModule.frequency").floatValue /= scaleMultiplier;
+		    serializedParticles.FindProperty("NoiseModule.strength.scalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("NoiseModule.strength.minScalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("NoiseModule.strengthY.scalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("NoiseModule.strengthY.minScalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("NoiseModule.strengthZ.scalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("NoiseModule.strengthZ.minScalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("NoiseModule.frequency").floatValue /= _scaleMultiplier;
 
-		    serializedParticles.FindProperty("NoiseModule.sizeAmount.scalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("NoiseModule.sizeAmount.minScalar").floatValue *= scaleMultiplier;
+		    serializedParticles.FindProperty("NoiseModule.sizeAmount.scalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("NoiseModule.sizeAmount.minScalar").floatValue *= _scaleMultiplier;
 		    ScaleAnimationCurve(serializedParticles.FindProperty("NoiseModule.sizeAmount.minCurve").animationCurveValue);
 		    ScaleAnimationCurve(serializedParticles.FindProperty("NoiseModule.sizeAmount.maxCurve").animationCurveValue);
             
-		    serializedParticles.FindProperty("NoiseModule.rotationAmount.scalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("NoiseModule.rotationAmount.minScalar").floatValue *= scaleMultiplier;
+		    serializedParticles.FindProperty("NoiseModule.rotationAmount.scalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("NoiseModule.rotationAmount.minScalar").floatValue *= _scaleMultiplier;
 		    ScaleAnimationCurve(serializedParticles.FindProperty("NoiseModule.rotationAmount.minCurve").animationCurveValue);
 		    ScaleAnimationCurve(serializedParticles.FindProperty("NoiseModule.rotationAmount.maxCurve").animationCurveValue);
             
-		    serializedParticles.FindProperty("NoiseModule.positionAmount.scalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("NoiseModule.positionAmount.minScalar").floatValue *= scaleMultiplier;
+		    serializedParticles.FindProperty("NoiseModule.positionAmount.scalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("NoiseModule.positionAmount.minScalar").floatValue *= _scaleMultiplier;
 		    ScaleAnimationCurve(serializedParticles.FindProperty("NoiseModule.positionAmount.minCurve").animationCurveValue);
 		    ScaleAnimationCurve(serializedParticles.FindProperty("NoiseModule.positionAmount.maxCurve").animationCurveValue);
 
-		    serializedParticles.FindProperty("LightsModule.rangeCurve.scalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("LightsModule.rangeCurve.minScalar").floatValue *= scaleMultiplier;
+		    serializedParticles.FindProperty("LightsModule.rangeCurve.scalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("LightsModule.rangeCurve.minScalar").floatValue *= _scaleMultiplier;
             
-		    serializedParticles.FindProperty("InitialModule.startSize.scalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("InitialModule.startSize.minScalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("InitialModule.startSizeY.scalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("InitialModule.startSizeY.minScalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("InitialModule.startSizeZ.scalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("InitialModule.startSizeZ.minScalar").floatValue *= scaleMultiplier;
+		    serializedParticles.FindProperty("InitialModule.startSize.scalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("InitialModule.startSize.minScalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("InitialModule.startSizeY.scalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("InitialModule.startSizeY.minScalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("InitialModule.startSizeZ.scalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("InitialModule.startSizeZ.minScalar").floatValue *= _scaleMultiplier;
             
 		    ScaleAnimationCurve(serializedParticles.FindProperty("InitialModule.startSize.minCurve").animationCurveValue);
 		    ScaleAnimationCurve(serializedParticles.FindProperty("InitialModule.startSize.maxCurve").animationCurveValue);
@@ -125,29 +125,29 @@
 		    ScaleAnimationCurve(serializedParticles.FindProperty("InitialModule.startSizeZ.minCurve").animationCurveValue);
 		    ScaleAnimationCurve(serializedParticles.FindProperty("InitialModule.startSizeZ.maxCurve").animationCurveValue);
             
-		    serializedParticles.FindProperty("InitialModule.startSpeed.scalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("InitialModule.startSpeed.minScalar").floatValue *= scaleMultiplier;	
+		    serializedParticles.FindProperty("InitialModule.startSpeed.scalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("InitialModule.startSpeed.minScalar").floatValue *= _scaleMultiplier;	
 
-		    serializedParticles.FindProperty("VelocityModule.x.minScalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("VelocityModule.y.minScalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("VelocityModule.z.minScalar").floatValue *= scaleMultiplier;
+		    serializedParticles.FindProperty("VelocityModule.x.minScalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("VelocityModule.y.minScalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("VelocityModule.z.minScalar").floatValue *= _scaleMultiplier;
 
-		    serializedParticles.FindProperty("ClampVelocityModule.x.minScalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("ClampVelocityModule.y.minScalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("ClampVelocityModule.z.minScalar").floatValue *= scaleMultiplier;
+		    serializedParticles.FindProperty("ClampVelocityModule.x.minScalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("ClampVelocityModule.y.minScalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("ClampVelocityModule.z.minScalar").floatValue *= _scaleMultiplier;
 
-		    serializedParticles.FindProperty("ForceModule.x.minScalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("ForceModule.y.minScalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("ForceModule.z.minScalar").floatValue *= scaleMultiplier;
+		    serializedParticles.FindProperty("ForceModule.x.minScalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("ForceModule.y.minScalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("ForceModule.z.minScalar").floatValue *= _scaleMultiplier;
             
-		    serializedParticles.FindProperty("ClampVelocityModule.magnitude.minScalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("ShapeModule.m_Scale").vector3Value *= scaleMultiplier;
+		    serializedParticles.FindProperty("ClampVelocityModule.magnitude.minScalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("ShapeModule.m_Scale").vector3Value *= _scaleMultiplier;
 
-		    serializedParticles.FindProperty("ShapeModule.radius.value").floatValue *= scaleMultiplier;
+		    serializedParticles.FindProperty("ShapeModule.radius.value").floatValue *= _scaleMultiplier;
 
-		    serializedParticles.FindProperty("VelocityModule.x.scalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("VelocityModule.y.scalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("VelocityModule.z.scalar").floatValue *= scaleMultiplier;
+		    serializedParticles.FindProperty("VelocityModule.x.scalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("VelocityModule.y.scalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("VelocityModule.z.scalar").floatValue *= _scaleMultiplier;
 
 		    ScaleAnimationCurve(serializedParticles.FindProperty("VelocityModule.x.minCurve").animationCurveValue);
 		    ScaleAnimationCurve(serializedParticles.FindProperty("VelocityModule.x.maxCurve").animationCurveValue);
@@ -156,10 +156,10 @@
 		    ScaleAnimationCurve(serializedParticles.FindProperty("VelocityModule.z.minCurve").animationCurveValue);
 		    ScaleAnimationCurve(serializedParticles.FindProperty("VelocityModule.z.maxCurve").animationCurveValue);
 
-		    serializedParticles.FindProperty("ClampVelocityModule.x.scalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("ClampVelocityModule.y.scalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("ClampVelocityModule.z.scalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("ClampVelocityModule.magnitude.scalar").floatValue *= scaleMultiplier;
+		    serializedParticles.FindProperty("ClampVelocityModule.x.scalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("ClampVelocityModule.y.scalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("ClampVelocityModule.z.scalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("ClampVelocityModule.magnitude.scalar").floatValue *= _scaleMultiplier;
 
 		    ScaleAnimationCurve(serializedParticles.FindProperty("ClampVelocityModule.x.minCurve").animationCurveValue);
 		    ScaleAnimationCurve(serializedParticles.FindProperty("ClampVelocityModule.x.maxCurve").animationCurveValue);
@@ -170,9 +170,9 @@
 		    ScaleAnimationCurve(serializedParticles.FindProperty("ClampVelocityModule.magnitude.minCurve").animationCurveValue);
 		    ScaleAnimationCurve(serializedParticles.FindProperty("ClampVelocityModule.magnitude.maxCurve").animationCurveValue);
 
-		    serializedParticles.FindProperty("ForceModule.x.scalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("ForceModule.y.scalar").floatValue *= scaleMultiplier;
-		    serializedParticles.FindProperty("ForceModule.z.scalar").floatValue *= scaleMultiplier;
+		    serializedParticles.FindProperty("ForceModule.x.scalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("ForceModule.y.scalar").floatValue *= _scaleMultiplier;
+		    serializedParticles.FindProperty("ForceModule.z.scalar").floatValue *= _scaleMultiplier;
 
             ScaleAnimationCurve(serializedParticles.FindProperty("ForceModule.x.minCurve").animationCurveValue);
             ScaleAnimationCurve(serializedParticles.FindProperty("ForceModule.x.maxCurve").animationCurveValue);
@@ -188,7 +188,7 @@
 			for (int i = 0; i < curve.keys.Length; i++)
 			{
 				Keyframe tempKey = curve.keys[i];
-				tempKey.value *= scaleMultiplier;
+				tempKey.value *= _scaleMultiplier;
 				curve.keys[i] = tempKey;
 			}
 		}
@@ -196,7 +196,7 @@
         private void HueShiftParticleSystem(ParticleSystem particleSystem, Color targetColor, int gradientColorKeyIndex = 0)
         {
             ParticleSystem.MainModule mainModule = particleSystem.main;
-            Color.RGBToHSV(targetColor, out targetHue, out targetSaturation, out float _);
+            Color.RGBToHSV(targetColor, out _targetHue, out _targetSaturation, out float _);
 
             switch(mainModule.startColor.mode)
             {
@@ -336,15 +336,15 @@
         private Color ShiftColorAndSaveDif(Color colorToShift)
         {
             Color.RGBToHSV(colorToShift, out float colorHue, out float colorSaturation, out float colorValue);
-            hueDifference = targetHue - colorHue;
-            saturationDifference = targetSaturation - colorSaturation;
-            return Color.HSVToRGB(Mathf.Clamp01(colorHue + hueDifference), Mathf.Clamp01(colorSaturation + saturationDifference), colorValue);
+            _hueDifference = _targetHue - colorHue;
+            _saturationDifference = _targetSaturation - colorSaturation;
+            return Color.HSVToRGB(Mathf.Clamp01(colorHue + _hueDifference), Mathf.Clamp01(colorSaturation + _saturationDifference), colorValue);
         }
 
         private Color ShiftColorFromPreCalculatedDif(Color colorToShift)
         {
             Color.RGBToHSV(colorToShift, out float colorHue, out float colorSaturation, out float colorValue);
-            return Color.HSVToRGB(Mathf.Clamp01(colorHue + hueDifference), Mathf.Clamp01(colorSaturation + saturationDifference), colorValue);
+            return Color.HSVToRGB(Mathf.Clamp01(colorHue + _hueDifference), Mathf.Clamp01(colorSaturation + _saturationDifference), colorValue);
         }
 	}
 }

@@ -5,11 +5,10 @@ using MageLock.Events;
 
 namespace MageLock.UI
 {
-   
     public class ViewManager
     {
-        private readonly Dictionary<ViewType, BaseView> viewRegistry = new();
-        private readonly Dictionary<ViewType, ViewState> viewStates = new();
+        private readonly Dictionary<ViewType, BaseView> _viewRegistry = new();
+        private readonly Dictionary<ViewType, ViewState> _viewStates = new();
         private struct ViewState
         {
             public int OriginalSortingOrder;
@@ -28,8 +27,8 @@ namespace MageLock.UI
             EventsBus.Unsubscribe<PopupClosedEvent>(OnPopupClosed);
             EventsBus.Unsubscribe<AllPopupsClosedEvent>(OnAllPopupsClosed);
 
-            viewRegistry.Clear();
-            viewStates.Clear();
+            _viewRegistry.Clear();
+            _viewStates.Clear();
         }
 
         private void OnPopupOpened(PopupOpenedEvent eventData)
@@ -54,7 +53,7 @@ namespace MageLock.UI
         {
             var viewType = GetViewTypeFromComponent(view);
 
-            if (viewRegistry.TryAdd(viewType, view))
+            if (_viewRegistry.TryAdd(viewType, view))
             {
                 Debug.Log($"[ViewManager] Registered view: {viewType}");
             }
@@ -67,10 +66,10 @@ namespace MageLock.UI
         public void UnregisterView(BaseView view)
         {
             var viewType = GetViewTypeFromComponent(view);
-            if (viewRegistry.TryGetValue(viewType, out BaseView existingView) && existingView == view)
+            if (_viewRegistry.TryGetValue(viewType, out BaseView existingView) && existingView == view)
             {
-                viewRegistry.Remove(viewType);
-                viewStates.Remove(viewType);
+                _viewRegistry.Remove(viewType);
+                _viewStates.Remove(viewType);
                 Debug.Log($"[ViewManager] Unregistered view: {viewType}");
             }
             else
@@ -92,13 +91,13 @@ namespace MageLock.UI
 
         public BaseView GetView(ViewType viewType)
         {
-            viewRegistry.TryGetValue(viewType, out BaseView view);
+            _viewRegistry.TryGetValue(viewType, out BaseView view);
             return view;
         }
 
         public T GetView<T>() where T : BaseView
         {
-            foreach (var view in viewRegistry.Values)
+            foreach (var view in _viewRegistry.Values)
             {
                 if (view is T typedView)
                     return typedView;
@@ -162,10 +161,11 @@ namespace MageLock.UI
 
         private void StoreViewState(ViewType viewType, BaseView view)
         {
-            if (!viewStates.ContainsKey(viewType))
+            if (!_viewStates.ContainsKey(viewType))
             {
-                viewStates[viewType] = new ViewState
+                _viewStates[viewType] = new ViewState
                 {
+                    OriginalSortingOrder = 0
                 };
             }
         }
@@ -192,7 +192,7 @@ namespace MageLock.UI
 
         public void RestoreAllViews()
         {
-            foreach (var view in viewRegistry.Values)
+            foreach (var view in _viewRegistry.Values)
             {
                 if (view != null)
                 {
@@ -202,7 +202,7 @@ namespace MageLock.UI
                 }
             }
 
-            viewStates.Clear();
+            _viewStates.Clear();
         }
 
         public void RefreshPlayerProfile()

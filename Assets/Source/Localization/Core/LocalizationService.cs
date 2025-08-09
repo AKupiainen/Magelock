@@ -9,9 +9,9 @@ namespace MageLock.Localization
         public delegate void OnLanguageChangedDelegate(SystemLanguage localizationLanguage);
         public static event OnLanguageChangedDelegate OnLanguageChangedCallback;
 
-        private readonly Dictionary<string, string> localizedData = new();
+        private readonly Dictionary<string, string> _localizedData = new();
 
-        private SystemLanguage currentLanguage;
+        private SystemLanguage _currentLanguage;
 
         [SerializeField] private List<LocalizationData> localizationDatas;
 
@@ -19,7 +19,7 @@ namespace MageLock.Localization
 
         public void Initialize(SystemLanguage localizationLanguage)
         {
-            localizedData.Clear();
+            _localizedData.Clear();
 
             LocalizationData localizationData = localizationDatas.Find(data => data.LocalizationLanguage == localizationLanguage);
 
@@ -27,7 +27,7 @@ namespace MageLock.Localization
             {
                 foreach (LocalizedString localizedString in localizationData.LocalizedStrings)
                 {
-                    localizedData[localizedString.Key] = localizedString.Value;
+                    _localizedData[localizedString.Key] = localizedString.Value;
                 }
 
                 OnLanguageChangedCallback?.Invoke(localizationLanguage);
@@ -48,12 +48,12 @@ namespace MageLock.Localization
 
         public string GetLocalizedValue(string key)
         {
-            return localizedData.GetValueOrDefault(key, key);
+            return _localizedData.GetValueOrDefault(key, key);
         }
 
         public void SetLanguage(SystemLanguage language)
         {
-            currentLanguage = GetSupportedLanguage(language, localizationDatas);
+            _currentLanguage = GetSupportedLanguage(language, localizationDatas);
             Initialize(language);
 
             static SystemLanguage GetSupportedLanguage(SystemLanguage language, List<LocalizationData> localizationDatas)
@@ -65,7 +65,7 @@ namespace MageLock.Localization
 
         public List<LocalizationData> LocalizationDatas => localizationDatas;
 
-        public SystemLanguage GetCurrentLanguage => currentLanguage;
+        public SystemLanguage GetCurrentLanguage => _currentLanguage;
         
         public LanguageData GetLanguageData => languageData;
     }

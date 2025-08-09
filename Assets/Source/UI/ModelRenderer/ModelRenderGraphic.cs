@@ -35,21 +35,21 @@ namespace MageLock.ModelRenderer
         [SerializeField] private Vector3 cameraRotation;
         [SerializeField] private bool useUniqueLayer;
         
-        private Camera renderCamera;
-        private Vector3 additionalModelOffset;
-        private RenderTexture renderTexture;
-        private new CanvasRenderer canvasRenderer;
-        private Bounds? cachedBounds;
-        private int temporaryRenderLayer = -1;
-        private bool isVisible = true;
+        private Camera _renderCamera;
+        private Vector3 _additionalModelOffset;
+        private RenderTexture _renderTexture;
+        private CanvasRenderer _canvasRenderer;
+        private Bounds? _cachedBounds;
+        private int _temporaryRenderLayer = -1;
+        private bool _isVisible = true;
 
         protected override void Awake()
         {
             base.Awake();
 
-            if (canvasRenderer == null)
+            if (_canvasRenderer == null)
             {
-                canvasRenderer = GetComponent<CanvasRenderer>();
+                _canvasRenderer = GetComponent<CanvasRenderer>();
             }
 
             if (Application.isPlaying && modelTransform != null)
@@ -66,29 +66,29 @@ namespace MageLock.ModelRenderer
         
         private void LateUpdate()
         {
-            AdjustCameraToModel(renderCamera);
-            bool currentlyVisible = isActiveAndEnabled && canvasRenderer.cull == false;
+            AdjustCameraToModel(_renderCamera);
+            bool currentlyVisible = isActiveAndEnabled && _canvasRenderer.cull == false;
 
-            if (currentlyVisible != isVisible)
+            if (currentlyVisible != _isVisible)
             {
-                isVisible = currentlyVisible;
-                ToggleCameraRendering(isVisible);
+                _isVisible = currentlyVisible;
+                ToggleCameraRendering(_isVisible);
             }
         }
 
         private void ToggleCameraRendering(bool enable)
         {
-            if (renderCamera == null)
+            if (_renderCamera == null)
             {
                 return;
             }
 
-            renderCamera.enabled = enable;
+            _renderCamera.enabled = enable;
         }
         
         private void InitializeCamera()
         {
-            if (renderCamera != null)
+            if (_renderCamera != null)
             {
                 return;
             }
@@ -98,46 +98,46 @@ namespace MageLock.ModelRenderer
                 hideFlags = HideFlags.DontSaveInBuild | HideFlags.DontSaveInEditor | HideFlags.NotEditable
             };
 
-            renderCamera = cameraObject.AddComponent<Camera>();
+            _renderCamera = cameraObject.AddComponent<Camera>();
             ApplyCameraSettings();
         }
 
         private void ApplyCameraSettings()
         {
-            if (renderCamera == null)
+            if (_renderCamera == null)
             {
                 return;
             }
 
-            if (UseUniqueLayer && temporaryRenderLayer == -1)
+            if (UseUniqueLayer && _temporaryRenderLayer == -1)
             {
-                temporaryRenderLayer = TemporaryLayerManager.GetAvailableLayer();
+                _temporaryRenderLayer = TemporaryLayerManager.GetAvailableLayer();
             }
 
-            renderCamera.cullingMask = UseUniqueLayer ? 1 << temporaryRenderLayer : cameraCullingMask;
-            renderCamera.clearFlags = cameraClearFlags;
-            renderCamera.backgroundColor = cameraBackgroundColor;
-            renderCamera.fieldOfView = cameraFieldOfView;
-            renderCamera.nearClipPlane = cameraNearClipPlane;
-            renderCamera.farClipPlane = cameraFarClipPlane;
-            renderCamera.depth = cameraDepth;
-            renderCamera.targetTexture = renderTexture;
+            _renderCamera.cullingMask = UseUniqueLayer ? 1 << _temporaryRenderLayer : cameraCullingMask;
+            _renderCamera.clearFlags = cameraClearFlags;
+            _renderCamera.backgroundColor = cameraBackgroundColor;
+            _renderCamera.fieldOfView = cameraFieldOfView;
+            _renderCamera.nearClipPlane = cameraNearClipPlane;
+            _renderCamera.farClipPlane = cameraFarClipPlane;
+            _renderCamera.depth = cameraDepth;
+            _renderCamera.targetTexture = _renderTexture;
         }
 
         private void ForceRenderTextureUpdate()
         {
-            if (canvasRenderer == null)
+            if (_canvasRenderer == null)
             {
-                canvasRenderer = GetComponent<CanvasRenderer>();
+                _canvasRenderer = GetComponent<CanvasRenderer>();
             }
 
-            if (renderTexture != null)
+            if (_renderTexture != null)
             {
-                renderTexture.Release();
-                renderTexture = null;
+                _renderTexture.Release();
+                _renderTexture = null;
             }
             
-            renderTexture = GetOrCreateRenderTexture();
+            _renderTexture = GetOrCreateRenderTexture();
             SetMaterialDirty();
         }
 
@@ -177,12 +177,12 @@ namespace MageLock.ModelRenderer
         
         private void CacheBounds()
         {
-            if (modelTransform == null || cachedBounds != null)
+            if (modelTransform == null || _cachedBounds != null)
             {
                 return;
             }
 
-            cachedBounds = CalculateBoundsFromMeshes(modelTransform);
+            _cachedBounds = CalculateBoundsFromMeshes(modelTransform);
         }
 
         private Bounds CalculateBoundsFromMeshes(Transform root)
@@ -240,12 +240,12 @@ namespace MageLock.ModelRenderer
                 return CalculateBoundsFromMeshes(modelTransform);
             }
             
-            if (cachedBounds == null)
+            if (_cachedBounds == null)
             {
                 CacheBounds();
             }
             
-            return cachedBounds ?? new Bounds(Vector3.zero, Vector3.zero);
+            return _cachedBounds ?? new Bounds(Vector3.zero, Vector3.zero);
         }
 
         public void AdjustCameraToModel(Camera targetCamera)
@@ -280,9 +280,9 @@ namespace MageLock.ModelRenderer
         
         private void DestroyCamera()
         {
-            if (renderCamera != null)
+            if (_renderCamera != null)
             {
-                GameObject cameraObject = renderCamera.gameObject;
+                GameObject cameraObject = _renderCamera.gameObject;
 
                 if (cameraObject == null)
                 {
@@ -299,8 +299,8 @@ namespace MageLock.ModelRenderer
                 }
             }
 
-            RenderTexturePool.ReleaseTexture(renderTexture);
-            renderTexture = null;
+            RenderTexturePool.ReleaseTexture(_renderTexture);
+            _renderTexture = null;
         }
 
         public void UpdateGraphicFromPreviewCamera(Camera previewCamera, RenderTexture previewTexture)
@@ -311,16 +311,16 @@ namespace MageLock.ModelRenderer
             }
 
             AdjustCameraToModel(previewCamera);
-            renderTexture = previewTexture;
-            canvasRenderer.SetTexture(renderTexture);
+            _renderTexture = previewTexture;
+            _canvasRenderer.SetTexture(_renderTexture);
         }
         
         public void UpdateModelTransform(Transform newModelTransform, Vector3 additionalModelOffset = new())
         {
-            this.additionalModelOffset = additionalModelOffset;
+            this._additionalModelOffset = additionalModelOffset;
             modelTransform = newModelTransform;
             modelTransform.rotation = Quaternion.Euler(cameraRotation);
-            cachedBounds = null; 
+            _cachedBounds = null; 
             
             ForceRenderTextureUpdate();
             InitializeCamera();
@@ -335,7 +335,7 @@ namespace MageLock.ModelRenderer
                 return;
             }
 
-            int assignedLayer = UseUniqueLayer ? temporaryRenderLayer : modelTransform.gameObject.layer;
+            int assignedLayer = UseUniqueLayer ? _temporaryRenderLayer : modelTransform.gameObject.layer;
             SetLayerRecursively(modelTransform, assignedLayer);
         }
         
@@ -358,20 +358,20 @@ namespace MageLock.ModelRenderer
         {
             if (Application.isPlaying)
             {
-                TemporaryLayerManager.ReleaseLayer(temporaryRenderLayer);
+                TemporaryLayerManager.ReleaseLayer(_temporaryRenderLayer);
                 DestroyCamera();
             }
         }
         
-        [UsedImplicitly] public Vector3 GetModelOffset() => modelOffset + additionalModelOffset;
+        [UsedImplicitly] public Vector3 GetModelOffset() => modelOffset + _additionalModelOffset;
         
         public override Texture mainTexture
         {
             get
             {
-                if (renderTexture != null)
+                if (_renderTexture != null)
                 {
-                    return renderTexture;
+                    return _renderTexture;
                 }
                 
                 return Texture2D.blackTexture;
@@ -455,7 +455,7 @@ namespace MageLock.ModelRenderer
         private const int MinLayer = 8;  
         private const int MaxLayer = 31; 
 
-        private static readonly HashSet<int> usedLayers = new();
+        private static readonly HashSet<int> UsedLayers = new();
 
         public static int GetAvailableLayer()
         {
@@ -466,7 +466,7 @@ namespace MageLock.ModelRenderer
                     continue;
                 }
 
-                if (usedLayers.Add(i))
+                if (UsedLayers.Add(i))
                 {
                     return i;
                 }
@@ -478,7 +478,7 @@ namespace MageLock.ModelRenderer
 
         public static void ReleaseLayer(int layer)
         {
-            usedLayers.Remove(layer);
+            UsedLayers.Remove(layer);
         }
     }
 }

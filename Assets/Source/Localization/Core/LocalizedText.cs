@@ -9,15 +9,15 @@ namespace MageLock.Localization
     {
         [SerializeField] private string localizationKey;
 
-        [Inject] private LocalizationService localizationService;
+        [Inject] private LocalizationService _localizationService;
 
-        private TextMeshProUGUI textComponent;
+        private TextMeshProUGUI _textComponent;
 
         private void Awake()
         {
-            textComponent = GetComponent<TextMeshProUGUI>();
+            _textComponent = GetComponent<TextMeshProUGUI>();
 
-            if (textComponent == null)
+            if (_textComponent == null)
             {
                 Debug.LogError("LocalizedText script must be attached to a GameObject with a TextMeshProUGUI component.");
             }
@@ -27,14 +27,14 @@ namespace MageLock.Localization
         [PostInject]
         private void InitializeLocalization()
         {
-            if (localizationService == null)
+            if (_localizationService == null)
             {
                 Debug.LogError($"LocalizationService not injected into LocalizedText on {gameObject.name}");
                 return;
             }
 
             LocalizationService.OnLanguageChangedCallback += UpdateText;
-            UpdateText(localizationService.GetCurrentLanguage);
+            UpdateText(_localizationService.GetCurrentLanguage);
             
             Debug.Log($"[LocalizedText] Initialized localization for {gameObject.name} with key: {localizationKey}");
         }
@@ -46,10 +46,10 @@ namespace MageLock.Localization
         
         private void UpdateText(SystemLanguage language)
         {
-            if (textComponent != null && localizationService != null)
+            if (_textComponent != null && _localizationService != null)
             {
-                string localizedValue = localizationService.GetLocalizedValue(localizationKey);
-                textComponent.text = localizedValue;
+                string localizedValue = _localizationService.GetLocalizedValue(localizationKey);
+                _textComponent.text = localizedValue;
             }
         }
     }

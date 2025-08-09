@@ -14,9 +14,9 @@ namespace MageLock.ModelRenderer
         [SerializeField] private Vector3 modelScale = Vector3.one;
         [SerializeField] private bool instantiateOnAwake = true;
         
-        private GameObject currentModelInstance;
+        private GameObject _currentModelInstance;
         
-        public Transform CurrentModelTransform => currentModelInstance?.transform;
+        public Transform CurrentModelTransform => _currentModelInstance?.transform;
         
         private void Awake()
         {
@@ -40,32 +40,32 @@ namespace MageLock.ModelRenderer
                 return null;
             }
             
-            if (currentModelInstance != null)
+            if (_currentModelInstance != null)
             {
                 if (Application.isPlaying)
                 {
-                    Destroy(currentModelInstance);
+                    Destroy(_currentModelInstance);
                 }
                 else
                 {
-                    DestroyImmediate(currentModelInstance);
+                    DestroyImmediate(_currentModelInstance);
                 }
                     
-                currentModelInstance = null;
+                _currentModelInstance = null;
             }
             
-            currentModelInstance = Instantiate(modelPrefab);
-            currentModelInstance.name = $"{modelPrefab.name}_Instance";
+            _currentModelInstance = Instantiate(modelPrefab);
+            _currentModelInstance.name = $"{modelPrefab.name}_Instance";
             
-            currentModelInstance.transform.position = Vector3.zero;
-            currentModelInstance.transform.rotation = Quaternion.Euler(modelRotation);
-            currentModelInstance.transform.localScale = modelScale;
+            _currentModelInstance.transform.position = Vector3.zero;
+            _currentModelInstance.transform.rotation = Quaternion.Euler(modelRotation);
+            _currentModelInstance.transform.localScale = modelScale;
             
-            currentModelInstance.SetActive(true);
+            _currentModelInstance.SetActive(true);
             
-            modelRenderer.UpdateModelTransform(currentModelInstance.transform, modelOffset);
+            modelRenderer.UpdateModelTransform(_currentModelInstance.transform, modelOffset);
             
-            return currentModelInstance.transform;
+            return _currentModelInstance.transform;
         }
         
         public Transform ChangeModelPrefab(GameObject newPrefab)
@@ -84,9 +84,9 @@ namespace MageLock.ModelRenderer
         {
             modelOffset = newOffset;
             
-            if (currentModelInstance != null && modelRenderer != null)
+            if (_currentModelInstance != null && modelRenderer != null)
             {
-                modelRenderer.UpdateModelTransform(currentModelInstance.transform, modelOffset);
+                modelRenderer.UpdateModelTransform(_currentModelInstance.transform, modelOffset);
             }
         }
         
@@ -94,13 +94,13 @@ namespace MageLock.ModelRenderer
         {
             modelRotation = newRotation;
             
-            if (currentModelInstance != null)
+            if (_currentModelInstance != null)
             {
-                currentModelInstance.transform.rotation = Quaternion.Euler(modelRotation);
+                _currentModelInstance.transform.rotation = Quaternion.Euler(modelRotation);
                 
                 if (modelRenderer != null)
                 {
-                    modelRenderer.UpdateModelTransform(currentModelInstance.transform, modelOffset);
+                    modelRenderer.UpdateModelTransform(_currentModelInstance.transform, modelOffset);
                 }
             }
         }
@@ -109,36 +109,36 @@ namespace MageLock.ModelRenderer
         {
             modelScale = newScale;
             
-            if (currentModelInstance != null)
+            if (_currentModelInstance != null)
             {
-                currentModelInstance.transform.localScale = modelScale;
+                _currentModelInstance.transform.localScale = modelScale;
                 
                 if (modelRenderer != null)
                 {
-                    modelRenderer.UpdateModelTransform(currentModelInstance.transform, modelOffset);
+                    modelRenderer.UpdateModelTransform(_currentModelInstance.transform, modelOffset);
                 }
             }
         }
         
         public void ForceModelRendererUpdate()
         {
-            if (modelRenderer != null && currentModelInstance != null)
+            if (modelRenderer != null && _currentModelInstance != null)
             {
-                modelRenderer.UpdateModelTransform(currentModelInstance.transform, modelOffset);
+                modelRenderer.UpdateModelTransform(_currentModelInstance.transform, modelOffset);
             }
         }
         
         private void OnDestroy()
         {
-            if (currentModelInstance != null)
+            if (_currentModelInstance != null)
             {
                 if (Application.isPlaying)
                 {
-                    Destroy(currentModelInstance);
+                    Destroy(_currentModelInstance);
                 }
                 else
                 {
-                    DestroyImmediate(currentModelInstance);
+                    DestroyImmediate(_currentModelInstance);
                 }
             }
         }
