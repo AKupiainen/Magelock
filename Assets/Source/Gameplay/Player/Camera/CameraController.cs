@@ -17,7 +17,7 @@ namespace MageLock.Gameplay
         public bool enableShake;
         public float shakeIntensity;
         
-        private float shakeTimer;
+        private float _shakeTimer;
         
         private void LateUpdate()
         {
@@ -40,14 +40,14 @@ namespace MageLock.Gameplay
         
         private void ApplyCameraShake()
         {
-            if (!enableShake || shakeTimer <= 0f) return;
+            if (!enableShake || _shakeTimer <= 0f) return;
             
-            shakeTimer -= Time.deltaTime;
+            _shakeTimer -= Time.deltaTime;
             
             Vector3 shakeOffset = Random.insideUnitSphere * shakeIntensity;
             transform.position += shakeOffset;
             
-            if (shakeTimer <= 0f)
+            if (_shakeTimer <= 0f)
             {
                 enableShake = false;
                 shakeIntensity = 0f;
@@ -62,7 +62,7 @@ namespace MageLock.Gameplay
         public void Shake(float intensity, float duration)
         {
             shakeIntensity = intensity;
-            shakeTimer = duration;
+            _shakeTimer = duration;
             enableShake = true;
         }
         

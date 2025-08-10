@@ -11,12 +11,12 @@ namespace MageLock.Spells
         [SerializeField] private float blinkDistance = 10f;
         [SerializeField] private GameObject blinkStartEffect;
         [SerializeField] private GameObject blinkEndEffect;
-        [SerializeField] private float effectDuration = 1f;
         [SerializeField] private bool checkForObstacles = true;
         
         protected override void CastInDirection(GameObject caster, Vector3 origin, Vector3 direction)
         {
-            Vector3 targetPosition = CalculateBlinkPosition(caster, origin, direction);
+            Vector3 blinkDirection = caster.transform.forward;
+            Vector3 targetPosition = CalculateBlinkPosition(caster, caster.transform.position, blinkDirection);
             
             if (blinkStartEffect)
             {
@@ -29,8 +29,6 @@ namespace MageLock.Spells
             {
                 SpawnEffect(blinkEndEffect, targetPosition);
             }
-            
-            Debug.Log($"[{SpellName}] Teleported to {targetPosition}");
         }
         
         private Vector3 CalculateBlinkPosition(GameObject caster, Vector3 origin, Vector3 direction)
@@ -74,15 +72,11 @@ namespace MageLock.Spells
         private void SpawnEffect(GameObject effectPrefab, Vector3 position)
         {
             GameObject effect = Instantiate(effectPrefab, position, Quaternion.identity);
-            NetworkObject netObj = effect.GetComponent<NetworkObject>();
             
+            NetworkObject netObj = effect.GetComponent<NetworkObject>();
             if (netObj != null && NetworkManager.Singleton.IsServer)
             {
                 netObj.Spawn();
-            }
-            else
-            {
-                Destroy(effect, effectDuration);
             }
         }
     }

@@ -6,6 +6,9 @@ using MageLock.DependencyInjection;
 
 namespace MageLock.Gameplay
 {
+    /// <summary>
+    /// Simplified networked spell casting handler
+    /// </summary>
     public class SpellCaster : NetworkBehaviour
     {
         [Header("References")]
@@ -25,9 +28,9 @@ namespace MageLock.Gameplay
         {
             base.OnNetworkSpawn();
             
-            if (!IsOwner) return;
-            
             DIContainer.Instance.Inject(this);
+            
+            if (!IsOwner) return;
             
             EventsBus.Subscribe<SpellCastRequestEvent>(OnSpellCastRequested);
             
@@ -52,6 +55,12 @@ namespace MageLock.Gameplay
         [ServerRpc]
         private void RequestSpellCastServerRpc(int slotIndex, int spellId)
         {
+            if (_spellDatabase == null)
+            {
+                Debug.LogError($"[SpellCaster] SpellDatabase is null on server! Make sure DI is setup.");
+                return;
+            }
+            
             Spell spell = _spellDatabase.GetSpell(spellId);
             
             if (spell == null)

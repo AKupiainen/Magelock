@@ -23,18 +23,16 @@ namespace MageLock.Gameplay
         [SerializeField] private float deadZone = 0.1f;
         [SerializeField] private bool useEventSystem = true;
 
-        private Rigidbody rb;
-        private Animator animator;
-        private Vector2 moveInput;
-        private Vector2 keyboardInput;
-        private Vector2 joystickInput;
-        private bool isLocalPlayer = false;
-        private InputMode previousInputMode;
+        private Rigidbody _rb;
+        private Animator _animator;
+        private Vector2 _moveInput;
+        private Vector2 _keyboardInput;
+        private Vector2 _joystickInput;
+        private bool _isLocalPlayer;
 
         private void Awake()
         {
             InitializeComponents();
-            previousInputMode = inputMode;
         }
 
         private void OnEnable()
@@ -57,19 +55,18 @@ namespace MageLock.Gameplay
 
         private void InitializeComponents()
         {
-            rb = GetComponent<Rigidbody>();
-            animator = GetComponentInChildren<Animator>();
+            _rb = GetComponent<Rigidbody>();
+            _animator = GetComponentInChildren<Animator>();
             
-            rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
-            rb.linearDamping = 0f; 
-            rb.useGravity = false; 
+            _rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
+            _rb.linearDamping = 0f; 
+            _rb.useGravity = false; 
         }
 
         public void SetIsLocalPlayer(bool isLocal)
         {
-            isLocalPlayer = isLocal;
+            _isLocalPlayer = isLocal;
             
-            // Fire event for other systems to react
             if (useEventSystem)
             {
                 EventsBus.Trigger(new LocalPlayerStatusEvent(gameObject, isLocal));
@@ -80,53 +77,53 @@ namespace MageLock.Gameplay
 
         public void HandleInput()
         {
-            if (!isLocalPlayer) return;
+            if (!_isLocalPlayer) return;
             
             if (inputMode == InputMode.Keyboard || inputMode == InputMode.Both)
             {
                 float h = GetAxisWithDeadZone(horizontalAxis);
                 float v = GetAxisWithDeadZone(verticalAxis);
-                keyboardInput = new Vector2(h, v);
+                _keyboardInput = new Vector2(h, v);
                 
-                if (useEventSystem && keyboardInput.sqrMagnitude > 0.01f)
+                if (useEventSystem && _keyboardInput.sqrMagnitude > 0.01f)
                 {
-                    EventsBus.Trigger(new MovementInputEvent(keyboardInput, InputSource.Keyboard));
+                    EventsBus.Trigger(new MovementInputEvent(_keyboardInput, InputSource.Keyboard));
                 }
             }
 
             switch (inputMode)
             {
                 case InputMode.Keyboard:
-                    moveInput = keyboardInput;
+                    _moveInput = _keyboardInput;
                     break;
                 case InputMode.VirtualJoystick:
-                    moveInput = joystickInput;
+                    _moveInput = _joystickInput;
                     break;
                 case InputMode.Both:
-                    moveInput = (keyboardInput.sqrMagnitude > joystickInput.sqrMagnitude) ? keyboardInput : joystickInput;
+                    _moveInput = (_keyboardInput.sqrMagnitude > _joystickInput.sqrMagnitude) ? _keyboardInput : _joystickInput;
                     break;
             }
 
-            if (moveInput.sqrMagnitude > 1f) 
-                moveInput.Normalize();
+            if (_moveInput.sqrMagnitude > 1f) 
+                _moveInput.Normalize();
         }
 
         private void OnMovementInputReceived(MovementInputEvent e)
         {
-            if (!isLocalPlayer) return;
+            if (!_isLocalPlayer) return;
             
             switch (e.Source)
             {
                 case InputSource.Keyboard:
-                    keyboardInput = e.MoveInput;
+                    _keyboardInput = e.MoveInput;
                     break;
                 case InputSource.VirtualJoystick:
-                    joystickInput = e.MoveInput;
+                    _joystickInput = e.MoveInput;
                     break;
                 case InputSource.Gamepad:
                     break;
                 case InputSource.Network:
-                    if (!isLocalPlayer)
+                    if (!_isLocalPlayer)
                     {
                         SetNetworkInput(e.MoveInput);
                     }
@@ -141,19 +138,18 @@ namespace MageLock.Gameplay
             switch (inputMode)
             {
                 case InputMode.Keyboard:
-                    moveInput = keyboardInput;
+                    _moveInput = _keyboardInput;
                     break;
                 case InputMode.VirtualJoystick:
-                    moveInput = joystickInput;
+                    _moveInput = _joystickInput;
                     break;
                 case InputMode.Both:
-                    moveInput = (keyboardInput.sqrMagnitude > joystickInput.sqrMagnitude) ? keyboardInput : joystickInput;
+                    _moveInput = (_keyboardInput.sqrMagnitude > _joystickInput.sqrMagnitude) ? _keyboardInput : _joystickInput;
                     break;
             }
 
-            // Normalize if magnitude > 1
-            if (moveInput.sqrMagnitude > 1f) 
-                moveInput.Normalize();
+            if (_moveInput.sqrMagnitude > 1f) 
+                _moveInput.Normalize();
         }
 
         private void OnInputModeChanged(InputModeChangeEvent e)
@@ -162,11 +158,11 @@ namespace MageLock.Gameplay
             
             if (e.NewMode == InputMode.Keyboard)
             {
-                joystickInput = Vector2.zero;
+                _joystickInput = Vector2.zero;
             }
             else if (e.NewMode == InputMode.VirtualJoystick)
             {
-                keyboardInput = Vector2.zero;
+                _keyboardInput = Vector2.zero;
             }
             
             UpdateCombinedInput();
@@ -178,19 +174,19 @@ namespace MageLock.Gameplay
             return Mathf.Abs(value) > deadZone ? value : 0f;
         }
 
-        public Vector2 GetMoveInput() => moveInput;
+        public Vector2 GetMoveInput() => _moveInput;
 
         public void SetNetworkInput(Vector2 networkMoveInput)
         {
-            if (!isLocalPlayer)
+            if (!_isLocalPlayer)
             {
-                moveInput = networkMoveInput;
+                _moveInput = networkMoveInput;
             }
         }
 
         public void ProcessMovement()
         {
-            Vector3 moveInput3D = new Vector3(moveInput.x, 0f, moveInput.y);
+            Vector3 moveInput3D = new Vector3(_moveInput.x, 0f, _moveInput.y);
             
             HandleMovement(moveInput3D);
             HandleRotation(moveInput3D);
@@ -200,16 +196,15 @@ namespace MageLock.Gameplay
 
         private void HandleMovement(Vector3 moveDirection)
         {
-            if (rb.isKinematic)
+            if (_rb.isKinematic)
             {
-                // For kinematic bodies, use MovePosition
-                Vector3 movement = moveDirection * moveSpeed * Time.fixedDeltaTime;
-                rb.MovePosition(rb.position + movement);
+                Vector3 movement = moveDirection * (moveSpeed * Time.fixedDeltaTime);
+                _rb.MovePosition(_rb.position + movement);
             }
             else
             {
                 Vector3 targetVelocity = moveDirection * moveSpeed;
-                rb.linearVelocity = new Vector3(targetVelocity.x, rb.linearVelocity.y, targetVelocity.z);
+                _rb.linearVelocity = new Vector3(targetVelocity.x, _rb.linearVelocity.y, targetVelocity.z);
             }
         }
 
@@ -226,42 +221,40 @@ namespace MageLock.Gameplay
 
         private void UpdateAnimations()
         {
-            if (animator == null) return;
+            if (_animator == null) return;
 
             float targetSpeed = GetAnimationSpeed();
-            animator.SetFloat(SpeedHash, targetSpeed);
+            _animator.SetFloat(SpeedHash, targetSpeed);
         }
 
         public float GetAnimationSpeed()
         {
-            if (rb.isKinematic)
+            if (_rb.isKinematic)
             {
-                return moveInput.magnitude * moveSpeed;
+                return _moveInput.magnitude * moveSpeed;
             }
-            else
-            {
-                Vector3 horizontalVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-                return horizontalVel.magnitude;
-            }
+
+            Vector3 horizontalVel = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
+            return horizontalVel.magnitude;
         }
         
         public void SetAnimationSpeed(float speed)
         {
-            if (animator == null) return;
-            animator.SetFloat(SpeedHash, speed);
+            if (_animator == null) return;
+            _animator.SetFloat(SpeedHash, speed);
         }
         
         private void Update()
         {
-            if (isLocalPlayer && !useEventSystem)
+            if (_isLocalPlayer && !useEventSystem)
             {
                 HandleInput();
             }
             
-            if (animator != null)
+            if (_animator != null)
             {
                 float targetSpeed = GetAnimationSpeed();
-                animator.SetFloat(SpeedHash, targetSpeed);
+                _animator.SetFloat(SpeedHash, targetSpeed);
             }
         }
 
@@ -275,12 +268,12 @@ namespace MageLock.Gameplay
             if (!Application.isPlaying) return;
             
             Gizmos.color = Color.cyan;
-            Gizmos.DrawRay(transform.position, new Vector3(moveInput.x, 0, moveInput.y) * 2f);
+            Gizmos.DrawRay(transform.position, new Vector3(_moveInput.x, 0, _moveInput.y) * 2f);
             
-            if (rb != null)
+            if (_rb != null)
             {
                 Gizmos.color = Color.yellow;
-                Gizmos.DrawRay(transform.position, rb.linearVelocity);
+                Gizmos.DrawRay(transform.position, _rb.linearVelocity);
             }
             
             Gizmos.color = Color.green;

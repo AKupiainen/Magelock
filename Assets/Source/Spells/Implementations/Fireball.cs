@@ -47,7 +47,6 @@ namespace MageLock.Spells
         {
             if (!NetworkManager.Singleton || NetworkManager.Singleton.IsServer)
             {
-                // Spawn explosion effect
                 if (effectPrefab)
                 {
                     GameObject explosion = Instantiate(effectPrefab, position, Quaternion.identity);
@@ -63,8 +62,8 @@ namespace MageLock.Spells
                     }
                 }
                 
-                // Apply explosion damage
                 var hits = Physics.OverlapSphere(position, radius);
+                
                 foreach (var hit in hits)
                 {
                     if (hit.gameObject == caster) continue;
@@ -72,17 +71,13 @@ namespace MageLock.Spells
                     var health = hit.GetComponent<IHealth>();
                     if (health != null)
                     {
-                        // Optional: Apply falloff damage based on distance
                         float distance = Vector3.Distance(position, hit.transform.position);
                         float falloff = 1f - (distance / radius);
                         float finalDamage = damage * falloff;
                         
                         health.TakeDamage(finalDamage);
-                        Debug.Log($"[Fireball] Explosion dealt {finalDamage:F1} damage to {hit.name}");
                     }
                 }
-                
-                Debug.Log($"[Fireball] Exploded at {position} with {radius}m radius, {damage} damage");
             }
         }
     }

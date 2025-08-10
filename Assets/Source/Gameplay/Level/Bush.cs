@@ -9,11 +9,11 @@ namespace MageLock.Gameplay
         [Header("Settings")]
         [SerializeField] private float revealDistance = 2f;
         
-        private static readonly HashSet<NetworkObject> PlayersInAnyBush = new HashSet<NetworkObject>();
-        private static readonly Dictionary<NetworkObject, HashSet<Bush>> playerBushes = new Dictionary<NetworkObject, HashSet<Bush>>();
-        private static readonly Dictionary<NetworkObject, Renderer[]> playerRenderers = new Dictionary<NetworkObject, Renderer[]>();
-        
-        private readonly HashSet<NetworkObject> _playersInThisBush = new HashSet<NetworkObject>();
+        private static readonly HashSet<NetworkObject> PlayersInAnyBush = new();
+        private static readonly Dictionary<NetworkObject, HashSet<Bush>> PlayerBushes = new();
+        private static readonly Dictionary<NetworkObject, Renderer[]> PlayerRenderers = new();
+
+        private readonly HashSet<NetworkObject> _playersInThisBush = new();
         
         private void Awake()
         {
@@ -29,12 +29,12 @@ namespace MageLock.Gameplay
             _playersInThisBush.Add(networkObject);
             PlayersInAnyBush.Add(networkObject);
             
-            if (!playerBushes.ContainsKey(networkObject))
-                playerBushes[networkObject] = new HashSet<Bush>();
-            playerBushes[networkObject].Add(this);
+            if (!PlayerBushes.ContainsKey(networkObject))
+                PlayerBushes[networkObject] = new HashSet<Bush>();
+            PlayerBushes[networkObject].Add(this);
             
-            if (!playerRenderers.ContainsKey(networkObject))
-                playerRenderers[networkObject] = other.GetComponentsInChildren<Renderer>();
+            if (!PlayerRenderers.ContainsKey(networkObject))
+                PlayerRenderers[networkObject] = other.GetComponentsInChildren<Renderer>();
         }
         
         private void OnTriggerExit(Collider other)
@@ -44,18 +44,18 @@ namespace MageLock.Gameplay
             
             _playersInThisBush.Remove(networkObject);
             
-            if (playerBushes.ContainsKey(networkObject))
+            if (PlayerBushes.ContainsKey(networkObject))
             {
-                playerBushes[networkObject].Remove(this);
-                if (playerBushes[networkObject].Count == 0)
+                PlayerBushes[networkObject].Remove(this);
+                if (PlayerBushes[networkObject].Count == 0)
                 {
-                    playerBushes.Remove(networkObject);
+                    PlayerBushes.Remove(networkObject);
                     PlayersInAnyBush.Remove(networkObject);
                     
-                    if (playerRenderers.ContainsKey(networkObject))
+                    if (PlayerRenderers.ContainsKey(networkObject))
                     {
-                        SetRenderersEnabled(playerRenderers[networkObject], true);
-                        playerRenderers.Remove(networkObject);
+                        SetRenderersEnabled(PlayerRenderers[networkObject], true);
+                        PlayerRenderers.Remove(networkObject);
                     }
                 }
             }
@@ -73,7 +73,7 @@ namespace MageLock.Gameplay
             
             var toRemove = new List<NetworkObject>();
             
-            foreach (var kvp in playerRenderers)
+            foreach (var kvp in PlayerRenderers)
             {
                 var player = kvp.Key;
                 var renderers = kvp.Value;
@@ -90,8 +90,8 @@ namespace MageLock.Gameplay
             
             foreach (var player in toRemove)
             {
-                playerRenderers.Remove(player);
-                playerBushes.Remove(player);
+                PlayerRenderers.Remove(player);
+                PlayerBushes.Remove(player);
                 PlayersInAnyBush.Remove(player);
             }
         }
@@ -119,10 +119,10 @@ namespace MageLock.Gameplay
         
         private static bool SharesBush(NetworkObject p1, NetworkObject p2)
         {
-            if (!playerBushes.ContainsKey(p1) || !playerBushes.TryGetValue(p2, out var playerBush))
+            if (!PlayerBushes.ContainsKey(p1) || !PlayerBushes.TryGetValue(p2, out var playerBush))
                 return false;
             
-            foreach (var bush in playerBushes[p1])
+            foreach (var bush in PlayerBushes[p1])
                 if (playerBush.Contains(bush))
                     return true;
             

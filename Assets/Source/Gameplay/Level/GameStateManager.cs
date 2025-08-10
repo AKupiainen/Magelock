@@ -16,52 +16,52 @@ namespace MageLock.Gameplay
 
     public class GameStateManager : NetworkBehaviour
     {
-        [Inject] private NetworkManagerCustom networkManagerCustom;
-        private PlayerSpawnManager playerSpawnManager;
+        [Inject] private NetworkManagerCustom _networkManagerCustom;
+        private PlayerSpawnManager _playerSpawnManager;
         
-        private NetworkVariable<GameState> currentState = new(GameState.WaitingForPlayers);
-        private NetworkVariable<float> matchTimer = new(0f);
+        private readonly NetworkVariable<GameState> _currentState = new();
+        private readonly NetworkVariable<float> _matchTimer = new();
         
-        private ulong player1ClientId = ulong.MaxValue;
-        private ulong player2ClientId = ulong.MaxValue;
-        private float matchDuration = 120f; 
+        private ulong _player1ClientId = ulong.MaxValue;
+        private ulong _player2ClientId = ulong.MaxValue;
+        private readonly float _matchDuration = 120f; 
         
         public event Action<GameState> OnGameStateChanged;
         public event Action<ulong> OnGameWon;
         
-        public GameState CurrentState => currentState.Value;
-        public float MatchTimer => matchTimer.Value;
-        public bool IsFull => player1ClientId != ulong.MaxValue && player2ClientId != ulong.MaxValue;
+        public GameState CurrentState => _currentState.Value;
+        public float MatchTimer => _matchTimer.Value;
+        public bool IsFull => _player1ClientId != ulong.MaxValue && _player2ClientId != ulong.MaxValue;
 
         private void Awake()
         {
             DIContainer.Instance.Inject(this);
-            playerSpawnManager = new PlayerSpawnManager();
+            _playerSpawnManager = new PlayerSpawnManager();
         }
 
         public override void OnNetworkSpawn()
         {
             if (IsServer)
             {
-                networkManagerCustom.OnClientDisconnectCallback += OnPlayerDisconnected;
+                _networkManagerCustom.OnClientDisconnectCallback += OnPlayerDisconnected;
                 
-                playerSpawnManager.SpawnAllPlayers();
+                _playerSpawnManager.SpawnAllPlayers();
                 SetupPlayers();
             }
 
-            currentState.OnValueChanged += (prev, current) => OnGameStateChanged?.Invoke(current);
+            _currentState.OnValueChanged += (prev, current) => OnGameStateChanged?.Invoke(current);
         }
 
         public override void OnNetworkDespawn()
         {
             if (IsServer)
             {
-                networkManagerCustom.OnClientDisconnectCallback -= OnPlayerDisconnected;
+                _networkManagerCustom.OnClientDisconnectCallback -= OnPlayerDisconnected;
             }
             
-            if (playerSpawnManager != null)
+            if (_playerSpawnManager != null)
             {
-                playerSpawnManager.Cleanup();
+                _playerSpawnManager.Cleanup();
             }
         }
 
@@ -69,7 +69,7 @@ namespace MageLock.Gameplay
         {
             if (!IsServer) return;
 
-            if (currentState.Value == GameState.Playing)
+            if (_currentState.Value == GameState.Playing)
             {
                 UpdateMatch();
             }
@@ -81,21 +81,21 @@ namespace MageLock.Gameplay
         {
             if (!IsServer) return;
 
-            foreach (var clientId in networkManagerCustom.ConnectedClientsIds)
+            foreach (var clientId in _networkManagerCustom.ConnectedClientsIds)
             {
-                if (player1ClientId == ulong.MaxValue)
+                if (_player1ClientId == ulong.MaxValue)
                 {
-                    player1ClientId = clientId;
+                    _player1ClientId = clientId;
                     Debug.Log($"Player 1 assigned: {clientId}");
                 }
-                else if (player2ClientId == ulong.MaxValue)
+                else if (_player2ClientId == ulong.MaxValue)
                 {
-                    player2ClientId = clientId;
+                    _player2ClientId = clientId;
                     Debug.Log($"Player 2 assigned: {clientId}");
                 }
             }
 
-            if (IsFull && currentState.Value == GameState.WaitingForPlayers)
+            if (IsFull && _currentState.Value == GameState.WaitingForPlayers)
             {
                 StartMatch();
             }
@@ -105,25 +105,25 @@ namespace MageLock.Gameplay
         {
             if (!IsServer) return;
 
-            if (clientId == player1ClientId || clientId == player2ClientId)
+            if (clientId == _player1ClientId || clientId == _player2ClientId)
             {
                 Debug.Log($"Player disconnected during match: {clientId}");
                 
-                playerSpawnManager.OnClientDisconnected(clientId);
+                _playerSpawnManager.OnClientDisconnected(clientId);
                 
-                if (currentState.Value == GameState.Playing)
+                if (_currentState.Value == GameState.Playing)
                 {
-                    EndMatch(clientId == player1ClientId ? player2ClientId : player1ClientId);
+                    EndMatch(clientId == _player1ClientId ? _player2ClientId : _player1ClientId);
                 }
                 else
                 {
-                    if (clientId == player1ClientId)
+                    if (clientId == _player1ClientId)
                     {
-                        player1ClientId = ulong.MaxValue;
+                        _player1ClientId = ulong.MaxValue;
                     }
-                    else if (clientId == player2ClientId)
+                    else if (clientId == _player2ClientId)
                     {
-                        player2ClientId = ulong.MaxValue;
+                        _player2ClientId = ulong.MaxValue;
                     }
                 }
             }
@@ -135,18 +135,18 @@ namespace MageLock.Gameplay
 
             Debug.Log("Starting match!");
             
-            matchTimer.Value = matchDuration;
+            _matchTimer.Value = _matchDuration;
             
-            currentState.Value = GameState.Playing;
+            _currentState.Value = GameState.Playing;
             
             StartMatchClientRpc();
         }
 
         private void UpdateMatch()
         {
-            matchTimer.Value -= Time.deltaTime;
+            _matchTimer.Value -= Time.deltaTime;
             
-            if (matchTimer.Value <= 0)
+            if (_matchTimer.Value <= 0)
             {
                 EndMatch(ulong.MaxValue);
             }
@@ -158,7 +158,7 @@ namespace MageLock.Gameplay
 
             Debug.Log($"Match ended! Winner: {winnerClientId}");
             
-            currentState.Value = GameState.GameOver;
+            _currentState.Value = GameState.GameOver;
             OnGameWon?.Invoke(winnerClientId);
             
             EndMatchClientRpc(winnerClientId);
@@ -170,10 +170,10 @@ namespace MageLock.Gameplay
         {
             if (!IsServer) return;
 
-            playerSpawnManager.ClearAllPlayers();
-            player1ClientId = ulong.MaxValue;
-            player2ClientId = ulong.MaxValue;
-            currentState.Value = GameState.WaitingForPlayers;
+            _playerSpawnManager.ClearAllPlayers();
+            _player1ClientId = ulong.MaxValue;
+            _player2ClientId = ulong.MaxValue;
+            _currentState.Value = GameState.WaitingForPlayers;
         }
 
         #endregion
@@ -185,7 +185,7 @@ namespace MageLock.Gameplay
         {
             if (!IsServer) return;
             
-            if (killerClientId == player1ClientId || killerClientId == player2ClientId)
+            if (killerClientId == _player1ClientId || killerClientId == _player2ClientId)
             {
                 EndMatch(killerClientId);
             }
@@ -213,13 +213,13 @@ namespace MageLock.Gameplay
 
         public bool IsPlayer(ulong clientId)
         {
-            return clientId == player1ClientId || clientId == player2ClientId;
+            return clientId == _player1ClientId || clientId == _player2ClientId;
         }
 
         public ulong GetOpponent(ulong clientId)
         {
-            if (clientId == player1ClientId) return player2ClientId;
-            if (clientId == player2ClientId) return player1ClientId;
+            if (clientId == _player1ClientId) return _player2ClientId;
+            if (clientId == _player2ClientId) return _player1ClientId;
             return ulong.MaxValue;
         }
 

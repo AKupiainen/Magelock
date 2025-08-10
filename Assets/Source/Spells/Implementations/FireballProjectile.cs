@@ -32,10 +32,10 @@ namespace MageLock.Spells
             if (Damage > 0)
             {
                 var health = other.GetComponent<IHealth>();
-                health?.TakeDamage(base.Damage);
+                health?.TakeDamage(Damage);
             }
             
-            _onExplode?.Invoke(transform.position, base.Caster, _explosionRadius, _explosionDamage, _explosionPrefab);
+            _onExplode?.Invoke(transform.position, Caster, _explosionRadius, _explosionDamage, _explosionPrefab);
             
             NetworkObject netObj = GetComponent<NetworkObject>();
             
