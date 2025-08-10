@@ -14,14 +14,7 @@ Shader "MageLock/HealthBar"
         
         [Header(Dimensions)]
         _BorderWidth ("Border Width", Range(0, 0.1)) = 0.05
-        _BarHeight ("Bar Height", Range(0, 1)) = 0.7
         _CornerRadius ("Corner Radius", Range(0, 0.5)) = 0.1
-        
-        [Header(Effects)]
-        _GlowIntensity ("Glow Intensity", Range(0, 2)) = 0.5
-        _PulseSpeed ("Pulse Speed", Range(0, 10)) = 2
-        _PulseAmount ("Pulse Amount", Range(0, 0.5)) = 0.1
-        _LowHealthThreshold ("Low Health Threshold", Range(0, 0.5)) = 0.25
     }
     
     SubShader
@@ -68,13 +61,7 @@ Shader "MageLock/HealthBar"
             float4 _BorderColor;
             
             float _BorderWidth;
-            float _BarHeight;
             float _CornerRadius;
-            
-            float _GlowIntensity;
-            float _PulseSpeed;
-            float _PulseAmount;
-            float _LowHealthThreshold;
             
             v2f vert (appdata v)
             {
@@ -101,40 +88,27 @@ Shader "MageLock/HealthBar"
                 float2 uv = i.uv;
                 float2 centeredUV = uv - 0.5;
                 
-                float2 boxSize = float2(0.5, 0.5 * _BarHeight);
+                float2 boxSize = float2(0.5, 0.5);
                 float border = sdRoundedBox(centeredUV, boxSize, _CornerRadius);
                 float borderMask = 1.0 - smoothStep(0, _BorderWidth * 0.01, abs(border));
                 
                 float innerBox = sdRoundedBox(centeredUV, boxSize - _BorderWidth, _CornerRadius * 0.8);
                 float innerMask = 1.0 - smoothStep(0, 0.002, innerBox);
                 
-                float healthFill = step(uv.x, _Health);
-                float damageFill = step(uv.x, _Damage);
+                float healthMask = step(uv.x, _Health);
+                float damageMask = step(uv.x, _Damage) * (1.0 - healthMask);
                 
                 float4 finalColor = _BackgroundColor;
                 
-                finalColor = lerp(finalColor, _DamageColor, damageFill * innerMask);
-                
-                float4 healthColorAdjusted = _HealthColor;
-                if (_Health < _LowHealthThreshold)
+                if (innerMask > 0)
                 {
-                    float pulse = sin(_Time.y * _PulseSpeed) * 0.5 + 0.5;
-                    healthColorAdjusted.rgb *= 1.0 + pulse * _PulseAmount;
-                }
-                
-                finalColor = lerp(finalColor, healthColorAdjusted, healthFill * innerMask);
-
-                if (_Health > 0 && uv.x > _Health - 0.02 && uv.x < _Health + 0.02)
-                {
-                    float edgeGlow = (1.0 - abs(uv.x - _Health) / 0.02) * _GlowIntensity;
-                    finalColor.rgb += _HealthColor.rgb * edgeGlow;
+                    float4 barColor = _BackgroundColor;
+                    barColor = lerp(barColor, _DamageColor, damageMask);
+                    barColor = lerp(barColor, _HealthColor, healthMask);
+                    finalColor = lerp(finalColor, barColor, innerMask);
                 }
                 
                 finalColor = lerp(finalColor, _BorderColor, borderMask * (1.0 - innerMask));
-                
-                float centerDistance = length(centeredUV);
-                float vignette = 1.0 - smoothStep(0.3, 0.5, centerDistance) * 0.3;
-                finalColor.rgb *= vignette;
                 
                 finalColor.a *= _Alpha;
                 finalColor.a *= 1.0 - smoothStep(-0.002, 0.002, border);
