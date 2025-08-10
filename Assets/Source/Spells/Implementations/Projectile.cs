@@ -75,7 +75,7 @@ namespace MageLock.Spells
             {
                 NetworkObject netObj = GetComponent<NetworkObject>();
                 
-                if (netObj != null)
+                if (netObj != null && netObj.IsSpawned)
                 {
                     netObj.Despawn();
                 }
