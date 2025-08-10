@@ -1,5 +1,5 @@
-using UnityEngine;
 using Unity.Netcode;
+using UnityEngine;
 
 namespace MageLock.Spells
 {
@@ -57,6 +57,7 @@ namespace MageLock.Spells
                 }
                 
                 _onExplode?.Invoke(transform.position, Caster, _explosionRadius, _explosionDamage, _explosionPrefab);
+                
                 DestroyProjectile();
             }
         }

@@ -20,58 +20,63 @@ namespace MageLock.Spells
                 return;
             }
             
+            if (!NetworkManager.Singleton.IsServer)
+            {
+                return;
+            }
+            
             Vector3 spawnPos = origin + direction * 0.5f;
+            
             GameObject projectileObj = Instantiate(projectilePrefab, spawnPos, Quaternion.LookRotation(direction));
+            NetworkObject netObj = projectileObj.GetComponent<NetworkObject>();
+            
+            netObj.Spawn();
             
             var projectile = projectileObj.GetComponent<FireballProjectile>();
             
-            projectile.Initialize(
-                caster, 
-                damageOnImpact ? damage : 0f,  
-                projectileSpeed, 
-                OnFireballExplode 
-            );
-
-            projectile.SetExplosionData(explosionRadius, explosionDamage, explosionPrefab);
-            
-            NetworkObject netObj = projectileObj.GetComponent<NetworkObject>();
-            
-            if (netObj != null && NetworkManager.Singleton.IsServer)
+            if (projectile != null)
             {
-                netObj.Spawn();
+                projectile.Initialize(
+                    caster, 
+                    damageOnImpact ? damage : 0f,  
+                    projectileSpeed, 
+                    OnFireballExplode 
+                );
+                
+                projectile.SetExplosionData(explosionRadius, explosionDamage, explosionPrefab);
             }
         }
         
         private void OnFireballExplode(Vector3 position, GameObject caster, float radius, float damage, GameObject effectPrefab)
         {
-            if (!NetworkManager.Singleton || NetworkManager.Singleton.IsServer)
+            if (!NetworkManager.Singleton.IsServer)
+                return;
+            
+            if (effectPrefab)
             {
-                if (effectPrefab)
+                GameObject explosion = Instantiate(effectPrefab, position, Quaternion.identity);
+                NetworkObject netObj = explosion.GetComponent<NetworkObject>();
+                
+                if (netObj != null)
                 {
-                    GameObject explosion = Instantiate(effectPrefab, position, Quaternion.identity);
-                    NetworkObject netObj = explosion.GetComponent<NetworkObject>();
-                    
-                    if (netObj != null)
-                    {
-                        netObj.Spawn();
-                    }
+                    netObj.Spawn();
                 }
+            }
+            
+            var hits = Physics.OverlapSphere(position, radius);
+            
+            foreach (var hit in hits)
+            {
+                if (hit.gameObject == caster) continue;
                 
-                var hits = Physics.OverlapSphere(position, radius);
-                
-                foreach (var hit in hits)
+                var health = hit.GetComponent<IHealth>();
+                if (health != null)
                 {
-                    if (hit.gameObject == caster) continue;
+                    float distance = Vector3.Distance(position, hit.transform.position);
+                    float falloff = 1f - (distance / radius);
+                    float finalDamage = damage * falloff;
                     
-                    var health = hit.GetComponent<IHealth>();
-                    if (health != null)
-                    {
-                        float distance = Vector3.Distance(position, hit.transform.position);
-                        float falloff = 1f - (distance / radius);
-                        float finalDamage = damage * falloff;
-                        
-                        health.TakeDamage(finalDamage);
-                    }
+                    health.TakeDamage(finalDamage);
                 }
             }
         }
