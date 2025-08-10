@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System;
-using TMPro;
 
 namespace MageLock.UI
 {
@@ -11,7 +10,6 @@ namespace MageLock.UI
         [SerializeField] private Button button;
         [SerializeField] private Image icon;
         [SerializeField] private Image cooldownOverlay;
-        [SerializeField] private TMP_Text cooldownText;
         
         [Header("State")]
         [SerializeField, ReadOnly] private float cooldownTimer;
@@ -54,7 +52,7 @@ namespace MageLock.UI
             isOnCooldown = true;
             SetCooldownActive(true);
             SetInteractable(false);
-            UpdateCooldownDisplay(1f, Mathf.CeilToInt(duration));
+            UpdateCooldownDisplay(1f);
         }
      
         public void UpdateCooldown(float deltaTime)
@@ -70,8 +68,7 @@ namespace MageLock.UI
             else
             {
                 float fillAmount = cooldownTimer / GetMaxCooldown();
-                int secondsRemaining = Mathf.CeilToInt(cooldownTimer);
-                UpdateCooldownDisplay(fillAmount, secondsRemaining);
+                UpdateCooldownDisplay(fillAmount);
             }
         }
         
@@ -87,16 +84,12 @@ namespace MageLock.UI
         {
             if (cooldownOverlay != null)
                 cooldownOverlay.gameObject.SetActive(active);
-            if (cooldownText != null)
-                cooldownText.gameObject.SetActive(active);
         }
         
-        private void UpdateCooldownDisplay(float fillAmount, int secondsRemaining)
+        private void UpdateCooldownDisplay(float fillAmount)
         {
             if (cooldownOverlay)
                 cooldownOverlay.fillAmount = fillAmount;
-            if (cooldownText)
-                cooldownText.text = secondsRemaining.ToString();
         }
   
         public void SetInteractable(bool interactable)
