@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEditor;
 using UnityEditor.UI;
 
@@ -9,27 +8,27 @@ namespace Magelock.UI.Editor
     [CanEditMultipleObjects]
     public class CircularImageEditor : ImageEditor
     {
-        private SerializedProperty segments;
-        private SerializedProperty filled;
-        private SerializedProperty fillAmount;
-        private SerializedProperty thickness;
-        private SerializedProperty zoom;
-        private SerializedProperty fillMethod;
-        private SerializedProperty fillClockwise;
-        private SerializedProperty fillOrigin;
+        private SerializedProperty _segments;
+        private SerializedProperty _filled;
+        private SerializedProperty _fillAmount;
+        private SerializedProperty _thickness;
+        private SerializedProperty _zoom;
+        private SerializedProperty _fillMethod;
+        private SerializedProperty _fillClockwise;
+        private SerializedProperty _fillOrigin;
         
         protected override void OnEnable()
         {
             base.OnEnable();
             
-            segments = serializedObject.FindProperty("segments");
-            filled = serializedObject.FindProperty("filled");
-            fillAmount = serializedObject.FindProperty("fillAmount");
-            thickness = serializedObject.FindProperty("thickness");
-            zoom = serializedObject.FindProperty("zoom");
-            fillMethod = serializedObject.FindProperty("fillMethod");
-            fillClockwise = serializedObject.FindProperty("fillClockwise");
-            fillOrigin = serializedObject.FindProperty("fillOrigin");
+            _segments = serializedObject.FindProperty("segments");
+            _filled = serializedObject.FindProperty("filled");
+            _fillAmount = serializedObject.FindProperty("fillAmount");
+            _thickness = serializedObject.FindProperty("thickness");
+            _zoom = serializedObject.FindProperty("zoom");
+            _fillMethod = serializedObject.FindProperty("fillMethod");
+            _fillClockwise = serializedObject.FindProperty("fillClockwise");
+            _fillOrigin = serializedObject.FindProperty("fillOrigin");
         }
         
         public override void OnInspectorGUI()
@@ -43,30 +42,30 @@ namespace Magelock.UI.Editor
             
             EditorGUI.BeginChangeCheck();
             
-            EditorGUILayout.PropertyField(segments);
-            EditorGUILayout.PropertyField(filled);
-            EditorGUILayout.PropertyField(zoom);
+            EditorGUILayout.PropertyField(_segments);
+            EditorGUILayout.PropertyField(_filled);
+            EditorGUILayout.PropertyField(_zoom);
             
-            if (!filled.boolValue)
+            if (!_filled.boolValue)
             {
                 EditorGUI.indentLevel++;
-                EditorGUILayout.PropertyField(thickness);
+                EditorGUILayout.PropertyField(_thickness);
                 EditorGUI.indentLevel--;
             }
             
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Fill Settings", EditorStyles.boldLabel);
             
-            EditorGUILayout.PropertyField(fillMethod);
+            EditorGUILayout.PropertyField(_fillMethod);
             
-            if (fillMethod.enumValueIndex != 0) 
+            if (_fillMethod.enumValueIndex != 0) 
             {
                 EditorGUI.indentLevel++;
-                EditorGUILayout.PropertyField(fillAmount);
-                EditorGUILayout.PropertyField(fillClockwise);
+                EditorGUILayout.PropertyField(_fillAmount);
+                EditorGUILayout.PropertyField(_fillClockwise);
                 
-                string[] originOptions = new string[] { "Top", "Right", "Bottom", "Left" };
-                fillOrigin.intValue = EditorGUILayout.Popup("Fill Origin", fillOrigin.intValue, originOptions);
+                string[] originOptions = { "Top", "Right", "Bottom", "Left" };
+                _fillOrigin.intValue = EditorGUILayout.Popup("Fill Origin", _fillOrigin.intValue, originOptions);
                 
                 EditorGUI.indentLevel--;
             }
@@ -103,7 +102,7 @@ namespace Magelock.UI.Editor
             Undo.RegisterCreatedObjectUndo(go, "Create " + go.name);
             Selection.activeObject = go;
             
-            Canvas canvas = GameObject.FindObjectOfType<Canvas>();
+            Canvas canvas = FindAnyObjectByType<Canvas>();
             if (canvas != null && go.transform.parent == null)
             {
                 go.transform.SetParent(canvas.transform, false);

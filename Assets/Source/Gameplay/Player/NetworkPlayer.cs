@@ -5,6 +5,7 @@ using MageLock.Player;
 using MageLock.Gameplay;
 using MageLock.Spells;
 using MageLock.Events;
+using MageLock.StatusEffects;
 
 namespace MageLock.Controls
 {
@@ -39,7 +40,7 @@ namespace MageLock.Controls
         public Vector3 DeathPosition { get; set; }
     }
     
-    public class NetworkPlayer : NetworkBehaviour, IHealth
+    public class NetworkPlayer : NetworkBehaviour, IHealth, IMovement
     {
         [Header("References")]
         [SerializeField] private CameraController cameraController;
@@ -49,13 +50,18 @@ namespace MageLock.Controls
         [SerializeField] private float maxHealth = 100f;
         [SerializeField] private float startingHealth = 100f;
         
+        [Header("Movement Settings")]
+        [SerializeField] private float baseMovementSpeed = 5f;
+        
         private SimpleNetworkController _controller;
         private Vector2 _lastSentInput;
         private bool _isDead;
+        private float _currentMovementSpeed;
         
         private readonly NetworkVariable<PlayerNetworkState> _networkState = new();
         private readonly NetworkVariable<PlayerInfo> _playerInfo = new();
         private readonly NetworkVariable<HealthData> _healthData = new();
+        private readonly NetworkVariable<float> _networkMovementSpeed = new();
         
         private struct InputData : INetworkSerializable
         {
@@ -106,6 +112,7 @@ namespace MageLock.Controls
         public override void OnNetworkSpawn()
         {    
             _controller = GetComponent<SimpleNetworkController>();
+            _currentMovementSpeed = baseMovementSpeed;
             
             if (IsServer)
             {
@@ -115,6 +122,8 @@ namespace MageLock.Controls
                     MaxHealth = maxHealth,
                     IsDead = false
                 };
+                
+                _networkMovementSpeed.Value = baseMovementSpeed;
             }
             
             if (IsOwner)
@@ -134,6 +143,7 @@ namespace MageLock.Controls
             _playerInfo.OnValueChanged += OnPlayerInfoChanged;
             _networkState.OnValueChanged += OnNetworkStateChanged;
             _healthData.OnValueChanged += OnHealthDataChanged;
+            _networkMovementSpeed.OnValueChanged += OnMovementSpeedChanged;
         }
         
         private void Update()
@@ -143,16 +153,20 @@ namespace MageLock.Controls
             _controller.HandleInput();
             Vector2 currentInput = _controller.GetMoveInput();
             
+            // Apply movement speed modifier to the input
+            float speedMultiplier = _currentMovementSpeed / baseMovementSpeed;
+            Vector2 modifiedInput = currentInput * speedMultiplier;
+            
             if (Vector2.Distance(currentInput, _lastSentInput) > 0.01f)
             {
                 if (IsHost)
                 {
-                    _controller.SetNetworkInput(currentInput);
+                    _controller.SetNetworkInput(modifiedInput);
                 }
                 else
                 {
-                    _controller.SetNetworkInput(currentInput);
-                    SendInputServerRpc(new InputData { MoveInput = currentInput });
+                    _controller.SetNetworkInput(modifiedInput);
+                    SendInputServerRpc(new InputData { MoveInput = modifiedInput });
                 }
                 
                 _lastSentInput = currentInput;
@@ -184,8 +198,11 @@ namespace MageLock.Controls
         {
             if (!IsOwner && !_isDead)
             {
-                _controller.SetNetworkInput(newValue.LastInput);
-                _controller.SetAnimationSpeed(newValue.Speed);
+                // Apply speed modifier to the replicated input
+                float speedMultiplier = _currentMovementSpeed / baseMovementSpeed;
+                Vector2 modifiedInput = newValue.LastInput * speedMultiplier;
+                _controller.SetNetworkInput(modifiedInput);
+                _controller.SetAnimationSpeed(newValue.Speed * speedMultiplier);
             }
         }
         
@@ -207,9 +224,18 @@ namespace MageLock.Controls
             }
         }
         
+        private void OnMovementSpeedChanged(float previousValue, float newValue)
+        {
+            _currentMovementSpeed = newValue;
+            
+            // No need to update controller, we'll apply speed through input modification
+            Debug.Log($"Player {OwnerClientId} movement speed changed from {previousValue} to {newValue}");
+        }
+        
         [ServerRpc]
         private void SendInputServerRpc(InputData inputData)
         {
+            // Input already modified on client, just apply it
             _controller.SetNetworkInput(inputData.MoveInput);
         }
         
@@ -232,6 +258,7 @@ namespace MageLock.Controls
             _playerInfo.OnValueChanged -= OnPlayerInfoChanged;
             _networkState.OnValueChanged -= OnNetworkStateChanged;
             _healthData.OnValueChanged -= OnHealthDataChanged;
+            _networkMovementSpeed.OnValueChanged -= OnMovementSpeedChanged;
             
             if (IsOwner && cameraController != null)
             {
@@ -272,6 +299,8 @@ namespace MageLock.Controls
             }
         }
 
+        #region IHealth Implementation
+        
         public void TakeDamage(float damage)
         {
             if (!IsServer) 
@@ -360,6 +389,32 @@ namespace MageLock.Controls
             return _healthData.Value.MaxHealth;
         }
         
+        #endregion
+        
+        #region IMovement Implementation
+        
+        public void SetSpeed(float speed)
+        {
+            if (!IsServer)
+            {
+                SetSpeedServerRpc(speed);
+                return;
+            }
+            
+            _networkMovementSpeed.Value = speed;
+            _currentMovementSpeed = speed;
+            
+            Debug.Log($"Player {OwnerClientId} movement speed set to {speed} (base: {baseMovementSpeed})");
+        }
+        
+        [ServerRpc(RequireOwnership = false)]
+        private void SetSpeedServerRpc(float speed)
+        {
+            SetSpeed(speed);
+        }
+        
+        #endregion
+        
         public bool IsDead() => _healthData.Value.IsDead;
         
         private void HandleDeath()
@@ -381,8 +436,8 @@ namespace MageLock.Controls
                 _controller.SetNetworkInput(Vector2.zero);
             }
         }
-        
-        public void SetMaxHealth(float newMaxHealth, bool maintainHealthPercentage = true)
+
+        private void SetMaxHealth(float newMaxHealth, bool maintainHealthPercentage = true)
         {
             if (!IsServer)
             {

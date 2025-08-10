@@ -45,15 +45,15 @@ namespace MageLock.Utilities
         
         [Header("Network Settings")]
         [SerializeField] private bool syncOnStart = true;
-        [SerializeField] private bool debugNetworking = false;
+        [SerializeField] private bool debugNetworking;
         
         [Header("Debug")]
         [SerializeField] private bool showGizmos = true;
         [SerializeField] private float gizmoSize = 0.1f;
         
-        private Dictionary<string, NetworkedTrackedPoint> _pointLookup = new Dictionary<string, NetworkedTrackedPoint>();
+        private readonly Dictionary<string, NetworkedTrackedPoint> _pointLookup = new();
         private Transform[] _allBones;
-        private bool _isSetup = false;
+        private bool _isSetup;
         
         private void Awake()
         {
@@ -273,13 +273,15 @@ namespace MageLock.Utilities
                 Gizmos.DrawRay(pos, rot * Vector3.forward * gizmoSize * 3);
                 
                 string label = $"{point.name}\n({point.boneName})";
+                
                 if (Application.isPlaying && NetworkManager.Singleton != null)
                 {
                     label += $"\n[{(IsServer ? "Server" : "Client")}]";
                     if (point.boneIndex >= 0)
                         label += $"\nIdx: {point.boneIndex}";
                 }
-                UnityEditor.Handles.Label(pos + Vector3.up * gizmoSize * 2, label);
+                
+                Handles.Label(pos + Vector3.up * gizmoSize * 2, label);
                 
                 if (point.trackedBone != transform)
                 {
