@@ -1,7 +1,6 @@
 using UnityEngine;
 using MageLock.Events;
 using MageLock.Controls;
-using Unity.Netcode;
 
 namespace MageLock.UI
 {
