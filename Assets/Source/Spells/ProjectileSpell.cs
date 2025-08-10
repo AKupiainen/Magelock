@@ -10,7 +10,7 @@ namespace MageLock.Spells
         [SerializeField] protected GameObject projectilePrefab;
         [SerializeField] protected float projectileSpeed = 20f;
         [SerializeField] protected float damage = 50f;
-        [SerializeField] protected float lifetime = 5f;
+
         
         protected override void CastInDirection(GameObject caster, Vector3 origin, Vector3 direction)
         {
@@ -31,7 +31,7 @@ namespace MageLock.Spells
             }
             
             var projectile = projectileObj.GetComponent<Projectile>();
-            projectile.Initialize(caster, damage, projectileSpeed, lifetime);
+            projectile.Initialize(caster, damage, projectileSpeed);
         }
     }
 }

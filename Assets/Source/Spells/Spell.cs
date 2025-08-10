@@ -23,7 +23,6 @@ namespace MageLock.Spells
         public Sprite Icon => icon;
         public float Cooldown => cooldown;
         public float Range => range;
-        public TargetingType Targeting => targetingType;
         
         public enum TargetingType
         {

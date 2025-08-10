@@ -21,14 +21,7 @@ namespace MageLock.Spells
             }
             
             Vector3 spawnPos = origin + direction * 0.5f;
-            
             GameObject projectileObj = Instantiate(projectilePrefab, spawnPos, Quaternion.LookRotation(direction));
-            NetworkObject netObj = projectileObj.GetComponent<NetworkObject>();
-            
-            if (netObj != null && NetworkManager.Singleton.IsServer)
-            {
-                netObj.Spawn();
-            }
             
             var projectile = projectileObj.GetComponent<FireballProjectile>();
             
@@ -36,11 +29,17 @@ namespace MageLock.Spells
                 caster, 
                 damageOnImpact ? damage : 0f,  
                 projectileSpeed, 
-                lifetime,
-                OnFireballExplode  
+                OnFireballExplode 
             );
-            
+
             projectile.SetExplosionData(explosionRadius, explosionDamage, explosionPrefab);
+            
+            NetworkObject netObj = projectileObj.GetComponent<NetworkObject>();
+            
+            if (netObj != null && NetworkManager.Singleton.IsServer)
+            {
+                netObj.Spawn();
+            }
         }
         
         private void OnFireballExplode(Vector3 position, GameObject caster, float radius, float damage, GameObject effectPrefab)
@@ -50,15 +49,11 @@ namespace MageLock.Spells
                 if (effectPrefab)
                 {
                     GameObject explosion = Instantiate(effectPrefab, position, Quaternion.identity);
-                    
                     NetworkObject netObj = explosion.GetComponent<NetworkObject>();
+                    
                     if (netObj != null)
                     {
                         netObj.Spawn();
-                    }
-                    else
-                    {
-                        Destroy(explosion);
                     }
                 }
                 

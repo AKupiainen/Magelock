@@ -84,7 +84,6 @@ namespace MageLock.Gameplay
             if (IsSlotOnCooldown(evt.SlotIndex))
             {
                 float remaining = GetRemainingCooldown(evt.SlotIndex);
-                Debug.Log($"[CooldownManager] Spell {evt.Spell.name} on cooldown: {remaining:F1}s remaining");
                 
                 EventsBus.Trigger(new SpellCastFailedEvent(
                     evt.Spell, 
@@ -118,12 +117,7 @@ namespace MageLock.Gameplay
 
         private float GetRemainingCooldown(int slotIndex)
         {
-            if (_activeCooldowns.TryGetValue(slotIndex, out CooldownData data))
-            {
-                return Mathf.Max(0f, data.remainingTime);
-            }
-            
-            return 0f;
+            return _activeCooldowns.TryGetValue(slotIndex, out CooldownData data) ? Mathf.Max(0f, data.remainingTime) : 0f;
         }
         
         [ServerRpc]

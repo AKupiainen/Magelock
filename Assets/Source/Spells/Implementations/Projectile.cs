@@ -4,52 +4,85 @@ using Unity.Netcode;
 
 namespace MageLock.Spells
 {
-    public class Projectile : MonoBehaviour
+    public class Projectile : NetworkBehaviour
     {
+        protected readonly NetworkVariable<float> NetworkSpeed = new();
+        protected readonly NetworkVariable<float> NetworkDamage = new();
+        protected readonly NetworkVariable<NetworkObjectReference> NetworkCaster = new();
+        
         protected GameObject Caster;
         protected float Damage;
         protected float Speed;
-
         protected Action<Vector3, GameObject> OnImpactCallback;
         
-        public virtual void Initialize(GameObject caster, float damage, float speed, float lifetime, Action<Vector3, GameObject> onImpact = null)
+        public virtual void Initialize(GameObject caster, float damage, float speed, Action<Vector3, GameObject> onImpact = null)
         {
             Caster = caster;
             Damage = damage;
             Speed = speed;
             OnImpactCallback = onImpact;
             
-            Destroy(gameObject, lifetime);
+            if (IsServer)
+            {
+                NetworkSpeed.Value = speed;
+                NetworkDamage.Value = damage;
+                
+                NetworkObject casterNetObj = caster.GetComponent<NetworkObject>();
+                if (casterNetObj != null)
+                {
+                    NetworkCaster.Value = casterNetObj;
+                }
+            }
+        }
+        
+        public override void OnNetworkSpawn()
+        {
+            if (!IsServer)
+            {
+                Speed = NetworkSpeed.Value;
+                Damage = NetworkDamage.Value;
+                
+                if (NetworkCaster.Value.TryGet(out NetworkObject casterNetObj))
+                {
+                    Caster = casterNetObj.gameObject;
+                }
+            }
         }
         
         protected virtual void Update()
         {
-            transform.position += transform.forward * (Speed * Time.deltaTime);
+            float moveSpeed = IsServer ? Speed : NetworkSpeed.Value;
+            transform.position += transform.forward * (moveSpeed * Time.deltaTime);
         }
         
         protected virtual void OnTriggerEnter(Collider other)
         {
             if (other.gameObject == Caster) return;
             
-            var health = other.GetComponent<IHealth>();
-            health?.TakeDamage(Damage);
-            
-            OnImpactCallback?.Invoke(transform.position, Caster);
-            
-            DestroyProjectile();
+            if (IsServer)
+            {
+                var health = other.GetComponent<IHealth>();
+                health?.TakeDamage(Damage);
+                
+                OnImpactCallback?.Invoke(transform.position, Caster);
+                DestroyProjectile();
+            }
         }
         
         protected virtual void DestroyProjectile()
         {
-            NetworkObject netObj = GetComponent<NetworkObject>();
-            
-            if (netObj != null && NetworkManager.Singleton && NetworkManager.Singleton.IsServer)
+            if (IsServer)
             {
-                netObj.Despawn();
-            }
-            else
-            {
-                Destroy(gameObject);
+                NetworkObject netObj = GetComponent<NetworkObject>();
+                
+                if (netObj != null)
+                {
+                    netObj.Despawn();
+                }
+                else
+                {
+                    Destroy(gameObject);
+                }
             }
         }
         
@@ -57,10 +90,13 @@ namespace MageLock.Spells
         {
             if (collision.gameObject == Caster) return;
             
-            Vector3 impactPoint = collision.contacts[0].point;
-            OnImpactCallback?.Invoke(impactPoint, Caster);
-            
-            DestroyProjectile();
+            if (IsServer)
+            {
+                Vector3 impactPoint = collision.contacts[0].point;
+                OnImpactCallback?.Invoke(impactPoint, Caster);
+                
+                DestroyProjectile();
+            }
         }
     }
 }

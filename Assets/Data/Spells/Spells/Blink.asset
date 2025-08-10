@@ -12,13 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cae84f9dc137545a38c688e190ff31ef, type: 3}
   m_Name: Blink
   m_EditorClassIdentifier: 
-  spellId: 1
+  spellId: -360574
+  spellName: Blink
+  icon: {fileID: 0}
   cooldown: 1
-  manaCost: 10
   range: 10
-  maxBlinkDistance: 10
-  blinkStartEffect: {fileID: 0}
-  blinkEndEffect: {fileID: 0}
-  obstacleLayer:
+  targetingType: 0
+  targetLayers:
     serializedVersion: 2
     m_Bits: 4294967295
+  blinkDistance: 10
+  blinkStartEffect: {fileID: 0}
+  blinkEndEffect: {fileID: 0}
+  checkForObstacles: 1

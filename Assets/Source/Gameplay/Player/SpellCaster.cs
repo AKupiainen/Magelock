@@ -83,17 +83,7 @@ namespace MageLock.Gameplay
 
         private Vector3 GetAimDirection()
         {
-            if (_playerCamera == null)
-                return transform.forward;
-            
-            Ray ray = _playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height / 2f, 0));
-            
-            if (Physics.Raycast(ray, out RaycastHit hit, 100f))
-            {
-                return (hit.point - castPoint.position).normalized;
-            }
-            
-            return _playerCamera.transform.forward;
+            return transform.forward;
         }
         
         public Vector3 GetCastPoint()

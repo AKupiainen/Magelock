@@ -5,16 +5,18 @@ namespace MageLock.Spells
 {
     public class FireballProjectile : Projectile
     {
+        private readonly NetworkVariable<float> _networkExplosionRadius = new();
+        private readonly NetworkVariable<float> _networkExplosionDamage = new();
+        
         private float _explosionRadius;
         private float _explosionDamage;
         private GameObject _explosionPrefab;
-
         private System.Action<Vector3, GameObject, float, float, GameObject> _onExplode;
         
-        public void Initialize(GameObject caster, float damage, float speed, float lifetime, 
+        public void Initialize(GameObject caster, float damage, float speed, 
             System.Action<Vector3, GameObject, float, float, GameObject> onExplosion)
         {
-            base.Initialize(caster, damage, speed, lifetime);
+            base.Initialize(caster, damage, speed);
             _onExplode = onExplosion;
         }
         
@@ -23,29 +25,39 @@ namespace MageLock.Spells
             _explosionRadius = radius;
             _explosionDamage = damage;
             _explosionPrefab = prefab;
+            
+            if (IsServer)
+            {
+                _networkExplosionRadius.Value = radius;
+                _networkExplosionDamage.Value = damage;
+            }
+        }
+        
+        public override void OnNetworkSpawn()
+        {
+            base.OnNetworkSpawn();
+            
+            if (!IsServer)
+            {
+                _explosionRadius = _networkExplosionRadius.Value;
+                _explosionDamage = _networkExplosionDamage.Value;
+            }
         }
         
         protected override void OnTriggerEnter(Collider other)
         {
             if (other.gameObject == Caster) return;
             
-            if (Damage > 0)
+            if (IsServer)
             {
-                var health = other.GetComponent<IHealth>();
-                health?.TakeDamage(Damage);
-            }
-            
-            _onExplode?.Invoke(transform.position, Caster, _explosionRadius, _explosionDamage, _explosionPrefab);
-            
-            NetworkObject netObj = GetComponent<NetworkObject>();
-            
-            if (netObj != null && NetworkManager.Singleton.IsServer)
-            {
-                netObj.Despawn();
-            }
-            else
-            {
-                Destroy(gameObject);
+                if (Damage > 0)
+                {
+                    var health = other.GetComponent<IHealth>();
+                    health?.TakeDamage(Damage);
+                }
+                
+                _onExplode?.Invoke(transform.position, Caster, _explosionRadius, _explosionDamage, _explosionPrefab);
+                DestroyProjectile();
             }
         }
     }
