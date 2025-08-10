@@ -74,6 +74,7 @@ namespace MageLock.Spells
             GameObject effect = Instantiate(effectPrefab, position, Quaternion.identity);
             
             NetworkObject netObj = effect.GetComponent<NetworkObject>();
+            
             if (netObj != null && NetworkManager.Singleton.IsServer)
             {
                 netObj.Spawn();

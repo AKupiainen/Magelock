@@ -12,8 +12,6 @@ namespace MageLock.Gameplay
         private static readonly HashSet<NetworkObject> PlayersInAnyBush = new();
         private static readonly Dictionary<NetworkObject, HashSet<Bush>> PlayerBushes = new();
         private static readonly Dictionary<NetworkObject, Renderer[]> PlayerRenderers = new();
-
-        private readonly HashSet<NetworkObject> _playersInThisBush = new();
         
         private void Awake()
         {
@@ -26,7 +24,8 @@ namespace MageLock.Gameplay
             var networkObject = other.GetComponent<NetworkObject>();
             if (!networkObject || !networkObject.IsSpawned) return;
             
-            _playersInThisBush.Add(networkObject);
+            if (!networkObject.IsPlayerObject) return;
+            
             PlayersInAnyBush.Add(networkObject);
             
             if (!PlayerBushes.ContainsKey(networkObject))
@@ -42,7 +41,7 @@ namespace MageLock.Gameplay
             var networkObject = other.GetComponent<NetworkObject>();
             if (!networkObject) return;
             
-            _playersInThisBush.Remove(networkObject);
+            if (!networkObject.IsPlayerObject) return;
             
             if (PlayerBushes.ContainsKey(networkObject))
             {
@@ -78,7 +77,7 @@ namespace MageLock.Gameplay
                 var player = kvp.Key;
                 var renderers = kvp.Value;
                 
-                if (!player)
+                if (!player || !player.IsSpawned)
                 {
                     toRemove.Add(player);
                     continue;
@@ -137,16 +136,40 @@ namespace MageLock.Gameplay
         
         private static NetworkObject GetLocalPlayer()
         {
-            var players = FindObjectsOfType<NetworkObject>();
-            foreach (var player in players)
-                if (player && player.IsLocalPlayer && player.IsPlayerObject)
-                    return player;
+            if (NetworkManager.Singleton != null && NetworkManager.Singleton.LocalClient != null)
+            {
+                var localClient = NetworkManager.Singleton.LocalClient;
+                if (localClient.PlayerObject != null && localClient.PlayerObject.IsSpawned)
+                {
+                    return localClient.PlayerObject;
+                }
+            }
+            
             return null;
         }
         
         private void OnDestroy()
         {
-            _playersInThisBush.Clear();
+            var toRemove = new List<NetworkObject>();
+            
+            foreach (var kvp in PlayerBushes)
+            {
+                kvp.Value.Remove(this);
+                if (kvp.Value.Count == 0)
+                    toRemove.Add(kvp.Key);
+            }
+            
+            foreach (var player in toRemove)
+            {
+                PlayerBushes.Remove(player);
+                PlayersInAnyBush.Remove(player);
+                
+                if (PlayerRenderers.ContainsKey(player))
+                {
+                    SetRenderersEnabled(PlayerRenderers[player], true);
+                    PlayerRenderers.Remove(player);
+                }
+            }
         }
         
         private void OnDrawGizmos()

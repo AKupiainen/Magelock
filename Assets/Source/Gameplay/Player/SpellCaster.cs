@@ -6,9 +6,6 @@ using MageLock.DependencyInjection;
 
 namespace MageLock.Gameplay
 {
-    /// <summary>
-    /// Simplified networked spell casting handler
-    /// </summary>
     public class SpellCaster : NetworkBehaviour
     {
         [Header("References")]
@@ -82,11 +79,9 @@ namespace MageLock.Gameplay
             if (spell == null) return;
             
             EventsBus.Trigger(new SpellCastSuccessEvent(spell, slotIndex, gameObject));
-            
-            Debug.Log($"[SpellCaster] Cast {spell.name} successfully");
         }
-        
-        public Vector3 GetAimDirection()
+
+        private Vector3 GetAimDirection()
         {
             if (_playerCamera == null)
                 return transform.forward;

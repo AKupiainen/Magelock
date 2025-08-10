@@ -9,8 +9,7 @@ namespace MageLock.Spells
         protected GameObject Caster;
         protected float Damage;
         protected float Speed;
-        protected float Lifetime;
-        
+
         protected Action<Vector3, GameObject> OnImpactCallback;
         
         public virtual void Initialize(GameObject caster, float damage, float speed, float lifetime, Action<Vector3, GameObject> onImpact = null)
@@ -18,7 +17,6 @@ namespace MageLock.Spells
             Caster = caster;
             Damage = damage;
             Speed = speed;
-            Lifetime = lifetime;
             OnImpactCallback = onImpact;
             
             Destroy(gameObject, lifetime);
