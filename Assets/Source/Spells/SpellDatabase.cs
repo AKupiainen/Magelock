@@ -9,9 +9,7 @@ namespace MageLock.Spells
         [SerializeField] private List<Spell> spells = new();
         
         private Dictionary<int, Spell> _spellCache;
-        
-        public int SpellCount => spells.Count;
-        
+
         private void OnEnable()
         {
             BuildCache();
@@ -33,11 +31,6 @@ namespace MageLock.Spells
         public Spell GetSpell(int spellId)
         {
             return _spellCache.GetValueOrDefault(spellId);
-        }
-        
-        public bool HasSpell(int spellId)
-        {
-            return _spellCache.ContainsKey(spellId);
         }
     }
 }

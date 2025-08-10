@@ -1,39 +1,88 @@
 using UnityEngine;
+using Unity.Netcode;
 
 namespace MageLock.Spells
 {
     [CreateAssetMenu(fileName = "Fireball", menuName = "MageLock/Spells/Abilities/Fireball")]
     public class Fireball : ProjectileSpell
     {
-        [Header("Explosion")]
+        [Header("Explosion Settings")]
         [SerializeField] private float explosionRadius = 3f;
         [SerializeField] private float explosionDamage = 25f;
         [SerializeField] private GameObject explosionPrefab;
+        [SerializeField] private bool damageOnImpact = true;
         
-        public override void Cast(GameObject caster, Vector3 direction)
+        protected override void CastInDirection(GameObject caster, Vector3 origin, Vector3 direction)
         {
-            if (!projectilePrefab) return;
+            if (!projectilePrefab)
+            {
+                Debug.LogError($"[{SpellName}] No projectile prefab assigned!");
+                return;
+            }
             
-            var spawnPos = caster.transform.position + Vector3.up + direction * 0.5f;
-            var projectile = Instantiate(projectilePrefab, spawnPos, Quaternion.LookRotation(direction));
+            Vector3 spawnPos = origin + direction * 0.5f;
             
-            var proj = projectile.GetComponent<Projectile>();
-            if (!proj) proj = projectile.AddComponent<Projectile>();
+            GameObject projectileObj = Instantiate(projectilePrefab, spawnPos, Quaternion.LookRotation(direction));
+            NetworkObject netObj = projectileObj.GetComponent<NetworkObject>();
             
-            proj.Initialize(caster, damage, projectileSpeed, lifetime, Explode);
+            if (netObj != null && NetworkManager.Singleton.IsServer)
+            {
+                netObj.Spawn();
+            }
+            
+            var projectile = projectileObj.GetComponent<FireballProjectile>();
+            
+            projectile.Initialize(
+                caster, 
+                damageOnImpact ? damage : 0f,  
+                projectileSpeed, 
+                lifetime,
+                OnFireballExplode  
+            );
+            
+            projectile.SetExplosionData(explosionRadius, explosionDamage, explosionPrefab);
         }
         
-        private void Explode(Vector3 position, GameObject caster)
+        private void OnFireballExplode(Vector3 position, GameObject caster, float radius, float damage, GameObject effectPrefab)
         {
-            if (explosionPrefab)
-                Instantiate(explosionPrefab, position, Quaternion.identity);
-            
-            var hits = Physics.OverlapSphere(position, explosionRadius);
-            
-            foreach (var hit in hits)
+            if (!NetworkManager.Singleton || NetworkManager.Singleton.IsServer)
             {
-                if (hit.gameObject == caster) continue;
-                hit.GetComponent<IHealth>()?.TakeDamage(explosionDamage);
+                // Spawn explosion effect
+                if (effectPrefab)
+                {
+                    GameObject explosion = Instantiate(effectPrefab, position, Quaternion.identity);
+                    
+                    NetworkObject netObj = explosion.GetComponent<NetworkObject>();
+                    if (netObj != null)
+                    {
+                        netObj.Spawn();
+                    }
+                    else
+                    {
+                        Destroy(explosion);
+                    }
+                }
+                
+                // Apply explosion damage
+                var hits = Physics.OverlapSphere(position, radius);
+                foreach (var hit in hits)
+                {
+                    if (hit.gameObject == caster) continue;
+                    
+                    var health = hit.GetComponent<IHealth>();
+                    if (health != null)
+                    {
+                        // Optional: Apply falloff damage based on distance
+                        float distance = Vector3.Distance(position, hit.transform.position);
+                        float falloff = 1f - (distance / radius);
+                        float finalDamage = damage * falloff;
+                        
+                        health.TakeDamage(finalDamage);
+                        Debug.Log($"[Fireball] Explosion dealt {finalDamage:F1} damage to {hit.name}");
+                    }
+                }
+                
+                Debug.Log($"[Fireball] Exploded at {position} with {radius}m radius, {damage} damage");
             }
         }
     }

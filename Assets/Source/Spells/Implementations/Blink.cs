@@ -1,52 +1,88 @@
 using UnityEngine;
+using Unity.Netcode;
+using Unity.Netcode.Components;
 
 namespace MageLock.Spells
 {
     [CreateAssetMenu(fileName = "Blink", menuName = "MageLock/Spells/Abilities/Blink")]
     public class Blink : Spell
     {
-        [Header("Teleport")]
-        [SerializeField] private float maxBlinkDistance = 10f;
+        [Header("Teleport Settings")]
+        [SerializeField] private float blinkDistance = 10f;
         [SerializeField] private GameObject blinkStartEffect;
         [SerializeField] private GameObject blinkEndEffect;
-        [SerializeField] private LayerMask obstacleLayer = -1;
+        [SerializeField] private float effectDuration = 1f;
+        [SerializeField] private bool checkForObstacles = true;
         
-        public override void Cast(GameObject caster, Vector3 direction)
+        protected override void CastInDirection(GameObject caster, Vector3 origin, Vector3 direction)
         {
-            var targetPosition = CalculateBlinkPosition(caster.transform.position, direction);
+            Vector3 targetPosition = CalculateBlinkPosition(caster, origin, direction);
             
             if (blinkStartEffect)
-                Instantiate(blinkStartEffect, caster.transform.position, Quaternion.identity);
+            {
+                SpawnEffect(blinkStartEffect, caster.transform.position);
+            }
             
             TeleportCaster(caster, targetPosition);
             
             if (blinkEndEffect)
-                Instantiate(blinkEndEffect, targetPosition, Quaternion.identity);
+            {
+                SpawnEffect(blinkEndEffect, targetPosition);
+            }
+            
+            Debug.Log($"[{SpellName}] Teleported to {targetPosition}");
         }
         
-        private Vector3 CalculateBlinkPosition(Vector3 origin, Vector3 direction)
+        private Vector3 CalculateBlinkPosition(GameObject caster, Vector3 origin, Vector3 direction)
         {
             direction.y = 0;
             direction.Normalize();
             
-            float actualDistance = Mathf.Min(maxBlinkDistance, Range);
+            float actualDistance = Mathf.Min(blinkDistance, Range);
+            Vector3 targetPos = caster.transform.position + direction * actualDistance;
             
-            if (Physics.Raycast(origin, direction, out RaycastHit hit, actualDistance, obstacleLayer))
+            if (checkForObstacles)
             {
-                return origin + direction * (hit.distance - 0.5f);
+                if (Physics.Raycast(caster.transform.position, direction, out RaycastHit hit, actualDistance, targetLayers))
+                {
+                    targetPos = caster.transform.position + direction * (hit.distance - 0.5f);
+                }
+                
+                if (Physics.Raycast(targetPos + Vector3.up * 2f, Vector3.down, out RaycastHit groundHit, 10f))
+                {
+                    targetPos.y = groundHit.point.y;
+                }
             }
             
-            return origin + direction * actualDistance;
+            return targetPos;
         }
         
         private void TeleportCaster(GameObject caster, Vector3 targetPosition)
         {
-            caster.transform.position = targetPosition;
-            var networkTransform = caster.GetComponent<Unity.Netcode.Components.NetworkTransform>();
+            var networkTransform = caster.GetComponent<NetworkTransform>();
             
-            if (networkTransform)
+            if (networkTransform != null && NetworkManager.Singleton.IsServer)
             {
                 networkTransform.Teleport(targetPosition, caster.transform.rotation, caster.transform.localScale);
+            }
+            else
+            {
+                caster.transform.position = targetPosition;
+            }
+        }
+        
+        private void SpawnEffect(GameObject effectPrefab, Vector3 position)
+        {
+            GameObject effect = Instantiate(effectPrefab, position, Quaternion.identity);
+            NetworkObject netObj = effect.GetComponent<NetworkObject>();
+            
+            if (netObj != null && NetworkManager.Singleton.IsServer)
+            {
+                netObj.Spawn();
+            }
+            else
+            {
+                Destroy(effect, effectDuration);
             }
         }
     }

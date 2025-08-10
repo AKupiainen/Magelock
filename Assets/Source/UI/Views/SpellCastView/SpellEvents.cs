@@ -2,9 +2,6 @@ using MageLock.Spells;
 
 namespace MageLock.Events
 {
-    /// <summary>
-    /// Event fired when a spell cast is requested from UI
-    /// </summary>
     public class SpellCastRequestEvent : IEventData
     {
         public Spell Spell { get; }
@@ -17,9 +14,6 @@ namespace MageLock.Events
         }
     }
     
-    /// <summary>
-    /// Event fired when a spell starts its cooldown
-    /// </summary>
     public class SpellCooldownStartedEvent : IEventData
     {
         public int SlotIndex { get; }
@@ -32,9 +26,6 @@ namespace MageLock.Events
         }
     }
     
-    /// <summary>
-    /// Event fired when a spell is assigned to a slot
-    /// </summary>
     public class SpellAssignedEvent : IEventData
     {
         public int SlotIndex { get; }
@@ -47,9 +38,6 @@ namespace MageLock.Events
         }
     }
     
-    /// <summary>
-    /// Event fired when a spell is successfully cast
-    /// </summary>
     public class SpellCastSuccessEvent : IEventData
     {
         public Spell Spell { get; }
@@ -64,14 +52,10 @@ namespace MageLock.Events
         }
     }
     
-    /// <summary>
-    /// Event fired when a spell cast fails
-    /// </summary>
     public class SpellCastFailedEvent : IEventData
     {
         public enum FailureReason
         {
-            InsufficientMana,
             OnCooldown,
             OutOfRange,
             InvalidTarget,
@@ -92,10 +76,7 @@ namespace MageLock.Events
             Message = message;
         }
     }
-    
-    /// <summary>
-    /// Event fired when a spell cooldown is complete
-    /// </summary>
+
     public class SpellCooldownCompleteEvent : IEventData
     {
         public int SlotIndex { get; }
@@ -107,10 +88,7 @@ namespace MageLock.Events
             Spell = spell;
         }
     }
-    
-    /// <summary>
-    /// Event fired when spell slots are cleared
-    /// </summary>
+
     public class SpellSlotsClearedEvent : IEventData
     {
         public int[] ClearedSlots { get; }
