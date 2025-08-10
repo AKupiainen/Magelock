@@ -11,7 +11,7 @@ public class Projectile : MonoBehaviour {
     Rigidbody rb;
     void Start () {
         rb = gameObject.GetComponent<Rigidbody>();
-        rb.velocity = Velocity;
+        rb.linearVelocity = Velocity;
 
     }
 

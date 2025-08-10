@@ -272,8 +272,6 @@ namespace MageLock.Controls
             }
         }
 
-        #region IHealth Implementation
-        
         public void TakeDamage(float damage)
         {
             if (!IsServer) 
@@ -362,10 +360,7 @@ namespace MageLock.Controls
             return _healthData.Value.MaxHealth;
         }
         
-
-        #endregion
-        
-        #region Health Helper Methods
+        public bool IsDead() => _healthData.Value.IsDead;
         
         private void HandleDeath()
         {
@@ -397,7 +392,6 @@ namespace MageLock.Controls
             
             if (_healthData.Value.IsDead) 
             {
-                Debug.Log($"Cannot modify max health for dead player {OwnerClientId}");
                 return;
             }
             
@@ -422,7 +416,5 @@ namespace MageLock.Controls
         {
             SetMaxHealth(newMaxHealth, maintainHealthPercentage);
         }
-        
-        #endregion
     }
 }
