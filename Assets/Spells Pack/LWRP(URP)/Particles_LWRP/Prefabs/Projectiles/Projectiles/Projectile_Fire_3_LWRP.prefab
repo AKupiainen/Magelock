@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 283538348305088904}
   - component: {fileID: 283538348305088905}
   - component: {fileID: 6345016736684443969}
-  - component: {fileID: 7247383761649222062}
   - component: {fileID: 5863719351142040573}
+  - component: {fileID: 7247383761649222062}
   - component: {fileID: 5608170588327403909}
   m_Layer: 0
   m_Name: Projectile_Fire_3_LWRP
@@ -4867,18 +4867,6 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.2
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7247383761649222062
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 283538348305088910}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad4deb4faf51140d4a22489f878ae86e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &5863719351142040573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4891,7 +4879,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3803837464
+  GlobalObjectIdHash: 3766999667
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -4900,6 +4888,18 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+--- !u!114 &7247383761649222062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 283538348305088910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad4deb4faf51140d4a22489f878ae86e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!54 &5608170588327403909
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -9785,6 +9785,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5740635702274482506}
   - component: {fileID: 1597527795295378045}
+  - component: {fileID: 7688406282718465600}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -9872,6 +9873,29 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &7688406282718465600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5887709897033620403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 3
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_RenderingLayers: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_ShadowRenderingLayers: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
 --- !u!1 &6884466979458141306
 GameObject:
   m_ObjectHideFlags: 0
@@ -9915,7 +9939,7 @@ ParticleSystem:
   serializedVersion: 8
   lengthInSec: 5
   simulationSpeed: 1
-  stopAction: 2
+  stopAction: 0
   cullingMode: 0
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
@@ -14761,7 +14785,7 @@ ParticleSystem:
   serializedVersion: 8
   lengthInSec: 5
   simulationSpeed: 1
-  stopAction: 2
+  stopAction: 0
   cullingMode: 0
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}

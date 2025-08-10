@@ -12,38 +12,18 @@ namespace MageLock.Spells
         [SerializeField] private GameObject explosionPrefab;
         [SerializeField] private bool damageOnImpact = true;
         
-        protected override void CastInDirection(GameObject caster, Vector3 origin, Vector3 direction)
+        [Header("Effect Cleanup")]
+        [SerializeField] private float explosionEffectDuration = 2f;
+        
+        protected override void InitializeProjectile(GameObject projectileObj, GameObject caster)
         {
-            if (!projectilePrefab)
+            var fireballProjectile = projectileObj.GetComponent<FireballProjectile>();
+            
+            if (fireballProjectile != null)
             {
-                Debug.LogError($"[{SpellName}] No projectile prefab assigned!");
-                return;
-            }
-            
-            if (!NetworkManager.Singleton.IsServer)
-            {
-                return;
-            }
-            
-            Vector3 spawnPos = origin + direction * 0.5f;
-            
-            GameObject projectileObj = Instantiate(projectilePrefab, spawnPos, Quaternion.LookRotation(direction));
-            NetworkObject netObj = projectileObj.GetComponent<NetworkObject>();
-            
-            netObj.Spawn();
-            
-            var projectile = projectileObj.GetComponent<FireballProjectile>();
-            
-            if (projectile != null)
-            {
-                projectile.Initialize(
-                    caster, 
-                    damageOnImpact ? damage : 0f,  
-                    projectileSpeed, 
-                    OnFireballExplode 
-                );
-                
-                projectile.SetExplosionData(explosionRadius, explosionDamage, explosionPrefab);
+                float impactDamage = damageOnImpact ? damage : 0f;
+                fireballProjectile.Initialize(caster, impactDamage, projectileSpeed, OnFireballExplode);
+                fireballProjectile.SetExplosionData(explosionRadius, explosionDamage, explosionPrefab);
             }
         }
         
@@ -52,33 +32,8 @@ namespace MageLock.Spells
             if (!NetworkManager.Singleton.IsServer)
                 return;
             
-            if (effectPrefab)
-            {
-                GameObject explosion = Instantiate(effectPrefab, position, Quaternion.identity);
-                NetworkObject netObj = explosion.GetComponent<NetworkObject>();
-                
-                if (netObj != null)
-                {
-                    netObj.Spawn();
-                }
-            }
-            
-            var hits = Physics.OverlapSphere(position, radius);
-            
-            foreach (var hit in hits)
-            {
-                if (hit.gameObject == caster) continue;
-                
-                var health = hit.GetComponent<IHealth>();
-                if (health != null)
-                {
-                    float distance = Vector3.Distance(position, hit.transform.position);
-                    float falloff = 1f - (distance / radius);
-                    float finalDamage = damage * falloff;
-                    
-                    health.TakeDamage(finalDamage);
-                }
-            }
+            SpawnNetworkEffect(effectPrefab, position, Quaternion.identity, explosionEffectDuration);
+            ApplyAreaDamage(position, caster, radius, damage);
         }
     }
 }
