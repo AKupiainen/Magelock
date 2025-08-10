@@ -15,10 +15,12 @@ namespace Magelock.UI
         public float StartAngle { get { return _startAngle; } set { SetProperty(ref _startAngle, value); } }
         
         [SerializeField] private bool _clockwise = true;
-        public bool Clockwise { get { return _clockwise; } set { SetProperty(ref _clockwise, value); } }
+        public bool Clockwise { get { return _clockwise; } set => SetProperty(ref _clockwise, value);
+        }
         
         [SerializeField] private bool _placeCenterItem = true;
-        public bool PlaceCenterItem { get { return _placeCenterItem; } set { SetProperty(ref _placeCenterItem, value); } }
+        public bool PlaceCenterItem { get { return _placeCenterItem; } set => SetProperty(ref _placeCenterItem, value);
+        }
         
         [Header("Child Settings")]
         [SerializeField] private bool _childForceExpandWidth = false;

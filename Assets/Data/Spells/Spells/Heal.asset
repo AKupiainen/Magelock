@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spellId: -87270
   spellName: Heal
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 8963414cff11a904ba99f35936116332, type: 3}
   cooldown: 1
   range: 10
   targetingType: 2

@@ -69,8 +69,8 @@ namespace MageLock.UI
                 button?.UpdateCooldown(deltaTime);
             }
         }
-        
-        public void AssignSpell(int slotIndex, Spell spell)
+
+        private void AssignSpell(int slotIndex, Spell spell)
         {
             if (!IsValidSlotIndex(slotIndex))
             {
@@ -113,8 +113,7 @@ namespace MageLock.UI
             if (spell != null)
             {
                 button.SetInteractable(true);
-                // TODO: Set icon when Spell has Icon property
-                // button.SetIcon(spell.Icon);
+                button.SetIcon(spell.Icon);
                 
                 button.SetMaxCooldown(spell.Cooldown);
             }
