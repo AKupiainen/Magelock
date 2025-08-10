@@ -101,6 +101,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offset: {x: 0, y: 4, z: 0}
   hideWhenFull: 0
+  damageBarShrinkDelay: 0.5
+  damageBarShrinkSpeed: 0.5
   healthPropertyName: _Health
   damagePropertyName: _Damage
   alphaPropertyName: _Alpha
@@ -562,7 +564,47 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 6593689378465111369}
+    - targetCorrespondingSourceObject: {fileID: 4638387145302325674, guid: 7c72ed3f90575084c9f3b5b585887182,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 194104804480959246}
   m_SourcePrefab: {fileID: 100100000, guid: 7c72ed3f90575084c9f3b5b585887182, type: 3}
+--- !u!137 &901686637518537606 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -4394780701237945513, guid: 7c72ed3f90575084c9f3b5b585887182,
+    type: 3}
+  m_PrefabInstance: {fileID: 5729129601422727377}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1143678512226476411 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4638387145302325674, guid: 7c72ed3f90575084c9f3b5b585887182,
+    type: 3}
+  m_PrefabInstance: {fileID: 5729129601422727377}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &194104804480959246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1143678512226476411}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65de732bd868a477a8a549ac56dae000, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetRenderer: {fileID: 901686637518537606}
+  trackedPoints:
+  - name: CastPoint
+    boneName: B_R_Hand
+    localOffset: {x: -0.33, y: 0, z: 0.95}
+    localRotationOffset: {x: 0, y: 0, z: 0}
+    trackedBone: {fileID: 5729129601422852619}
+    boneIndex: 0
+  syncOnStart: 1
+  debugNetworking: 1
+  showGizmos: 1
+  gizmoSize: 0.1
 --- !u!1 &5729129601422827479 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100102, guid: 7c72ed3f90575084c9f3b5b585887182,
@@ -731,7 +773,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0f66deff037c4140ade93ca51011ed6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  castPoint: {fileID: 0}
+  castPoint: {fileID: 194104804480959246}
 --- !u!114 &6593689378465111369
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -744,6 +786,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a32c03b3c96b34a07b233fbc8998df62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &5729129601422852619 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 400090, guid: 7c72ed3f90575084c9f3b5b585887182,
+    type: 3}
+  m_PrefabInstance: {fileID: 5729129601422727377}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5729129601422852663 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400102, guid: 7c72ed3f90575084c9f3b5b585887182,

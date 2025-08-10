@@ -116,7 +116,7 @@ namespace Magelock.UI
             
             float width = rectTransform.rect.width;
             float height = rectTransform.rect.height;
-            float radius = Mathf.Min(width, height) * 0.5f;  // Circle size stays constant
+            float radius = Mathf.Min(width, height) * 0.5f;
             
             Vector2 center = Vector2.zero;
             Vector4 uv = sprite != null ? DataUtility.GetOuterUV(sprite) : Vector4.zero;

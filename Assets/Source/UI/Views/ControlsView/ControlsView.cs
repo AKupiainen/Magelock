@@ -114,8 +114,6 @@ namespace MageLock.UI
             {
                 button.SetInteractable(true);
                 button.SetIcon(spell.Icon);
-                
-                button.SetMaxCooldown(spell.Cooldown);
             }
             else
             {

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using Magelock.UI;
 
 namespace MageLock.UI
 {
@@ -10,9 +11,15 @@ namespace MageLock.UI
         [SerializeField] private Button button;
         [SerializeField] private Image icon;
         [SerializeField] private Image cooldownOverlay;
+        [SerializeField] private CircularImage circularCooldownOverlay; 
+        
+        [Header("Cooldown Settings")]
+        [SerializeField] private bool useCircularCooldown;
+        [SerializeField] private bool invertCooldownFill; 
         
         [Header("State")]
         [SerializeField, ReadOnly] private float cooldownTimer;
+        [SerializeField, ReadOnly] private float maxCooldownDuration;
         [SerializeField, ReadOnly] private bool isOnCooldown;
         
         private Action<int> _onButtonPressed;
@@ -25,6 +32,14 @@ namespace MageLock.UI
             
             if (button != null)
                 button.onClick.AddListener(HandleButtonPress);
+            
+            if (!useCircularCooldown && cooldownOverlay != null)
+            {
+                cooldownOverlay.type = Image.Type.Filled;
+                cooldownOverlay.fillMethod = Image.FillMethod.Radial360;
+                cooldownOverlay.fillOrigin = (int)Image.Origin360.Top;
+                cooldownOverlay.fillClockwise = true;
+            }
         }
         
         private void OnDestroy()
@@ -48,6 +63,7 @@ namespace MageLock.UI
         
         public void StartCooldown(float duration)
         {
+            maxCooldownDuration = duration;
             cooldownTimer = duration;
             isOnCooldown = true;
             SetCooldownActive(true);
@@ -67,7 +83,9 @@ namespace MageLock.UI
             }
             else
             {
-                float fillAmount = cooldownTimer / GetMaxCooldown();
+                float progress = 1f - (cooldownTimer / maxCooldownDuration);
+                float fillAmount = invertCooldownFill ? progress : 1f - progress;
+                
                 UpdateCooldownDisplay(fillAmount);
             }
         }
@@ -78,18 +96,31 @@ namespace MageLock.UI
             isOnCooldown = false;
             SetCooldownActive(false);
             SetInteractable(true);
+            UpdateCooldownDisplay(0f);
         }
         
         private void SetCooldownActive(bool active)
         {
-            if (cooldownOverlay != null)
+            if (useCircularCooldown && circularCooldownOverlay != null)
+            {
+                circularCooldownOverlay.gameObject.SetActive(active);
+            }
+            else if (cooldownOverlay != null)
+            {
                 cooldownOverlay.gameObject.SetActive(active);
+            }
         }
         
         private void UpdateCooldownDisplay(float fillAmount)
         {
-            if (cooldownOverlay)
+            if (useCircularCooldown && circularCooldownOverlay != null)
+            {
+                circularCooldownOverlay.FillAmount = fillAmount;
+            }
+            else if (cooldownOverlay != null)
+            {
                 cooldownOverlay.fillAmount = fillAmount;
+            }
         }
   
         public void SetInteractable(bool interactable)
@@ -114,22 +145,20 @@ namespace MageLock.UI
             CompleteCooldown();
         }
         
-        private float _maxCooldown;
-        public void SetMaxCooldown(float max)
-        {
-            _maxCooldown = max;
-        }
-        
-        private float GetMaxCooldown()
-        {
-            return _maxCooldown > 0 ? _maxCooldown : 1f;
-        }
-        
 #if UNITY_EDITOR
         private void OnValidate()
         {
             if (button == null)
                 button = GetComponent<Button>();
+            
+            if (circularCooldownOverlay == null && cooldownOverlay != null)
+            {
+                circularCooldownOverlay = cooldownOverlay.GetComponent<CircularImage>();
+                if (circularCooldownOverlay != null)
+                {
+                    useCircularCooldown = true;
+                }
+            }
         }
 #endif
     }

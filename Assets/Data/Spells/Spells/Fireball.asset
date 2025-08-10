@@ -15,7 +15,7 @@ MonoBehaviour:
   spellId: -360260
   spellName: Fireball
   icon: {fileID: 21300000, guid: 3390647031b5c794eba542e6cd263c27, type: 3}
-  cooldown: 1
+  cooldown: 3
   range: 10
   targetingType: 0
   targetLayers:

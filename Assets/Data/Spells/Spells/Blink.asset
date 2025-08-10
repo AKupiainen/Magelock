@@ -15,7 +15,7 @@ MonoBehaviour:
   spellId: -360574
   spellName: Blink
   icon: {fileID: 21300000, guid: 1b497534119c3594b9debd153c826819, type: 3}
-  cooldown: 1
+  cooldown: 5
   range: 10
   targetingType: 0
   targetLayers:
