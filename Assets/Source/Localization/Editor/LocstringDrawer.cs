@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEditor;
 using System.Linq;
 using System.Collections.Generic;
@@ -136,18 +137,18 @@ namespace MageLock.Localization.Editor
                 
                 PreviewCache.Clear();
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 Debug.LogError($"Error loading localization keys: {e.Message}");
-                _availableKeys = new string[0];
+                _availableKeys = Array.Empty<string>();
             }
         }
 
         private string GetLocalizedPreview(string key)
         {
-            if (PreviewCache.ContainsKey(key))
+            if (PreviewCache.TryGetValue(key, out var preview))
             {
-                return PreviewCache[key];
+                return preview;
             }
 
             try
@@ -175,7 +176,7 @@ namespace MageLock.Localization.Editor
                     }
                 }
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 Debug.LogError($"Error getting localized preview for key '{key}': {e.Message}");
             }

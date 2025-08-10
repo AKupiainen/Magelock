@@ -46,7 +46,68 @@ namespace MageLock.Events
             Spell = spell;
         }
     }
-
+    
+    /// <summary>
+    /// Event fired when a spell is successfully cast
+    /// </summary>
+    public class SpellCastSuccessEvent : IEventData
+    {
+        public Spell Spell { get; }
+        public int SlotIndex { get; }
+        public UnityEngine.GameObject Caster { get; }
+        
+        public SpellCastSuccessEvent(Spell spell, int slotIndex, UnityEngine.GameObject caster)
+        {
+            Spell = spell;
+            SlotIndex = slotIndex;
+            Caster = caster;
+        }
+    }
+    
+    /// <summary>
+    /// Event fired when a spell cast fails
+    /// </summary>
+    public class SpellCastFailedEvent : IEventData
+    {
+        public enum FailureReason
+        {
+            InsufficientMana,
+            OnCooldown,
+            OutOfRange,
+            InvalidTarget,
+            Interrupted,
+            NotLearned
+        }
+        
+        public Spell Spell { get; }
+        public int SlotIndex { get; }
+        public FailureReason Reason { get; }
+        public string Message { get; }
+        
+        public SpellCastFailedEvent(Spell spell, int slotIndex, FailureReason reason, string message = "")
+        {
+            Spell = spell;
+            SlotIndex = slotIndex;
+            Reason = reason;
+            Message = message;
+        }
+    }
+    
+    /// <summary>
+    /// Event fired when a spell cooldown is complete
+    /// </summary>
+    public class SpellCooldownCompleteEvent : IEventData
+    {
+        public int SlotIndex { get; }
+        public Spell Spell { get; }
+        
+        public SpellCooldownCompleteEvent(int slotIndex, Spell spell)
+        {
+            SlotIndex = slotIndex;
+            Spell = spell;
+        }
+    }
+    
     /// <summary>
     /// Event fired when spell slots are cleared
     /// </summary>
