@@ -406,7 +406,12 @@ namespace MageLock.Controls
             
             Debug.Log($"Player {OwnerClientId} movement speed set to {speed} (base: {baseMovementSpeed})");
         }
-        
+
+        public float GetBaseSpeed()
+        {
+            return baseMovementSpeed;
+        }
+
         [ServerRpc(RequireOwnership = false)]
         private void SetSpeedServerRpc(float speed)
         {

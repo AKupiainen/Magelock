@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using MageLock.Gameplay;
 using Unity.Netcode;
 
 namespace MageLock.Spells

@@ -2,22 +2,27 @@ using UnityEngine;
 using Unity.Netcode;
 using System.Collections.Generic;
 using System.Linq;
+using MageLock.Gameplay;
 
 namespace MageLock.StatusEffects
 {
     public class StatusEffectHandler : NetworkBehaviour
     {
-        [Header("Base Stats")]
-        [SerializeField] private float baseMovementSpeed = 5f;
+        private float _currentMovementSpeed;
+        private readonly List<StatusEffectInstance> activeEffects = new();
+        private IMovement _movementComponent;
         
-        [Header("Current Stats")]
-        [SerializeField] private float currentMovementSpeed;
-        
-        [SerializeField] private List<StatusEffectInstance> activeEffects = new();
+        private float _baseMovementSpeed;
         
         private void Awake()
         {
-            currentMovementSpeed = baseMovementSpeed;
+            _movementComponent = GetComponent<IMovement>();
+            
+            if (_movementComponent != null)
+            {
+                _baseMovementSpeed = _movementComponent.GetBaseSpeed();
+                _currentMovementSpeed = _baseMovementSpeed;
+            }
         }
         
         private void Update()
@@ -38,8 +43,7 @@ namespace MageLock.StatusEffects
             }
         }
         
-
-        public void ApplyEffect(StatusEffect effect)
+        public void ApplyEffect(StatusEffect effect, GameObject source = null)
         {
             if (!IsServer) return;
             if (effect == null) return;
@@ -78,7 +82,7 @@ namespace MageLock.StatusEffects
             
             if (effect is SlowEffect)
             {
-                SyncMovementSpeedClientRpc(currentMovementSpeed);
+                SyncMovementSpeedClientRpc(_currentMovementSpeed);
             }
         }
         
@@ -103,7 +107,6 @@ namespace MageLock.StatusEffects
         public void RecalculateMovement()
         {
             float movementMultiplier = 1f;
-            
             var slowEffects = activeEffects.Where(e => e.effect is SlowEffect);
             
             foreach (var instance in slowEffects)
@@ -112,14 +115,16 @@ namespace MageLock.StatusEffects
                 if (slow != null) movementMultiplier *= (1f - slow.SlowPercentage);
             }
             
-            currentMovementSpeed = Mathf.Max(baseMovementSpeed * 0.1f, baseMovementSpeed * movementMultiplier);
+            _currentMovementSpeed = Mathf.Max(_baseMovementSpeed * 0.1f, _baseMovementSpeed * movementMultiplier);
             UpdateMovementController();
         }
         
         private void UpdateMovementController()
         {
-            var movement = GetComponent<IMovement>();
-            movement?.SetSpeed(currentMovementSpeed);
+            if (_movementComponent != null)
+            {
+                _movementComponent.SetSpeed(_currentMovementSpeed);
+            }
         }
         
         [ClientRpc]
@@ -127,13 +132,8 @@ namespace MageLock.StatusEffects
         {
             if (IsServer) return;
             
-            currentMovementSpeed = speed;
+            _currentMovementSpeed = speed;
             UpdateMovementController();
         }
-    }
-    
-    public interface IMovement
-    {
-        void SetSpeed(float speed);
     }
 }

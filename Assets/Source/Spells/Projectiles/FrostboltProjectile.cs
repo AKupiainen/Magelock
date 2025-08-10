@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using MageLock.Gameplay;
 using Unity.Netcode;
 using MageLock.StatusEffects;
 

@@ -1,3 +1,4 @@
+using MageLock.Gameplay;
 using UnityEngine;
 
 namespace MageLock.Spells

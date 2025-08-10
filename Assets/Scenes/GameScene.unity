@@ -9413,10 +9413,10 @@ MonoBehaviour:
   m_Padding:
     m_Left: -40
     m_Right: 0
-    m_Top: 7
+    m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 0
-  _radius: 288.8
+  _radius: 290
   _startAngle: 500
   _clockwise: 0
   _placeCenterItem: 1
@@ -11549,7 +11549,11 @@ MonoBehaviour:
   button: {fileID: 520651691}
   icon: {fileID: 520651689}
   cooldownOverlay: {fileID: 1864893301}
+  circularCooldownOverlay: {fileID: 1864893301}
+  useCircularCooldown: 1
+  invertCooldownFill: 0
   cooldownTimer: 0
+  maxCooldownDuration: 0
   isOnCooldown: 0
 --- !u!114 &520651691
 MonoBehaviour:
@@ -24994,7 +24998,11 @@ MonoBehaviour:
   button: {fileID: 1067109320}
   icon: {fileID: 1067109318}
   cooldownOverlay: {fileID: 548569999}
+  circularCooldownOverlay: {fileID: 548569999}
+  useCircularCooldown: 1
+  invertCooldownFill: 0
   cooldownTimer: 0
+  maxCooldownDuration: 0
   isOnCooldown: 0
 --- !u!114 &1067109320
 MonoBehaviour:
@@ -27409,7 +27417,11 @@ MonoBehaviour:
   button: {fileID: 1145941523}
   icon: {fileID: 1145941526}
   cooldownOverlay: {fileID: 1486868580}
+  circularCooldownOverlay: {fileID: 1486868580}
+  useCircularCooldown: 1
+  invertCooldownFill: 0
   cooldownTimer: 0
+  maxCooldownDuration: 0
   isOnCooldown: 0
 --- !u!114 &1145941523
 MonoBehaviour:
@@ -29689,7 +29701,11 @@ MonoBehaviour:
   button: {fileID: 1231739816}
   icon: {fileID: 1231739814}
   cooldownOverlay: {fileID: 16248399}
+  circularCooldownOverlay: {fileID: 16248399}
+  useCircularCooldown: 1
+  invertCooldownFill: 0
   cooldownTimer: 0
+  maxCooldownDuration: 0
   isOnCooldown: 0
 --- !u!114 &1231739816
 MonoBehaviour:
@@ -44214,10 +44230,12 @@ MonoBehaviour:
   - {fileID: 1145941522}
   - {fileID: 1067109319}
   - {fileID: 520651690}
+  - {fileID: 1231739815}
   assignedSpells:
   - {fileID: 11400000, guid: 16542ee0bbd184575876bad8d8dc5c55, type: 2}
   - {fileID: 11400000, guid: 03b50be07eeb7428dad30765e9b0f322, type: 2}
   - {fileID: 11400000, guid: 7ba3f3010c36541988a839d82e3f50c6, type: 2}
+  - {fileID: 11400000, guid: ac51384bb84c2472fb36e79511511480, type: 2}
 --- !u!1001 &1843869098
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -25,7 +25,10 @@ MonoBehaviour:
     type: 3}
   projectileSpeed: 20
   damage: 50
+  spawnOffset: 0.5
   explosionRadius: 3
   explosionDamage: 25
-  explosionPrefab: {fileID: 0}
+  explosionPrefab: {fileID: 5685069347925975538, guid: 1c4588a647e79774489c06bf83d7b03f,
+    type: 3}
   damageOnImpact: 1
+  explosionEffectDuration: 2
