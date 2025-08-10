@@ -93,6 +93,8 @@ namespace MageLock.Graphics.Editor
         private static bool _showPresets = true;
         private bool _stylesInitialized;
         
+        public ToonShaderGUI() { }
+        
         public ToonShaderGUI(MaterialProperty specularSize)
         {
             _specularSize = specularSize;
